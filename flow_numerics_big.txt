@@ -1,0 +1,138 @@
+##########################################################################
+p = 14, s_0 = 6, s* = 5, |M(s_0)| = 6476, 20 temperatures
+
+=== rho = 0.0 ===
+  measure{k>0} = 0.900   max k = 4   max Theta = 1.785e+11
+  exact gap        : min 3.9693e-03  max 1.7965e-02   [1/(4p) = 1.7857e-02]
+  pibar on 2^W: max #local maxima, flips+exchanges = 2 ; flips only = 2   (1 = unimodal)
+  ascent ensemble on 2^W: max_J pibar[Lam(J)]/pibar(J) = inf  [bound 2^k = 16] ; max ascent length = 4 [bound 2^k-1 = 15]
+
+  hypercube congestion varrho (max over lambda):
+    H1 flips, increasing order   (single path) : 519.88
+    H2 exchange pairing          (single path) : 520.41
+    H3 steepest ascent to mode   (single path) : inf
+    H4 flips, uniform order      (FLOW)      : 142.81
+    H5 matching+order, exchanges (FLOW)      : 142.66
+    H6 optimal flow, LP          (FLOW)      : 2.2746
+
+  gap LOWER BOUNDS actually delivered (min over lambda), truth min = 3.969e-03:
+    paper Thm 6.9  1/(32 p s0(2s*+1)max(1,Th)(1+kTh)^k) : 6.9514e-60
+    exact single-path ensemble  1/(rho(T) ell)          : 8.9245e-18      [max rho(T) = 7.003e+15]
+    two-level, H1 flips increasing order                : 1.9047e-06
+    two-level, H2 exchange pairing                      : 1.9028e-06
+    two-level, H3 ascent to the mode                    : 3.2673e-04   [UNAVAILABLE at 3 of 18 temperatures with k>0]
+    two-level, H5 flow (matching+order)                 : 6.2212e-06
+    two-level, H6 optimal flow (LP)                     : 1.1668e-04   [UNAVAILABLE at 2 of 18 temperatures with k>0]
+    funnel congestion alone rho_F (max)                 : 62.63
+    THEOREM (T) 1/{8p(2s*+1)max(1,s* 2^k)(4s0+2^(k+1))}  : 1.8118e-07
+    max_lambda max(1,Theta)(1+k Theta)^k                : 4.8653e+54
+    (T) / [exact congestion of the H3 ensemble]         : 0.0005545
+    (T) / eq:gapM                                      : 2.6064e+52
+
+  decomposition (Jerrum-Son-Tetali-Vigoda):
+    min_lambda Gap(Pbar on 2^W)      = 4.0398e-03
+    min_lambda min_J Gap(P|B_J)      = 1.7857e-02
+    min_lambda (1/2)Gap(Pbar)minGap  = 3.6128e-05
+    max_lambda [(1/2)GapBar*GapBlk]/Gap over {k>0} = 0.0250  (<=1 means the JSTV inequality holds here)
+
+=== rho = 0.5 ===
+  measure{k>0} = 0.900   max k = 5   max Theta = 2.468e+17
+  exact gap        : min 1.4460e-02  max 2.6530e-02   [1/(4p) = 1.7857e-02]
+  pibar on 2^W: max #local maxima, flips+exchanges = 1 ; flips only = 3   (1 = unimodal)
+  ascent ensemble on 2^W: max_J pibar[Lam(J)]/pibar(J) = 4.022  [bound 2^k = 32] ; max ascent length = 4 [bound 2^k-1 = 31]
+
+  hypercube congestion varrho (max over lambda):
+    H1 flips, increasing order   (single path) : 6.2466e+08
+    H2 exchange pairing          (single path) : 10466
+    H3 steepest ascent to mode   (single path) : 1.2701
+    H4 flips, uniform order      (FLOW)      : 7.6361e+07
+    H5 matching+order, exchanges (FLOW)      : 3.9292e+07
+    H6 optimal flow, LP          (FLOW)      : 1
+
+  gap LOWER BOUNDS actually delivered (min over lambda), truth min = 1.446e-02:
+    paper Thm 6.9  1/(32 p s0(2s*+1)max(1,Th)(1+kTh)^k) : 3.3740e-76
+    exact single-path ensemble  1/(rho(T) ell)          : 1.2213e-18      [max rho(T) = 6.823e+16]
+    two-level, H1 flips increasing order                : 1.6718e-12
+    two-level, H2 exchange pairing                      : 9.9781e-08
+    two-level, H3 ascent to the mode                    : 3.1369e-04
+    two-level, H5 flow (matching+order)                 : 1.7590e-11
+    two-level, H6 optimal flow (LP)                     : 1.6213e-04
+    funnel congestion alone rho_F (max)                 : 69.1
+    THEOREM (T) 1/{8p(2s*+1)max(1,s* 2^k)(4s0+2^(k+1))}  : 5.7648e-08
+    max_lambda max(1,Theta)(1+k Theta)^k                : 1.0024e+71
+    (T) / [exact congestion of the H3 ensemble]         : 0.0001838
+    (T) / eq:gapM                                      : 1.7086e+68
+
+  decomposition (Jerrum-Son-Tetali-Vigoda):
+    min_lambda Gap(Pbar on 2^W)      = 1.4824e-02
+    min_lambda min_J Gap(P|B_J)      = 1.7858e-02
+    min_lambda (1/2)Gap(Pbar)minGap  = 1.3253e-04
+    max_lambda [(1/2)GapBar*GapBlk]/Gap over {k>0} = 0.0124  (<=1 means the JSTV inequality holds here)
+
+=== rho = 0.85 ===
+  measure{k>0} = 0.950   max k = 5   max Theta = 2.389e+34
+  exact gap        : min 1.4024e-02  max 2.4137e-02   [1/(4p) = 1.7857e-02]
+  pibar on 2^W: max #local maxima, flips+exchanges = 2 ; flips only = 4   (1 = unimodal)
+  ascent ensemble on 2^W: max_J pibar[Lam(J)]/pibar(J) = inf  [bound 2^k = 32] ; max ascent length = 4 [bound 2^k-1 = 31]
+
+  hypercube congestion varrho (max over lambda):
+    H1 flips, increasing order   (single path) : 1.6158e+35
+    H2 exchange pairing          (single path) : 2.8923e+05
+    H3 steepest ascent to mode   (single path) : inf
+    H4 flips, uniform order      (FLOW)      : 1.8974e+34
+    H5 matching+order, exchanges (FLOW)      : 1.7381e+34
+    H6 optimal flow, LP          (FLOW)      : 1
+
+  gap LOWER BOUNDS actually delivered (min over lambda), truth min = 1.402e-02:
+    paper Thm 6.9  1/(32 p s0(2s*+1)max(1,Th)(1+kTh)^k) : 5.8281e-215
+    exact single-path ensemble  1/(rho(T) ell)          : 4.9006e-43      [max rho(T) = 1.7e+41]
+    two-level, H1 flips increasing order                : 6.4952e-39
+    two-level, H2 exchange pairing                      : 3.6284e-09
+    two-level, H3 ascent to the mode                    : 2.4650e-04   [UNAVAILABLE at 1 of 19 temperatures with k>0]
+    two-level, H5 flow (matching+order)                 : 3.5222e-38
+    two-level, H6 optimal flow (LP)                     : 2.0880e-04   [UNAVAILABLE at 1 of 19 temperatures with k>0]
+    funnel congestion alone rho_F (max)                 : 59.59
+    THEOREM (T) 1/{8p(2s*+1)max(1,s* 2^k)(4s0+2^(k+1))}  : 5.7648e-08
+    max_lambda max(1,Theta)(1+k Theta)^k                : 5.8029e+209
+    (T) / [exact congestion of the H3 ensemble]         : 0.0002339
+    (T) / eq:gapM                                      : 9.8914e+206
+
+  decomposition (Jerrum-Son-Tetali-Vigoda):
+    min_lambda Gap(Pbar on 2^W)      = 1.4033e-02
+    min_lambda min_J Gap(P|B_J)      = 1.7858e-02
+    min_lambda (1/2)Gap(Pbar)minGap  = 1.2532e-04
+    max_lambda [(1/2)GapBar*GapBlk]/Gap over {k>0} = 0.0179  (<=1 means the JSTV inequality holds here)
+
+=== rho = 0.95 ===
+  measure{k>0} = 0.950   max k = 5   max Theta = 1.194e+43
+  exact gap        : min 1.7952e-02  max 2.7247e-02   [1/(4p) = 1.7857e-02]
+  pibar on 2^W: max #local maxima, flips+exchanges = 1 ; flips only = 3   (1 = unimodal)
+  ascent ensemble on 2^W: max_J pibar[Lam(J)]/pibar(J) = 4.518  [bound 2^k = 32] ; max ascent length = 3 [bound 2^k-1 = 31]
+
+  hypercube congestion varrho (max over lambda):
+    H1 flips, increasing order   (single path) : 4.459e+42
+    H2 exchange pairing          (single path) : 2.8587e+05
+    H3 steepest ascent to mode   (single path) : 1.6276
+    H4 flips, uniform order      (FLOW)      : 2.0409e+42
+    H5 matching+order, exchanges (FLOW)      : 7.1281e+41
+    H6 optimal flow, LP          (FLOW)      : 1
+
+  gap LOWER BOUNDS actually delivered (min over lambda), truth min = 1.795e-02:
+    paper Thm 6.9  1/(32 p s0(2s*+1)max(1,Th)(1+kTh)^k) : 3.7338e-267
+    exact single-path ensemble  1/(rho(T) ell)          : 6.7379e-47      [max rho(T) = 1.237e+45]
+    two-level, H1 flips increasing order                : 2.3536e-46
+    two-level, H2 exchange pairing                      : 3.6711e-09
+    two-level, H3 ascent to the mode                    : 3.4491e-04
+    two-level, H5 flow (matching+order)                 : 8.7377e-46
+    two-level, H6 optimal flow (LP)                     : 1.4436e-04   [UNAVAILABLE at 4 of 19 temperatures with k>0]
+    funnel congestion alone rho_F (max)                 : 59.61
+    THEOREM (T) 1/{8p(2s*+1)max(1,s* 2^k)(4s0+2^(k+1))}  : 5.7648e-08
+    max_lambda max(1,Theta)(1+k Theta)^k                : 9.0578e+261
+    (T) / [exact congestion of the H3 ensemble]         : 0.0001671
+    (T) / eq:gapM                                      : 1.5439e+259
+
+  decomposition (Jerrum-Son-Tetali-Vigoda):
+    min_lambda Gap(Pbar on 2^W)      = 1.8033e-02
+    min_lambda min_J Gap(P|B_J)      = 1.7858e-02
+    min_lambda (1/2)Gap(Pbar)minGap  = 1.6101e-04
+    max_lambda [(1/2)GapBar*GapBlk]/Gap over {k>0} = 0.0145  (<=1 means the JSTV inequality holds here)

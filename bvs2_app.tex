@@ -1,0 +1,1555 @@
+\section{Deferred proofs}
+\label{sec:app}
+
+% \begin{proof}[Proof of Lemma~\ref{lemma:master}]
+%     Dividing numerator and denominator of the last fraction
+%     in~\eqref{eq:Lik} by $g^{n/2}$, and writing $C_n(Y)$ for the
+%     $\gamma$-free prefactor,
+%     \begin{equation}
+%         \label{eq:logL}
+%         \log\mathcal{L}_n(Y\mid\gamma)
+%         =\log C_n(Y)-\frac n2\log g
+%         -\frac{\abs \gamma}{2}\log(1+g)
+%         -\frac n2\log\bigl\{g^{-1}+1-R^{2}_\gamma\bigr\}.
+%     \end{equation}
+%     The first two terms of the right-hand side of~\eqref{eq:logL} do not
+%     depend on $\gamma$, hence cancel in a difference:
+%     \begin{equation}
+%         \label{eq:logLratio}
+%         \log\frac{\mathcal{L}_n(Y\mid\gamma)}
+%         {\mathcal{L}_n(Y\mid\gamma')}
+%         =\frac{\abs{\gamma'}-\abs \gamma}{2}\log(1+g)
+%         +\frac n2\log\frac{g^{-1}+1-R^{2}_{\gamma'}}
+%         {g^{-1}+1-R^{2}_{\gamma}} .
+%     \end{equation}
+%     By~\eqref{eq:prior} and~\eqref{eq:pilambda}, the normalising constants
+%     cancelling,
+%     \begin{equation*}
+%         \log\frac{\pi_n^{(\lambda)}(\gamma\mid Y)}
+%         {\pi_n^{(\lambda)}(\gamma'\mid Y)}
+%         =\log\frac{\pi(\gamma)}{\pi(\gamma')}
+%         +\lambda\log\frac{\mathcal{L}_n(Y\mid\gamma)}
+%         {\mathcal{L}_n(Y\mid\gamma')}
+%         =\kappa\bigl(\abs{\gamma'}-\abs \gamma\bigr)\log p
+%         +\lambda\log\frac{\mathcal{L}_n(Y\mid\gamma)}
+%         {\mathcal{L}_n(Y\mid\gamma')} .
+%     \end{equation*}
+%     Substituting~\eqref{eq:logLratio} and collecting the two terms
+%     carrying the factor $\abs{\gamma'}-\abs \gamma$
+%     gives~\eqref{eq:master}.
+% \end{proof}
+
+Every proof of the paper is collected here, together with the notation and
+the deterministic bounds they rest on. Only the proof of \cref{th:drop}
+involves the temperature, and it involves it only through the factor
+$\lambda$ multiplying the fit term of~\eqref{eq:master}.
+
+\subsection{Notation}
+\label{sec:prelim}
+
+We use throughout the effective noise of YWJ,
+\begin{equation}
+    \label{eq:wtilde}
+    \widetilde w\ \coloneq\ X_{S^{c}}\beta^\ast_{S^{c}}+w,
+    \qquad\text{so that}\qquad
+    Y=\signal+\widetilde w ,
+\end{equation}
+the elementary inequalities
+\begin{gather}
+    \label{eq:elementary}
+    \log(1+x)\leq x\ \ (x>-1),
+    \qquad
+    \norm{a+b}_2^{2}\leq2\norm a_2^{2}+2\norm b_2^{2},\\
+    \nonumber
+    \frac{a}{a+b}\geq\min\Bigl\{\frac12,\frac{a}{2b}\Bigr\}
+    \ \ (a,b>0),
+\end{gather}
+and, for an underfitted $\gamma\in\mathscr{M}(s_0)$, the quantity
+\begin{equation}
+    \label{eq:Adef}
+    A^{2}\ \coloneq\ \nu\,
+    \frac{\norm{(I-\Phi_\gamma)\signal}_2^{2}}
+    {\abs{\gamma^{\ast}\setminus\gamma}}\ >\ 0 ,
+\end{equation}
+the dependence on $\gamma$ being suppressed, as YWJ suppress it, since
+$\gamma$ is fixed wherever $A$ occurs.
+
+
+\subsection{Deterministic bounds}
+\label{sub:appdet}
+
+\begin{lemma}[Uniform residual lower bound]
+    \label{lemma:residual}
+    On the good event, and under~\eqref{eq:Dassumption}, every
+    $\bar\gamma\in\mathscr{M}(s_0)$ satisfies
+    \begin{equation}
+        \label{eq:residual}
+        \norm Y_2^{2}\bigl(g^{-1}+1-R^{2}_{\bar\gamma}\bigr)
+        \ \geq\ \norm{(I-\Phi_{\bar\gamma})Y}_2^{2}
+        \ \geq\ \frac{n\sigma_0^{2}}{8} .
+    \end{equation}
+\end{lemma}
+
+\begin{proof}
+    Since $\norm Y_2^{2}(g^{-1}+1-R^{2}_{\bar\gamma})
+    =g^{-1}\norm Y_2^{2}+\norm{(I-\Phi_{\bar\gamma})Y}_2^{2}$, the first
+    inequality amounts to discarding $g^{-1}\norm Y_2^{2}\geq0$. For the
+    second, fix $\bar\gamma\in\mathscr{M}(s_0)$ and set
+    $\bar\gamma^{+}\coloneq\bar\gamma\cup\gamma^{\ast}$, so that
+    $\abs{\bar\gamma^{+}}\leq\abs{\bar\gamma}+s^{\ast}\leq s$ and
+    $\bar\gamma^{+}\in\mathscr{M}(s)$. Since
+    $\bar\gamma\subseteq\bar\gamma^{+}$, the range of $\Phi_{\bar\gamma}$
+    is contained in that of $\Phi_{\bar\gamma^{+}}$, so
+    $I-\Phi_{\bar\gamma}\succcurlyeq I-\Phi_{\bar\gamma^{+}}$ and
+    \begin{equation}
+        \label{eq:res1}
+        \norm{(I-\Phi_{\bar\gamma})Y}_2^{2}
+        \ \geq\ \norm{(I-\Phi_{\bar\gamma^{+}})Y}_2^{2}.
+    \end{equation}
+    Because $\gamma^{\ast}\subseteq\bar\gamma^{+}$, the vector $\signal$
+    lies in the range of $\Phi_{\bar\gamma^{+}}$, so
+    $(I-\Phi_{\bar\gamma^{+}})\signal=0$ and
+    \begin{equation*}
+    (I-\Phi_{\bar\gamma^{+}})
+        Y
+        =(I-\Phi_{\bar\gamma^{+}})w
+        +(I-\Phi_{\bar\gamma^{+}})X_{S^{c}}\beta^\ast_{S^{c}} .
+    \end{equation*}
+    Apply $\norm{a+b}_2^{2}\geq\tfrac12\norm a_2^{2}-\norm b_2^{2}$, which
+    is the rearrangement of $\tfrac12(\norm a_2-2\norm b_2)^{2}\geq0$,
+    with $a=(I-\Phi_{\bar\gamma^{+}})w$ and
+    $b=(I-\Phi_{\bar\gamma^{+}})X_{S^{c}}\beta^\ast_{S^{c}}$. Since
+    projections are non-expansive, $\norm b_2^{2}\leq
+    \norm{X_{S^{c}}\beta^\ast_{S^{c}}}_2^{2}\leq\Ltil\sigma_0^{2}\log p$
+    by \cref{ass:A}, and $\norm a_2^{2}=\norm w_2^{2}
+    -w^{\top}\Phi_{\bar\gamma^{+}}w$ because $I-\Phi_{\bar\gamma^+}$ is a
+    projection. Hence
+    \begin{equation*}
+        \norm{(I-\Phi_{\bar\gamma^{+}})Y}_2^{2}
+        \ \geq\ \tfrac12\bigl(\norm w_2^{2}
+        -w^{\top}\Phi_{\bar\gamma^{+}}w\bigr)
+        -\Ltil\sigma_0^{2}\log p .
+    \end{equation*}
+    On $\mathcal{C}_n$ we have $\norm w_2^{2}\geq n\sigma_0^{2}/2$, and on
+    $\mathcal{B}_n$, applied to $\bar\gamma^{+}\in\mathscr{M}(s)$, we have
+    $w^{\top}\Phi_{\bar\gamma^{+}}w\leq 8s\,\sigma_0^{2}\log p$.
+    Therefore
+    \begin{equation*}
+        \norm{(I-\Phi_{\bar\gamma^{+}})Y}_2^{2}
+        \ \geq\ \frac{n\sigma_0^{2}}{4}
+        -\bigl\{4s+\Ltil\bigr\}\sigma_0^{2}\log p
+        \ \geq\ \frac{n\sigma_0^{2}}{4}
+        -\bigl\{8s+\Ltil\bigr\}\sigma_0^{2}\log p ,
+    \end{equation*}
+    and by~\eqref{eq:Dassumption} the subtracted term is at most
+    $n\sigma_0^{2}/32$, so the right-hand side is at least
+    $7n\sigma_0^{2}/32\geq n\sigma_0^{2}/8$. Combining
+    with~\eqref{eq:res1} finishes the proof.
+\end{proof}
+
+\begin{lemma}[Effective noise]
+    \label{lemma:noise}
+    On the good event, and under~\eqref{eq:Dassumption}:
+    \begin{equivcond}
+        \item\label{it:noise_i}
+        $\norm{\widetilde w}_2^{2}\leq2\Ltil\sigma_0^{2}\log p
+        +3n\sigma_0^{2}$;
+        \item\label{it:noise_ii} for every pair
+        $\gamma_2\subset\gamma_1$ of $\mathscr{M}(s)$ with
+        $\abs{\gamma_1}-\abs{\gamma_2}=1$,
+        \begin{equation*}
+            \norm{(\Phi_{\gamma_1}-\Phi_{\gamma_2})\widetilde w}_2^{2}
+            \ \leq\ 2(L+\Ltil)\,\sigma_0^{2}\log p
+            \ \leq\ \frac{n\nu^{2}C_\beta^{2}}{64} .
+        \end{equation*}
+    \end{equivcond}
+\end{lemma}
+
+\begin{proof}
+    \ref{it:noise_i} By~\eqref{eq:elementary} and \cref{ass:A},
+    $\norm{\widetilde w}_2^{2}\leq2\norm{X_{S^{c}}
+        \beta^\ast_{S^{c}}}_2^{2}+2\norm w_2^{2}
+    \leq2\Ltil\sigma_0^{2}\log p+2\norm w_2^{2}$, and on $\mathcal{C}_n$
+    we have $\norm w_2^{2}\leq\tfrac32n\sigma_0^{2}$.
+
+    \ref{it:noise_ii} Write $\Pi=\Phi_{\gamma_1}-\Phi_{\gamma_2}$, an
+    orthogonal projection, so that $\norm{\Pi v}_2\leq\norm v_2$ for every
+    $v$ and $\norm{\Pi w}_2^{2}=w^{\top}\Pi w$. Hence,
+    by~\eqref{eq:elementary},
+    \begin{align*}
+        \norm{\Pi\widetilde w}_2^{2}
+        &\leq2\norm{\Pi X_{S^{c}}\beta^\ast_{S^{c}}}_2^{2}
+        +2\norm{\Pi w}_2^{2}
+        \leq2\norm{X_{S^{c}}\beta^\ast_{S^{c}}}_2^{2}
+        +2\,w^{\top}\bigl(\Phi_{\gamma_1}-\Phi_{\gamma_2}\bigr)w\\
+        &\leq2\Ltil\sigma_0^{2}\log p+2L\sigma_0^{2}\log p,
+    \end{align*}
+    using \cref{ass:A} for the first term and the event $\mathcal{A}_n$,
+    applied to the nested pair $\gamma_2\subset\gamma_1$ of
+    $\mathscr{M}(s)$ with $\abs{\gamma_1}-\abs{\gamma_2}=1$, for the
+    second. The final inequality is \cref{ass:betamin} rearranged.
+\end{proof}
+
+\begin{lemma}[Upper bound on the regularised residual]
+    \label{lemma:Dupper}
+    On the good event, and under~\eqref{eq:Dassumption} and $n\geq3$, every
+    $\gamma\in\mathscr{M}(s_0)$ satisfies
+    \begin{equation}
+        \label{eq:Dupper}
+        \norm Y_2^{2}\bigl(g^{-1}+1-R^{2}_{\gamma}\bigr)
+        \ \leq\ 2\norm{(I-\Phi_\gamma)\signal}_2^{2}
+        +8\,n\sigma_0^{2} .
+    \end{equation}
+\end{lemma}
+
+\begin{proof}
+    By~\eqref{eq:wtilde} and~\eqref{eq:elementary},
+    \begin{equation*}
+        \norm{(I-\Phi_\gamma)Y}_2^{2}
+        \leq2\norm{(I-\Phi_\gamma)\signal}_2^{2}
+        +2\norm{(I-\Phi_\gamma)\widetilde w}_2^{2}
+        \leq2\norm{(I-\Phi_\gamma)\signal}_2^{2}
+        +2\norm{\widetilde w}_2^{2},
+    \end{equation*}
+    the last step because $I-\Phi_\gamma$ is a projection. By
+    \cref{lemma:noise}\ref{it:noise_i}, $2\norm{\widetilde w}_2^{2}\leq
+    4\Ltil\sigma_0^{2}\log p+6n\sigma_0^{2}$, and on $\mathcal{D}_n$ we
+    have $g^{-1}\norm Y_2^{2}\leq(2\log p+3)\sigma_0^{2}$. Adding the two,
+    the additive term is at most
+    \begin{equation*}
+        \bigl\{4\Ltil\log p+6n+2\log p+3\bigr\}\sigma_0^{2}
+        \ \leq\ \Bigl\{\frac n8+6n+\frac{n}{128}+n\Bigr\}\sigma_0^{2}
+        \ \leq\ 8n\sigma_0^{2},
+    \end{equation*}
+    where we used, in order: $\Ltil\log p\leq n/32$
+    from~\eqref{eq:Dassumption}, whence $4\Ltil\log p\leq n/8$; the same display
+    with $\Ltil$ replaced by $8s\geq8$, whence $\log p\leq n/256$ and
+    $2\log p\leq n/128$; and $3\leq n$.
+\end{proof}
+
+\begin{lemma}[Greedy selection; YWJ, Lemma~8]
+    \label{lemma:forward}
+    Let $\gamma\in\mathscr{M}(s_0)$ be underfitted and let $j_\gamma$ be
+    as in~\eqref{eq:jdef}. Under \cref{ass:B,ass:D,ass:betamin}:
+    \begin{equivcond}
+        \item\label{it:fs_a}
+        $\norm{(\Phi_{\gamma\cup\{j_\gamma\}}-\Phi_\gamma)
+            \signal}_2^{2}\geq A^{2}$, and moreover
+        \begin{equation}
+            \label{eq:Alower}
+            A^{2}\ \geq\ n\,\nu^{2}\min_{j\in\gamma^{\ast}}
+            \abs{\beta^\ast_j}^{2}
+            \ \geq\ n\,\nu^{2}C_\beta^{2} ;
+        \end{equation}
+        \item\label{it:fs_b} if in addition $\gamma$ is saturated and
+        $k_\gamma$ is as in~\eqref{eq:kdef}, then, with
+        $\widetilde\gamma=\gamma\cup\{j_\gamma\}$ and
+        $\gamma'=\widetilde\gamma\setminus\{k_\gamma\}$,
+        \begin{equation*}
+            \norm{(\Phi_{\widetilde\gamma}-\Phi_{\gamma'})
+                \signal}_2^{2}
+            \ \leq\ n\,\omega(X)\,
+            \frac{\norm{\beta^\ast_{\gamma^{\ast}\setminus\gamma}}_2^{2}}
+            {s_0-s^{\ast}}
+            \ \leq\ \frac{A^{2}}{4} .
+        \end{equation*}
+    \end{equivcond}
+\end{lemma}
+
+\begin{proof}
+    We use two facts from YWJ. The first is their Lemma~7, the rank-one
+    update formula: for $\bar\gamma\in\mathscr{M}(s)$ and
+    $k\notin\bar\gamma$ with $\abs{\bar\gamma}<s$,
+    \begin{equation}
+        \label{eq:rankone}
+        \Phi_{\bar\gamma\cup\{k\}}-\Phi_{\bar\gamma}
+        =\frac{(I-\Phi_{\bar\gamma})X_kX_k^{\top}
+            (I-\Phi_{\bar\gamma})}
+        {X_k^{\top}(I-\Phi_{\bar\gamma})X_k},
+    \end{equation}
+    which follows from the block inversion formula applied to
+    $X_{\bar\gamma\cup\{k\}}^{\top}X_{\bar\gamma\cup\{k\}}$. The second
+    is their Lemma~6: under \cref{ass:B}, for every nested pair
+    $\gamma_2\subset\gamma_1$ of $\mathscr{M}(s)$,
+    \begin{equation}
+        \label{eq:underfit}
+        \lambda_{\min}\Bigl(\frac1n
+        X_{\gamma_1\setminus\gamma_2}^{\top}
+        (I-\Phi_{\gamma_2})X_{\gamma_1\setminus\gamma_2}\Bigr)
+        \ \geq\ \nu ,
+    \end{equation}
+    because the matrix inside is $n$ times the Schur complement of the
+    block $X_{\gamma_2}^{\top}X_{\gamma_2}$ in
+    $X_{\gamma_1}^{\top}X_{\gamma_1}$, hence its inverse is the
+    corresponding diagonal block of
+    $(n^{-1}X_{\gamma_1}^{\top}X_{\gamma_1})^{-1}$, whose largest
+    eigenvalue is at most
+    $\lambda_{\min}(n^{-1}X_{\gamma_1}^{\top}X_{\gamma_1})^{-1}
+    \leq\nu^{-1}$.
+
+    \emph{Proof of~\ref{it:fs_a}.} Put $u\coloneq(I-\Phi_\gamma)\signal$.
+    For $\ell\in\gamma^{\ast}\setminus\gamma$, idempotence of projections
+    and~\eqref{eq:rankone} give
+    \begin{align}
+        \notag
+        \norm{\Phi_{\gamma\cup\{\ell\}}\signal}_2^{2}
+        -\norm{\Phi_{\gamma}\signal}_2^{2}
+        &=(\beta^\ast_{\gamma^{\ast}})^{\top}
+        X_{\gamma^{\ast}}^{\top}
+        \bigl(\Phi_{\gamma\cup\{\ell\}}-\Phi_\gamma\bigr)\signal\\
+        \label{eq:onegain}
+        &=\frac{\langle X_\ell,u\rangle^{2}}
+        {X_\ell^{\top}(I-\Phi_\gamma)X_\ell}
+        \ \geq\ \frac{\langle X_\ell,u\rangle^{2}}{n},
+    \end{align}
+    where the last step uses
+    $X_\ell^{\top}(I-\Phi_\gamma)X_\ell\leq\norm{X_\ell}_2^{2}=n$ and,
+    for the middle equality, that
+    $X_\ell^{\top}(I-\Phi_\gamma)\signal=\langle X_\ell,u\rangle$.
+    Summing~\eqref{eq:onegain} over $\ell\in\gamma^{\ast}\setminus\gamma$,
+    \begin{equation}
+        \label{eq:sumgain}
+        \sum_{\ell\in\gamma^{\ast}\setminus\gamma}
+        \Bigl\{\norm{\Phi_{\gamma\cup\{\ell\}}\signal}_2^{2}
+        -\norm{\Phi_{\gamma}\signal}_2^{2}\Bigr\}
+        \ \geq\ \frac1n
+        \norm{X_{\gamma^{\ast}\setminus\gamma}^{\top}u}_2^{2}
+        \ =\ \frac1n\norm{X_{\gamma^{\ast}\cup\gamma}^{\top}u}_2^{2},
+    \end{equation}
+    the last equality because $X_j^{\top}u=0$ for $j\in\gamma$: indeed
+    $X_j$ lies in the range of $\Phi_\gamma$, to which $u$ is orthogonal
+    by construction. Now $u$ lies in the range of
+    $X_{\gamma^{\ast}\cup\gamma}$, so $u=X_{\gamma^{\ast}\cup\gamma}v$ for
+    some $v$; writing
+    $M\coloneq X_{\gamma^{\ast}\cup\gamma}^{\top}
+    X_{\gamma^{\ast}\cup\gamma}$, we have
+    $\abs{\gamma^{\ast}\cup\gamma}\leq s$, hence $M\succcurlyeq n\nu I$ by
+    \cref{ass:B}, and therefore
+    \begin{equation*}
+        \frac1n\norm{X_{\gamma^{\ast}\cup\gamma}^{\top}u}_2^{2}
+        =\frac1nv^{\top}M^{2}v
+        \ \geq\ \nu\,v^{\top}Mv
+        =\nu\norm u_2^{2},
+    \end{equation*}
+    the inequality because $M^{2}-n\nu M=M^{1/2}(M-n\nu I)M^{1/2}
+    \succcurlyeq0$. Combining with~\eqref{eq:sumgain} and dividing by
+    $\abs{\gamma^{\ast}\setminus\gamma}$, the maximum over $\ell$ of the
+    left-hand side of~\eqref{eq:onegain} is at least
+    $\nu\norm u_2^{2}/\abs{\gamma^{\ast}\setminus\gamma}=A^{2}$. Since
+    $j_\gamma$ attains that maximum by~\eqref{eq:jdef}, and since the
+    left-hand side of~\eqref{eq:onegain} equals
+    $\norm{(\Phi_{\gamma\cup\{\ell\}}-\Phi_\gamma)\signal}_2^{2}$ by
+    idempotence, the first claim follows.
+
+    For~\eqref{eq:Alower}, note that
+    $(I-\Phi_\gamma)\signal=(I-\Phi_\gamma)
+    X_{\gamma^{\ast}\setminus\gamma}
+    \beta^\ast_{\gamma^{\ast}\setminus\gamma}$, because the columns $X_j$
+    with $j\in\gamma^{\ast}\cap\gamma$ lie in the range of $\Phi_\gamma$;
+    hence by~\eqref{eq:underfit} applied to
+    $\gamma\subset\gamma^{\ast}\cup\gamma$,
+    \begin{equation}
+        \label{eq:usquare}
+        \norm u_2^{2}
+        =(\beta^\ast_{\gamma^{\ast}\setminus\gamma})^{\top}
+        X_{\gamma^{\ast}\setminus\gamma}^{\top}(I-\Phi_\gamma)
+        X_{\gamma^{\ast}\setminus\gamma}
+        \beta^\ast_{\gamma^{\ast}\setminus\gamma}
+        \ \geq\ n\,\nu
+        \norm{\beta^\ast_{\gamma^{\ast}\setminus\gamma}}_2^{2},
+    \end{equation}
+    so that, using
+    $\norm{\beta^\ast_{\gamma^{\ast}\setminus\gamma}}_2^{2}
+    \geq\abs{\gamma^{\ast}\setminus\gamma}
+    \min_{j\in\gamma^{\ast}}\abs{\beta^\ast_j}^{2}$ and~\eqref{eq:S},
+    \begin{equation}
+        \label{eq:Achain}
+        A^{2}=\frac{\nu\norm u_2^{2}}
+        {\abs{\gamma^{\ast}\setminus\gamma}}
+        \ \geq\ \frac{n\nu^{2}
+            \norm{\beta^\ast_{\gamma^{\ast}\setminus\gamma}}_2^{2}}
+        {\abs{\gamma^{\ast}\setminus\gamma}}
+        \ \geq\ n\nu^{2}\min_{j\in\gamma^{\ast}}
+        \abs{\beta^\ast_j}^{2}
+        \ \geq\ n\nu^{2}C_\beta^{2} .
+    \end{equation}
+
+    \emph{Proof of~\ref{it:fs_b}.} Write
+    $\widetilde\gamma=\gamma\cup\{j_\gamma\}$. For
+    $\bar\gamma\in\mathscr{M}(s)$ let $\widehat\beta(\bar\gamma)$ solve
+    \begin{equation}
+        \label{eq:modLS}
+        \min\bigl\{\norm{X\beta
+        -X_{\gamma^{\ast}\setminus\widetilde\gamma}
+            \beta^\ast_{\gamma^{\ast}\setminus\widetilde\gamma}}_2^{2}:\
+        \beta\in\bbR^{p},\ \beta_j=0\ \text{for }j\notin\bar\gamma\bigr\},
+    \end{equation}
+    so that
+    \begin{equation}
+        \label{eq:LSid}
+        \norm{X\widehat\beta(\bar\gamma)
+        -X_{\gamma^{\ast}\setminus\widetilde\gamma}
+            \beta^\ast_{\gamma^{\ast}\setminus\widetilde\gamma}}_2^{2}
+        =\norm{(I-\Phi_{\bar\gamma})
+            X_{\gamma^{\ast}\setminus\widetilde\gamma}
+            \beta^\ast_{\gamma^{\ast}\setminus\widetilde\gamma}}_2^{2},
+        \qquad
+        \widehat\beta(\bar\gamma)_{\bar\gamma}
+        =(X_{\bar\gamma}^{\top}X_{\bar\gamma})^{-1}X_{\bar\gamma}^{\top}
+        X_{\gamma^{\ast}\setminus\widetilde\gamma}
+        \beta^\ast_{\gamma^{\ast}\setminus\widetilde\gamma} .
+    \end{equation}
+    Since
+    $k_\gamma\notin\gamma^\ast$ we have
+    $\Phi_{\widetilde\gamma}X_{\gamma^{\ast}\cap\widetilde\gamma}
+    =\Phi_{\widetilde\gamma\setminus\{k\}}
+    X_{\gamma^{\ast}\cap\widetilde\gamma}$ for every
+    $k\in\widetilde\gamma\setminus\gamma^{\ast}$, so with
+    $\gamma'=\widetilde\gamma\setminus\{k_\gamma\}$
+    \begin{align}
+        \notag
+        \norm{(\Phi_{\widetilde\gamma}-\Phi_{\gamma'})
+            \signal}_2^{2}
+        &=\norm{(\Phi_{\widetilde\gamma}-\Phi_{\gamma'})
+            X_{\gamma^{\ast}\setminus\widetilde\gamma}
+            \beta^\ast_{\gamma^{\ast}\setminus\widetilde\gamma}}_2^{2}\\
+        \notag
+        &=\norm{(I-\Phi_{\gamma'})
+            X_{\gamma^{\ast}\setminus\widetilde\gamma}
+            \beta^\ast_{\gamma^{\ast}\setminus\widetilde\gamma}}_2^{2}
+        -\norm{(I-\Phi_{\widetilde\gamma})
+            X_{\gamma^{\ast}\setminus\widetilde\gamma}
+            \beta^\ast_{\gamma^{\ast}\setminus\widetilde\gamma}}_2^{2}\\
+        \label{eq:LSdiff}
+        &=\norm{X\widehat\beta(\gamma')
+        -X_{\gamma^{\ast}\setminus\widetilde\gamma}
+            \beta^\ast_{\gamma^{\ast}\setminus\widetilde\gamma}}_2^{2}
+        -\norm{X\widehat\beta(\widetilde\gamma)
+        -X_{\gamma^{\ast}\setminus\widetilde\gamma}
+            \beta^\ast_{\gamma^{\ast}\setminus\widetilde\gamma}}_2^{2},
+    \end{align}
+    using in the second line that
+    $\Phi_{\widetilde\gamma}-\Phi_{\gamma'}$ is a projection and
+    $\gamma'\subset\widetilde\gamma$. By optimality of
+    $\widehat\beta(\widetilde\gamma)$ in~\eqref{eq:modLS}, the residual
+    $X\widehat\beta(\widetilde\gamma)
+    -X_{\gamma^{\ast}\setminus\widetilde\gamma}
+    \beta^\ast_{\gamma^{\ast}\setminus\widetilde\gamma}$ is orthogonal to
+    $X_k$ for every $k\in\widetilde\gamma$, so for such $k$
+    \begin{align*}
+        \norm{X\widehat\beta(\widetilde\gamma\setminus\{k\})
+        -X_{\gamma^{\ast}\setminus\widetilde\gamma}
+            \beta^\ast_{\gamma^{\ast}\setminus\widetilde\gamma}}_2^{2}
+        &\ \leq\ \norm{X\widehat\beta(\widetilde\gamma)
+        -X_{\gamma^{\ast}\setminus\widetilde\gamma}
+            \beta^\ast_{\gamma^{\ast}\setminus\widetilde\gamma}
+            -X_k\widehat\beta_k(\widetilde\gamma)}_2^{2}\\
+        &\ =\ \norm{X\widehat\beta(\widetilde\gamma)
+        -X_{\gamma^{\ast}\setminus\widetilde\gamma}
+            \beta^\ast_{\gamma^{\ast}\setminus\widetilde\gamma}}_2^{2}
+        +\norm{X_k}_2^{2}\,
+        \abs{\widehat\beta_k(\widetilde\gamma)}^{2},
+    \end{align*}
+    the first line because the vector $\widehat\beta(\widetilde\gamma)$
+    with its $k$th coordinate zeroed is feasible for the problem defining
+    $\widehat\beta(\widetilde\gamma\setminus\{k\})$, and the second by
+    orthogonality. Since $\norm{X_k}_2^{2}=n$ and $k_\gamma$ minimises the
+    left-hand side over $k\in\gamma\setminus\gamma^\ast
+    =\widetilde\gamma\setminus(\gamma^{\ast}\cup\{j_\gamma\})$, whose
+    cardinality is $s_0-\abs{\gamma\cap\gamma^{\ast}}\geq s_0-s^{\ast}$,
+    \begin{equation*}
+        \norm{X\widehat\beta(\gamma')
+        -X_{\gamma^{\ast}\setminus\widetilde\gamma}
+            \beta^\ast_{\gamma^{\ast}\setminus\widetilde\gamma}}_2^{2}
+        -\norm{X\widehat\beta(\widetilde\gamma)
+        -X_{\gamma^{\ast}\setminus\widetilde\gamma}
+            \beta^\ast_{\gamma^{\ast}\setminus\widetilde\gamma}}_2^{2}
+        \ \leq\ n\min_{k\in\gamma\setminus\gamma^\ast}
+        \abs{\widehat\beta_k(\widetilde\gamma)}^{2}
+        \ \leq\ \frac{n\norm{\widehat\beta(\widetilde\gamma)}_2^{2}}
+        {s_0-s^{\ast}},
+    \end{equation*}
+    a minimum being at most the average. Finally
+    \begin{equation*}
+        \norm{\widehat\beta(\widetilde\gamma)}_2^{2}
+        =\norm{(X_{\widetilde\gamma}^{\top}X_{\widetilde\gamma})^{-1}
+            X_{\widetilde\gamma}^{\top}
+            X_{\gamma^{\ast}\setminus\widetilde\gamma}
+            \beta^\ast_{\gamma^{\ast}\setminus\widetilde\gamma}}_2^{2}
+        \ \leq\ \omega(X)\,
+        \norm{\beta^\ast_{\gamma^{\ast}
+        \setminus\widetilde\gamma}}_2^{2}
+        \ \leq\ \omega(X)\,
+        \norm{\beta^\ast_{\gamma^{\ast}\setminus\gamma}}_2^{2},
+    \end{equation*}
+    by the definition of $\omega(X)$ in \cref{ass:D} and
+    $\gamma^{\ast}\setminus\widetilde\gamma\subseteq
+    \gamma^{\ast}\setminus\gamma$. Together with~\eqref{eq:LSdiff} this
+    gives the first inequality of~\ref{it:fs_b}.
+
+    For the second, combine
+    $A^{2}\geq n\nu^{2}
+    \norm{\beta^\ast_{\gamma^{\ast}\setminus\gamma}}_2^{2}/
+    \abs{\gamma^{\ast}\setminus\gamma}\geq
+    n\nu^{2}\norm{\beta^\ast_{\gamma^{\ast}\setminus\gamma}}_2^{2}/
+    s^{\ast}$, which is~\eqref{eq:Achain}, with the first inequality of
+    \cref{ass:D}: $s_0\geq(4\nu^{-2}\omega(X)+1)s^{\ast}$ is equivalent to
+    $4\omega(X)s^{\ast}\leq\nu^{2}(s_0-s^{\ast})$, that is to
+    \begin{equation*}
+        \frac{n\,\omega(X)
+        \norm{\beta^\ast_{\gamma^{\ast}\setminus\gamma}}_2^{2}}
+        {s_0-s^{\ast}}
+        \ \leq\ \frac14\cdot
+        \frac{n\,\nu^{2}
+            \norm{\beta^\ast_{\gamma^{\ast}\setminus\gamma}}_2^{2}}
+        {s^{\ast}}
+        \ \leq\ \frac{A^{2}}{4} . \qedhere
+    \end{equation*}
+\end{proof}
+
+
+\begin{remark}
+    \label{rem:ywj_constant}
+    With their constant $2$ in place of our $4$ in~\eqref{eq:Dassumption},
+    YWJ obtain $\norm{v_2}_2\leq A/\sqrt2$ rather than
+    $\norm{v_2}_2\leq A/2$, and combine it with a noise bound $A/4$. The
+    resulting numbers do not close: on their page~2527 the displayed lower
+    bound $A(A-A/4)-(A/\sqrt2)(A/\sqrt2+A/4)-A^{2}/16$ equals
+    $0.0107\,A^{2}$, not the $A^{2}/8$ claimed, and it is negative if one
+    keeps the factor $2$ that their own preceding display carries on the
+    cross terms. Strengthening \cref{ass:D} to
+    $s_0\geq(4\nu^{-2}\omega(X)+1)s^{\ast}$, and \cref{ass:betamin} so
+    that the noise budget is $A/8$ rather than $A/4$, repairs this with
+    room to spare; see~\eqref{eq:satdrop} below. Nothing else in their
+    argument, or in ours, is affected.
+\end{remark}
+
+\begin{lemma}[Proxy bound]
+    \label{lemma:proxy}
+    For every $\gamma\in\mathscr{M}(s)$ and every
+    $j\in\gamma\setminus\gamma^{\ast}$,
+    \begin{equation}
+        \label{eq:proxy}
+        \bigl\|(\Phi_{\gamma}-\Phi_{\gamma\setminus\{j\}})
+        \signal\bigr\|_2^{2}
+        \ \leq\ n\,\omega(X)\,
+        \bigl\|\beta^{\ast}_{\gamma^{\ast}\setminus\gamma}\bigr\|_2^{2} .
+    \end{equation}
+\end{lemma}
+
+\begin{proof}
+    This is the chain of displays in the proof of
+    \cref{lemma:forward}\ref{it:fs_b}, run with $\widetilde\gamma$
+    replaced by $\gamma$ and $k_\gamma$ by $j$. Every step used only
+    $j\notin\gamma^{\ast}$ and $\gamma\in\mathscr{M}(s)$: first
+    $\Phi_{\gamma}X_{\gamma^{\ast}\cap\gamma}
+    =\Phi_{\gamma\setminus\{j\}}X_{\gamma^{\ast}\cap\gamma}$, so the left
+    side equals $\|(\Phi_\gamma-\Phi_{\gamma\setminus\{j\}})
+    X_{\gamma^{\ast}\setminus\gamma}
+    \beta^{\ast}_{\gamma^{\ast}\setminus\gamma}\|_2^{2}$; then the
+    identification with a difference of least-squares residuals; then
+    feasibility of zeroing the $j$th coordinate, which gives the bound
+    $n\abs{\widehat\beta_j(\gamma)}^{2}$; then
+    $\|\widehat\beta(\gamma)\|_2^{2}\leq\omega(X)
+    \|\beta^{\ast}_{\gamma^{\ast}\setminus\gamma}\|_2^{2}$. Taking
+    $\gamma\supseteq\gamma^{\ast}$ makes the right side vanish and
+    recovers the identity used in \cref{sub:over}.
+\end{proof}
+
+\subsection{Counting and paths}
+\label{sub:appcount}
+
+\begin{lemma}[Counting precedents]
+    \label{lemma:count}
+    Let $\bar\eta\in\mathscr{M}(s_0)$.
+    \begin{equivcond}
+        \item\label{it:cnt_i} $\mathcal{G}$ maps overfitted states to
+        states containing $\gamma^{\ast}$. Consequently, if $\gamma$ is
+        underfitted then every $\bar\gamma\in\Lambda(\gamma)$ is
+        underfitted.
+        \item\label{it:cnt_ii} $\bar\eta$ has at most $(s^{\ast}+1)p$
+        immediate precedents that are underfitted --- that is, states
+        $\bar\gamma\neq\bar\eta$ with
+        $\mathcal{G}(\bar\gamma)=\bar\eta$ and $\bar\gamma$ underfitted
+        --- and at most $p$ that are overfitted.
+        \item\label{it:cnt_iii} Hence, for every $k\geq0$, the number of
+        $\bar\gamma$ with $\mathcal{G}^{k}(\bar\gamma)=\bar\eta$ and
+        $\bar\gamma,\mathcal{G}(\bar\gamma),\dots,
+        \mathcal{G}^{k-1}(\bar\gamma)$ all underfitted is at most
+        $\{(s^{\ast}+1)p\}^{k}$; and if
+        $\bar\eta\supseteq\gamma^{\ast}$, the number of overfitted
+        $\bar\gamma\in\Lambda_k(\bar\eta)$ is at most $p^{k}$.
+    \end{equivcond}
+\end{lemma}
+
+\begin{proof}
+    \ref{it:cnt_i} An overfitted $\bar\gamma$ is treated by
+    rule~\ref{G:del}, which deletes
+    $\ell_{\bar\gamma}\in\bar\gamma\setminus\gamma^{\ast}$ and therefore
+    leaves $\gamma^{\ast}\subseteq\mathcal{G}(\bar\gamma)$; and
+    $\gamma^{\ast}$ is a fixed point. So
+    $\mathcal{G}^{k}(\bar\gamma)\supseteq\gamma^{\ast}$ for every
+    $k\geq0$, and no such state is underfitted.
+
+    \ref{it:cnt_ii} Let $\bar\gamma\neq\bar\eta$ be underfitted with
+    $\mathcal{G}(\bar\gamma)=\bar\eta$. If rule~\ref{G:add} applies then
+    $\bar\eta=\bar\gamma\cup\{j_{\bar\gamma}\}$ with
+    $j_{\bar\gamma}\in\gamma^{\ast}$, so
+    $\bar\gamma=\bar\eta\setminus\{j\}$ for some
+    $j\in\gamma^{\ast}\cap\bar\eta$: at most $s^{\ast}$ states. If
+    rule~\ref{G:exch} applies then
+    $\bar\eta=\bar\gamma\cup\{j_{\bar\gamma}\}
+    \setminus\{k_{\bar\gamma}\}$ with $j_{\bar\gamma}\in\gamma^{\ast}$
+    and $k_{\bar\gamma}\in S^{c}$, so
+    $\bar\gamma=\bar\eta\cup\{k\}\setminus\{j\}$ with
+    $j\in\gamma^{\ast}\cap\bar\eta$ and $k\in S^{c}$: at most
+    $s^{\ast}(p-s^{\ast})$ states. The total is at most
+    $s^{\ast}(1+p-s^{\ast})\leq s^{\ast}(1+p)\leq(s^{\ast}+1)p$, the last
+    step because $s^{\ast}\leq p$. If instead $\bar\gamma$ is overfitted
+    then rule~\ref{G:del} applies and $\bar\gamma=\bar\eta\cup\{\ell\}$
+    with $\ell\in S^{c}$: at most $p$ states.
+
+    \ref{it:cnt_iii} Iterate~\ref{it:cnt_ii}: a state counted at level
+    $k$ is an immediate precedent, of the stated type, of one counted at
+    level $k-1$. For the second claim, \ref{it:cnt_i} shows that an
+    overfitted $\bar\gamma\in\Lambda_k(\bar\eta)$ reaches $\bar\eta$
+    through states containing $\gamma^{\ast}$ only, so each of the $k$
+    steps deletes an index of $S^{c}$; hence
+    $\bar\gamma=\bar\eta\cup u$ with $u\subseteq S^{c}$ and $\abs u=k$,
+    and there are at most $\binom{p}{k}\leq p^{k}$ such $u$.
+\end{proof}
+
+\begin{lemma}[Path properties; YWJ, Lemma~2]
+    \label{lemma:paths}
+    \begin{equivcond}
+        \item\label{it:pp_i} $\mathcal{G}^{k}(\gamma)=\gamma^{\ast}$ for
+        some $k\leq d_H(\gamma,\gamma^{\ast})$, every
+        $\gamma\in\mathscr{M}(s_0)$; in particular
+        $\Lambda(\gamma^{\ast})=\mathscr{M}(s_0)$.
+        \item\label{it:pp_ii} $\abs{T_{\gamma,\gamma^{\ast}}}\leq
+        d_H(\gamma,\gamma^{\ast})\leq s_0+s^{\ast}\leq2s_0$, and
+        $\ell(\mathcal{T})\leq4s_0$.
+        \item\label{it:pp_iii} For a directed edge
+        $e=(\bar\gamma,\mathcal{G}(\bar\gamma))$,
+        \begin{equation*}
+            \bigl\{(\gamma,\gamma'):T_{\gamma,\gamma'}\ni e\bigr\}
+            \ \subseteq\ \Lambda(\bar\gamma)\times\mathscr{M}(s_0) .
+        \end{equation*}
+    \end{equivcond}
+\end{lemma}
+
+\begin{proof}
+    \ref{it:pp_i} By the second remark after \cref{def:G},
+    $d_H(\mathcal{G}(\gamma),\gamma^{\ast})<d_H(\gamma,\gamma^{\ast})$
+    whenever $\gamma\neq\gamma^{\ast}$, so the orbit reaches the unique
+    fixed point $\gamma^{\ast}$ in at most
+    $d_H(\gamma,\gamma^{\ast})$ steps. Hence every state lies in
+    $\Lambda(\gamma^{\ast})$.
+
+    \ref{it:pp_ii} Each step of $\mathcal{G}$ decreases
+    $d_H(\cdot,\gamma^{\ast})$ by at least one, so the orbit has at most
+    $d_H(\gamma,\gamma^{\ast})$ edges; and
+    $d_H(\gamma,\gamma^{\ast})\leq\abs\gamma+\abs{\gamma^{\ast}}
+    \leq s_0+s^{\ast}$, which is at most $2s_0$ because
+    $s^{\ast}<s_0$. Since $T_{\gamma,\gamma'}$ is contained in the
+    concatenation of $T_{\gamma,\gamma^{\ast}}$ with the reverse of
+    $T_{\gamma',\gamma^{\ast}}$, its length is at most $4s_0$.
+
+    \ref{it:pp_iii} By construction $T_{\gamma,\gamma'}$ traverses its
+    first segment in the direction of $\mathcal{G}$ and its second
+    segment against it. The edge $e$ points in the direction of
+    $\mathcal{G}$, so it can only occur in the first segment, which is
+    part of $T_{\gamma,\gamma^{\ast}}$. Hence $\bar\gamma\in
+    T_{\gamma,\gamma^{\ast}}$, that is $\gamma\in\Lambda(\bar\gamma)$,
+    while $\gamma'$ is unconstrained.
+\end{proof}
+
+\subsection{Proof of \cref{th:drop}: overfitted states}
+\label{sub:over}
+
+Throughout \cref{sub:over,sub:under,sub:sat} we write
+$\gamma'\coloneq\mathcal{G}(\gamma)$ and start from~\eqref{eq:master} with
+the size change read off from~\eqref{eq:sizechange}.
+
+Here $\gamma\supseteq\gamma^{\ast}$, $\gamma\neq\gamma^{\ast}$, and
+rule~\ref{G:del} applies: $\gamma'=\gamma\setminus\{\ell_\gamma\}$ with
+$\ell_\gamma\in\gamma\setminus\gamma^\ast$, so
+$\abs{\gamma'}-\abs \gamma=-1$ and \eqref{eq:master} gives
+\begin{equation}
+    \label{eq:over1}
+    \log\frac{\pi_n^{(\lambda)}(\gamma\mid Y)}
+    {\pi_n^{(\lambda)}(\gamma'\mid Y)}
+    \ =\ -\kappa\log p-\frac{\lambda}{2}\log(1+g)
+    +\frac{\lambda n}{2}
+    \log\frac{g^{-1}+1-R^{2}_{\gamma'}}{g^{-1}+1-R^{2}_{\gamma}} .
+\end{equation}
+Since $\gamma'\subset\gamma$ and $\abs \gamma-\abs{\gamma'}=1$, the matrix
+$\Phi_\gamma-\Phi_{\gamma'}$ is an orthogonal projection of rank one, and
+\begin{equation}
+    \label{eq:over1b}
+    \norm Y_2^{2}\bigl(R^{2}_{\gamma}-R^{2}_{\gamma'}\bigr)
+    =Y^{\top}(\Phi_\gamma-\Phi_{\gamma'})Y
+    =\norm{(\Phi_\gamma-\Phi_{\gamma'})Y}_2^{2}\ \geq\ 0 ,
+\end{equation}
+so that, using $\log(1+x)\leq x$ and then \cref{lemma:residual},
+\begin{equation}
+    \label{eq:over2}
+    \frac n2\log\frac{g^{-1}+1-R^{2}_{\gamma'}}
+    {g^{-1}+1-R^{2}_{\gamma}}
+    =\frac n2\log\Bigl(1+\frac{\norm{(\Phi_\gamma-\Phi_{\gamma'})
+        Y}_2^{2}}{\norm Y_2^{2}(g^{-1}+1-R^{2}_{\gamma})}\Bigr)
+    \ \leq\ \frac n2\cdot
+    \frac{8\norm{(\Phi_\gamma-\Phi_{\gamma'})Y}_2^{2}}{n\sigma_0^{2}} .
+\end{equation}
+It remains to bound $\norm{(\Phi_\gamma-\Phi_{\gamma'})Y}_2^{2}$. Since
+$\ell_\gamma\notin\gamma^\ast$ and $\gamma^{\ast}\subseteq\gamma$, we have
+$\gamma^{\ast}\subseteq\gamma'$, so $\signal$ lies in the range of
+$\Phi_{\gamma'}$; and $\Phi_\gamma-\Phi_{\gamma'}$ annihilates that range,
+because for $v$ in it $\Phi_\gamma v=v$, the range of $\Phi_{\gamma'}$
+being contained in that of $\Phi_\gamma$, so that
+$(\Phi_\gamma-\Phi_{\gamma'})v=v-v=0$. Hence, by~\eqref{eq:wtilde},
+\begin{equation}
+    \label{eq:over3}
+    (\Phi_\gamma-\Phi_{\gamma'})Y
+    =(\Phi_\gamma-\Phi_{\gamma'})\widetilde w,
+    \qquad\text{so}\qquad
+    \norm{(\Phi_\gamma-\Phi_{\gamma'})Y}_2^{2}
+    \ \leq\ 2(L+\Ltil)\sigma_0^{2}\log p
+\end{equation}
+by \cref{lemma:noise}\ref{it:noise_ii}, applied to the nested pair
+$\gamma'\subset\gamma$ of
+$\mathscr{M}(s_0)\subseteq\mathscr{M}(s)$ with
+$\abs \gamma-\abs{\gamma'}=1$. Substituting~\eqref{eq:over3}
+into~\eqref{eq:over2},
+\begin{equation}
+    \label{eq:over4}
+    \frac n2\log\frac{g^{-1}+1-R^{2}_{\gamma'}}
+    {g^{-1}+1-R^{2}_{\gamma}}\ \leq\ 8(L+\Ltil)\log p ,
+\end{equation}
+and substituting this into~\eqref{eq:over1}, using $\lambda\geq0$ so that
+multiplying~\eqref{eq:over4} by $\lambda$ preserves the inequality,
+\begin{equation*}
+    \log\frac{\pi_n^{(\lambda)}(\gamma\mid Y)}
+    {\pi_n^{(\lambda)}(\gamma'\mid Y)}
+    \ \leq\ -\kappa\log p
+    -\lambda\Bigl\{\frac12\log(1+g)-8(L+\Ltil)\log p\Bigr\} ,
+\end{equation*}
+which is~\eqref{eq:drop_over}. \qed
+
+\subsection{Proof of \cref{th:drop}: underfitted, unsaturated states}
+\label{sub:under}
+
+Here $\gamma^{\ast}\setminus\gamma\neq\emptyset$ and $\abs \gamma<s_0$, so
+rule~\ref{G:add} applies: $\gamma'=\gamma\cup\{j_\gamma\}$,
+$\abs{\gamma'}-\abs \gamma=+1$, and \eqref{eq:master} gives
+\begin{equation}
+    \label{eq:und1}
+    \log\frac{\pi_n^{(\lambda)}(\gamma\mid Y)}
+    {\pi_n^{(\lambda)}(\gamma'\mid Y)}
+    \ =\ \kappa\log p+\frac{\lambda}{2}\log(1+g)
+    +\frac{\lambda n}{2}
+    \log\frac{g^{-1}+1-R^{2}_{\gamma'}}{g^{-1}+1-R^{2}_{\gamma}} .
+\end{equation}
+Note $s^{\ast}\geq1$, since $\gamma^{\ast}\setminus\gamma\neq\emptyset$.
+The matrix $\Phi_{\gamma'}-\Phi_\gamma$ is an orthogonal projection of
+rank one, and as in~\eqref{eq:over1b},
+\begin{equation}
+    \label{eq:und1b}
+    \norm Y_2^{2}\bigl(R^{2}_{\gamma'}-R^{2}_{\gamma}\bigr)
+    =\norm{(\Phi_{\gamma'}-\Phi_{\gamma})Y}_2^{2} ,
+\end{equation}
+so that, by $\log(1+x)\leq x$ applied with
+$x=-\norm{(\Phi_{\gamma'}-\Phi_\gamma)Y}_2^{2}/
+\{\norm Y_2^{2}(g^{-1}+1-R^{2}_\gamma)\}\in(-1,0]$,
+\begin{equation}
+    \label{eq:und2}
+    \frac n2\log\frac{g^{-1}+1-R^{2}_{\gamma'}}
+    {g^{-1}+1-R^{2}_{\gamma}}
+    \ \leq\ -\frac n2\cdot
+    \frac{\norm{(\Phi_{\gamma'}-\Phi_\gamma)Y}_2^{2}}
+    {\norm Y_2^{2}\bigl(g^{-1}+1-R^{2}_{\gamma}\bigr)} .
+\end{equation}
+
+\emph{Step 1: the numerator.} By \cref{lemma:forward}\ref{it:fs_a},
+$\norm{(\Phi_{\gamma'}-\Phi_\gamma)\signal}_2\geq A$, and by
+\cref{lemma:noise}\ref{it:noise_ii} applied to the nested pair
+$\gamma\subset\gamma'$, together with~\eqref{eq:Alower},
+\begin{equation}
+    \label{eq:und3}
+    \norm{(\Phi_{\gamma'}-\Phi_\gamma)\widetilde w}_2^{2}
+    \ \leq\ \frac{n\nu^{2}C_\beta^{2}}{64}\ \leq\ \frac{A^{2}}{64},
+    \qquad\text{that is}\qquad
+    \norm{(\Phi_{\gamma'}-\Phi_\gamma)\widetilde w}_2
+    \leq\frac{A}{8} .
+\end{equation}
+Hence, by the triangle inequality and~\eqref{eq:wtilde},
+\begin{equation}
+    \label{eq:und4}
+    \norm{(\Phi_{\gamma'}-\Phi_\gamma)Y}_2
+    \ \geq\ A-\frac{A}{8}=\frac{7A}{8}\ >\ 0,
+    \quad\text{so}\quad
+    \norm{(\Phi_{\gamma'}-\Phi_\gamma)Y}_2^{2}
+    \ \geq\ \tfrac{49}{64}A^{2}\ \geq\ \tfrac12A^{2} .
+\end{equation}
+
+\emph{Step 2: the denominator.} By \cref{lemma:Dupper} and the
+definition~\eqref{eq:Adef}, which gives
+$\norm{(I-\Phi_\gamma)\signal}_2^{2}
+=\abs{\gamma^{\ast}\setminus\gamma}A^{2}/\nu\leq s^{\ast}A^{2}/\nu$,
+\begin{equation}
+    \label{eq:und5}
+    \norm Y_2^{2}\bigl(g^{-1}+1-R^{2}_{\gamma}\bigr)
+    \ \leq\ \frac{2s^{\ast}A^{2}}{\nu}+8n\sigma_0^{2} .
+\end{equation}
+
+\emph{Step 3: combining.} By~\eqref{eq:und4} and~\eqref{eq:und5}, then by
+the third inequality of~\eqref{eq:elementary} with
+$a=2s^{\ast}A^{2}/\nu>0$ and $b=8n\sigma_0^{2}>0$,
+\begin{equation}
+    \label{eq:und6}
+    \frac n2\cdot
+    \frac{\norm{(\Phi_{\gamma'}-\Phi_\gamma)Y}_2^{2}}
+    {\norm Y_2^{2}(g^{-1}+1-R^{2}_{\gamma})}
+    \ \geq\ \frac n4\cdot\frac{A^{2}}
+    {2s^{\ast}A^{2}/\nu+8n\sigma_0^{2}}
+    \ =\ \frac{n\nu}{8s^{\ast}}\cdot\frac{a}{a+b}
+    \ \geq\ \frac{n\nu}{8s^{\ast}}
+    \min\Bigl\{\frac12,\frac{s^{\ast}A^{2}}
+    {8\nu n\sigma_0^{2}}\Bigr\} ,
+\end{equation}
+that is, distributing $n\nu/(8s^{\ast})$ over the minimum and then
+using $A^{2}\geq n\nu^{2}C_\beta^{2}$ from~\eqref{eq:Alower},
+\begin{equation}
+    \label{eq:und8}
+    \frac n2\cdot
+    \frac{\norm{(\Phi_{\gamma'}-\Phi_\gamma)Y}_2^{2}}
+    {\norm Y_2^{2}(g^{-1}+1-R^{2}_{\gamma})}
+    \ \geq\ \min\Bigl\{\frac{n\nu}{16s^{\ast}},\
+    \frac{A^{2}}{64\,\sigma_0^{2}}\Bigr\}
+    \ \geq\ \gainfloor .
+\end{equation}
+Combining \eqref{eq:und1}, \eqref{eq:und2} and~\eqref{eq:und8}, and using
+$\lambda\geq0$,
+\begin{equation*}
+    \log\frac{\pi_n^{(\lambda)}(\gamma\mid Y)}
+    {\pi_n^{(\lambda)}(\gamma'\mid Y)}
+    \ \leq\ \kappa\log p
+    +\lambda\Bigl\{\frac12\log(1+g)-\gainfloor\Bigr\} ,
+\end{equation*}
+which is~\eqref{eq:drop_unsat}. \qed
+
+\subsection{Proof of \cref{th:drop}: underfitted, saturated states}
+\label{sub:sat}
+
+Here $\gamma^{\ast}\setminus\gamma\neq\emptyset$ and $\abs \gamma=s_0$, so
+rule~\ref{G:exch} applies: with
+$\widetilde\gamma=\gamma\cup\{j_\gamma\}$ and
+$\gamma'=\widetilde\gamma\setminus\{k_\gamma\}$ we have
+$\abs{\gamma'}=\abs \gamma$, and \eqref{eq:master} gives
+\begin{equation}
+    \label{eq:sat1}
+    \log\frac{\pi_n^{(\lambda)}(\gamma\mid Y)}
+    {\pi_n^{(\lambda)}(\gamma'\mid Y)}
+    \ =\ \frac{\lambda n}{2}
+    \log\frac{g^{-1}+1-R^{2}_{\gamma'}}{g^{-1}+1-R^{2}_{\gamma}} ,
+\end{equation}
+the inclusion penalty having cancelled identically. Note that
+$\widetilde\gamma\in\mathscr{M}(s)$, since
+$\abs{\widetilde\gamma}=s_0+1\leq s$, and that both $\gamma$ and $\gamma'$
+are subsets of $\widetilde\gamma$ of cardinality
+$\abs{\widetilde\gamma}-1$, so that
+$\Phi_{\widetilde\gamma}-\Phi_\gamma$ and
+$\Phi_{\widetilde\gamma}-\Phi_{\gamma'}$ are orthogonal projections of
+rank one. Following YWJ, set
+\begin{equation}
+    \label{eq:vdef}
+    v_1\coloneq(\Phi_{\widetilde\gamma}-\Phi_\gamma)\signal,
+    \qquad
+    v_2\coloneq(\Phi_{\widetilde\gamma}-\Phi_{\gamma'})\signal .
+\end{equation}
+Adding and subtracting $Y^{\top}\Phi_{\widetilde\gamma}Y$,
+\begin{equation}
+    \label{eq:sat2}
+    \norm Y_2^{2}\bigl(R^{2}_{\gamma'}-R^{2}_{\gamma}\bigr)
+    =Y^{\top}\Phi_{\gamma'}Y-Y^{\top}\Phi_{\gamma}Y
+    =\norm{(\Phi_{\widetilde\gamma}-\Phi_\gamma)Y}_2^{2}
+    -\norm{(\Phi_{\widetilde\gamma}-\Phi_{\gamma'})Y}_2^{2} .
+\end{equation}
+By \cref{lemma:forward}\ref{it:fs_a} and~\ref{it:fs_b},
+$\norm{v_1}_2\geq A$ and $\norm{v_2}_2\leq A/2$; and by
+\cref{lemma:noise}\ref{it:noise_ii} applied to each of the two nested
+pairs $\gamma\subset\widetilde\gamma$ and
+$\gamma'\subset\widetilde\gamma$ of $\mathscr{M}(s)$, exactly as
+in~\eqref{eq:und3},
+\begin{equation}
+    \label{eq:sat4}
+    \norm{(\Phi_{\widetilde\gamma}-\Phi_\gamma)\widetilde w}_2
+    \ \leq\ \frac{A}{8},
+    \qquad
+    \norm{(\Phi_{\widetilde\gamma}-\Phi_{\gamma'})\widetilde w}_2
+    \ \leq\ \frac{A}{8} .
+\end{equation}
+Therefore, by the triangle inequality applied to
+$(\Phi_{\widetilde\gamma}-\Phi_\gamma)Y=v_1
++(\Phi_{\widetilde\gamma}-\Phi_\gamma)\widetilde w$ and to
+$(\Phi_{\widetilde\gamma}-\Phi_{\gamma'})Y=v_2
++(\Phi_{\widetilde\gamma}-\Phi_{\gamma'})\widetilde w$,
+\begin{equation}
+    \label{eq:sat5}
+    \norm{(\Phi_{\widetilde\gamma}-\Phi_\gamma)Y}_2
+    \ \geq\ A-\frac{A}{8}=\frac{7A}{8}\ >\ 0,
+    \qquad
+    \norm{(\Phi_{\widetilde\gamma}-\Phi_{\gamma'})Y}_2
+    \ \leq\ \frac{A}{2}+\frac{A}{8}=\frac{5A}{8} ,
+\end{equation}
+and squaring, which is legitimate because both bounds are non-negative,
+\begin{equation}
+    \label{eq:satdrop}
+    \norm Y_2^{2}\bigl(R^{2}_{\gamma'}-R^{2}_{\gamma}\bigr)
+    \ \geq\ \frac{49}{64}A^{2}-\frac{25}{64}A^{2}
+    \ =\ \frac{24}{64}A^{2}\ \geq\ \frac{A^{2}}{4}\ >\ 0 .
+\end{equation}
+Inequality~\eqref{eq:und2} holds verbatim, with
+$\norm{(\Phi_{\gamma'}-\Phi_\gamma)Y}_2^{2}$ replaced by the left-hand
+side of~\eqref{eq:satdrop}, and repeating Steps~2 and~3 of
+\cref{sub:under} with $A^{2}/2$ replaced by $A^{2}/4$ in the numerator
+of~\eqref{eq:und6} halves the right-hand side of~\eqref{eq:und8}:
+\begin{equation*}
+    \frac n2\cdot
+    \frac{\norm Y_2^{2}(R^{2}_{\gamma'}-R^{2}_{\gamma})}
+    {\norm Y_2^{2}(g^{-1}+1-R^{2}_{\gamma})}
+    \ \geq\ \frac n8\cdot\frac{A^{2}}
+    {2s^{\ast}A^{2}/\nu+8n\sigma_0^{2}}
+    \ \geq\ \frac12\,\gainfloor .
+\end{equation*}
+Substituting into~\eqref{eq:sat1} and using $\lambda\geq0$ gives the third
+bound~\eqref{eq:drop_sat}. \qed
+
+\subsection{Proofs for \cref{sec:ywj}}
+\label{sub:appywj}
+
+\begin{proof}[Proof of \cref{lemma:kernel}]
+    Write $q(\gamma,\gamma')$ for the probability that
+    $\widetilde{\mathbf{P}}$ proposes $\gamma'$ from $\gamma$. On
+    $\mathcal{N}_1$ it equals $1/(2p)$, symmetric in $(\gamma,\gamma')$.
+    On $\mathcal{N}_2$ the move preserves the size, so
+    $\abs{\gamma'}=\abs\gamma$ and $q(\gamma,\gamma')
+    =\{2\abs\gamma(p-\abs\gamma)\}^{-1}=q(\gamma',\gamma)$; in particular
+    an exchange never leaves $\mathscr{M}(s_0)$. Hence $q$ is symmetric,
+    and for $\gamma\neq\gamma'$
+    \begin{equation}
+        \label{eq:detbal}
+        \mu(\gamma)\,\widetilde{\mathbf{P}}(\gamma,\gamma')
+        =q(\gamma,\gamma')\min\bigl\{\mu(\gamma),\mu(\gamma')\bigr\},
+    \end{equation}
+    which is symmetric; this is detailed balance for
+    $\widetilde{\mathbf{P}}$, hence for $\mathbf{P}$, and
+    it shows $\mathbf{Q}$ is symmetric.
+
+    For irreducibility, recall that $\mu$ has full support on
+    $\mathscr{M}(s_0)$. Given
+    $\gamma\neq\gamma'$, delete the elements of $\gamma$ one at a time
+    and then add those of $\gamma'$ one at a time; every intermediate
+    state is a subset of $\gamma$ or of $\gamma'$, hence lies in
+    $\mathscr{M}(s_0)$, and consecutive states differ by one flip, so
+    each transition has positive probability by~\eqref{eq:MH}.
+    Aperiodicity is $\mathbf{P}(\gamma,\gamma)\geq1/2>0$.
+
+    For non-negative definiteness, $\widetilde{\mathbf{P}}$ is a
+    reversible Markov kernel, hence self-adjoint on
+    $\mathcal{L}^2(\mu)$ with spectrum in $[-1,1]$, so
+    $\mathbf{P}=\tfrac12(\mathbf{I}+\widetilde{\mathbf{P}})$ has spectrum
+    in $[0,1]$ and its absolute spectral gap coincides with $1-\lambda_2$.
+
+    For~\eqref{eq:edge}, combine~\eqref{eq:lazy} and~\eqref{eq:detbal}:
+    $\mathbf{Q}(\gamma,\gamma')=\tfrac12 q(\gamma,\gamma')
+    \min\{\mu(\gamma),\mu(\gamma')\}$, and
+    $q(\gamma,\gamma')\geq1/(2ps_0)$ in both cases: on $\mathcal{N}_1$
+    because $1/(2p)\geq1/(2ps_0)$, and on $\mathcal{N}_2$ because
+    $\abs\gamma\leq s_0$ and $p-\abs\gamma\leq p$.
+\end{proof}
+
+\subsection{Proofs for \cref{sec:main}}
+\label{sub:appmain}
+
+\begin{proof}[Proof of \cref{cor:critical}]
+    For an underfitted unsaturated $\gamma$, the bound
+    \eqref{eq:drop_unsat} is at most $-\eta\log p$ precisely when
+    $\lambda\{\gainfloorsm-\tfrac12\log(1+g)\}\geq(\kappa+\eta)\log p$,
+    that is when $\lambda$ is at least the first term
+    of~\eqref{eq:lambdastar}, the coefficient
+    $\gainfloorsm-\tfrac12\log(1+g)$ being positive by hypothesis. For an
+    underfitted saturated $\gamma$, the bound~\eqref{eq:drop_sat} is
+    at most $-\eta\log p$ precisely when
+    $\lambda\gainfloorsm\geq2\eta\log p$, that is when $\lambda$ is at
+    least the second term of~\eqref{eq:lambdastar}. Taking the maximum
+    gives~\eqref{eq:underconc}. The overfitted claim restates
+    \eqref{eq:drop_over}, and~\eqref{eq:endpoints} is
+    obtained by evaluating the affine function at $\lambda=0$ and
+    $\lambda=1$ and bounding $\tfrac12\log(1+g)$ below by
+    $\alpha\log p$.
+\end{proof}
+
+\begin{proof}[Proof of \cref{cor:prec}]
+    Write $a\coloneq(s^{\ast}+1)p^{1-\eta}$ and $b\coloneq p^{1-\eta}$,
+    so that $b\leq a\leq\tfrac12$ by~\eqref{eq:etamin}.
+
+    \emph{Step 0: the drop along a path.} If
+    $\mathcal{G}^{k}(\bar\gamma)=\gamma$ then, telescoping and applying
+    \cref{cor:critical} at each of the $k$ source states --- each of
+    which is either overfitted or underfitted, and both cases are covered
+    by its hypotheses ---
+    \begin{equation}
+        \label{eq:telescope}
+        \frac{\pi_n^{(\lambda)}(\bar\gamma\mid Y)}
+        {\pi_n^{(\lambda)}(\gamma\mid Y)}
+        =\prod_{i=0}^{k-1}
+        \frac{\pi_n^{(\lambda)}(\mathcal{G}^{i}(\bar\gamma)\mid Y)}
+        {\pi_n^{(\lambda)}(\mathcal{G}^{i+1}(\bar\gamma)\mid Y)}
+        \ \leq\ p^{-\eta k} .
+    \end{equation}
+
+    \emph{Step 1: $\gamma$ underfitted.} By
+    \cref{lemma:count}\ref{it:cnt_i} every $\bar\gamma\in\Lambda(\gamma)$
+    is underfitted, so \cref{lemma:count}\ref{it:cnt_iii} gives
+    $\abs{\Lambda_k(\gamma)}\leq\{(s^{\ast}+1)p\}^{k}$, and
+    with~\eqref{eq:telescope}
+    \begin{equation}
+        \label{eq:precunder}
+        \frac{\pi_n^{(\lambda)}[\Lambda(\gamma)\mid Y]}
+        {\pi_n^{(\lambda)}(\gamma\mid Y)}
+        \ \leq\ \sum_{k\geq0}\{(s^{\ast}+1)p\}^{k}p^{-\eta k}
+        \ =\ \sum_{k\geq0}a^{k}\ =\ \frac{1}{1-a} ,
+    \end{equation}
+    the series converging because $a\leq\tfrac12$.
+
+    \emph{Step 2: $\gamma\supseteq\gamma^{\ast}$.} Split
+    $\Lambda(\gamma)=\mathbb{M}_1\sqcup\mathbb{M}_2$ into the precedents
+    that contain $\gamma^{\ast}$ and those that do not, so that
+    $\gamma\in\mathbb{M}_1$ and every member of $\mathbb{M}_2$ is
+    underfitted. By \cref{lemma:count}\ref{it:cnt_iii}
+    and~\eqref{eq:telescope},
+    \begin{equation}
+        \label{eq:precM1}
+        \frac{\pi_n^{(\lambda)}[\mathbb{M}_1\mid Y]}
+        {\pi_n^{(\lambda)}(\gamma\mid Y)}
+        \ \leq\ \sum_{k\geq0}p^{k}p^{-\eta k}\ =\ \frac{1}{1-b} .
+    \end{equation}
+    For $\bar\gamma\in\mathbb{M}_2$ let $f(\bar\gamma)$ be the first
+    state on the path
+    $\bar\gamma\to\mathcal{G}(\bar\gamma)\to\dots\to\gamma$ that contains
+    $\gamma^{\ast}$; it exists because $\gamma$ itself does, and it lies
+    in $\mathbb{M}_1$ because it is a precedent of $\gamma$. Every state
+    strictly before $f(\bar\gamma)$ on that path is underfitted, by the
+    definition of $f$, so \cref{lemma:count}\ref{it:cnt_iii} applies to
+    the chain from $\bar\gamma$ to $f(\bar\gamma)$, whose length is at
+    least $1$ because $\bar\gamma\notin\mathbb{M}_1$. Grouping the sum
+    over $\mathbb{M}_2$ by the value of $f$, and
+    using~\eqref{eq:telescope} for the inner ratios,
+    \begin{align}
+        \notag
+        \frac{\pi_n^{(\lambda)}[\mathbb{M}_2\mid Y]}
+        {\pi_n^{(\lambda)}(\gamma\mid Y)}
+        &=\sum_{\widetilde\gamma\in\mathbb{M}_1}
+        \frac{\pi_n^{(\lambda)}(\widetilde\gamma\mid Y)}
+        {\pi_n^{(\lambda)}(\gamma\mid Y)}
+        \sum_{\bar\gamma:\,f(\bar\gamma)=\widetilde\gamma}
+        \frac{\pi_n^{(\lambda)}(\bar\gamma\mid Y)}
+        {\pi_n^{(\lambda)}(\widetilde\gamma\mid Y)}\\
+        \label{eq:precM2}
+        &\ \leq\ \frac{\pi_n^{(\lambda)}[\mathbb{M}_1\mid Y]}
+        {\pi_n^{(\lambda)}(\gamma\mid Y)}
+        \cdot\sum_{k\geq1}a^{k}
+        \ \leq\ \frac{1}{1-b}\cdot\frac{a}{1-a} .
+    \end{align}
+    Adding~\eqref{eq:precM1} and~\eqref{eq:precM2},
+    \begin{equation*}
+        \frac{\pi_n^{(\lambda)}[\Lambda(\gamma)\mid Y]}
+        {\pi_n^{(\lambda)}(\gamma\mid Y)}
+        \ \leq\ \frac{1}{1-b}\Bigl(1+\frac{a}{1-a}\Bigr)
+        \ =\ \frac{1}{(1-a)(1-b)} ,
+    \end{equation*}
+    which is the middle expression in~\eqref{eq:precmass}. It dominates
+    the bound $1/(1-a)$ of Step~1, so both cases are covered by it, and
+    every $\gamma\in\mathscr{M}(s_0)$ falls into one of them: a state
+    other than $\gamma^{\ast}$ is either underfitted or overfitted, and
+    $\gamma^{\ast}\supseteq\gamma^{\ast}$. Finally $a,b\leq\tfrac12$
+    gives $\{(1-a)(1-b)\}^{-1}\leq4$.
+\end{proof}
+
+\begin{proof}[Proof of \cref{prop:sharp}]
+    Identity~\eqref{eq:sharpid} is~\eqref{eq:onestep} with
+    $j=j_\gamma$, read in the direction
+    $\log\{\pi_n^{(\lambda)}(\gamma\mid Y)/
+    \pi_n^{(\lambda)}(\gamma'\mid Y)\}
+    =-\log\{\pi_n^{(\lambda)}(\gamma'\mid Y)/
+    \pi_n^{(\lambda)}(\gamma\mid Y)\}$. The right-hand side
+    of~\eqref{eq:sharpid} is non-positive if and only if
+    $\lambda\log\{\mathcal{L}_n(Y\mid\mathcal{G}(\gamma))/
+    \mathcal{L}_n(Y\mid\gamma)\}\geq\kappa\log p$, which gives the stated
+    equivalence; at $\lambda=0$ it equals $\kappa\log p>0$; and if the
+    likelihood ratio is at most one then its logarithm is non-positive, so
+    for $\lambda\geq0$ the right-hand side is at least $\kappa\log p>0$.
+    The characterisation of $\lambda_{\mathrm{crit}}$ follows by taking
+    the maximum over the finitely many underfitted unsaturated $\gamma$,
+    with the convention that a state whose likelihood ratio is at most one
+    contributes $+\infty$.
+
+    For~\eqref{eq:lambdacritbound}, form the ratio of two copies
+    of~\eqref{eq:Lik} with $\gamma'=\gamma\cup\{j_\gamma\}$:
+    \begin{align*}
+        \log\frac{\mathcal{L}_n(Y\mid\gamma')}
+        {\mathcal{L}_n(Y\mid\gamma)}
+        &=-\frac12\log(1+g)
+        -\frac n2\log\frac{g^{-1}+1-R^{2}_{\gamma'}}
+        {g^{-1}+1-R^{2}_{\gamma}}\\
+        &\ \geq\ -\frac12\log(1+g)+\gainfloor ,
+    \end{align*}
+    the last step by~\eqref{eq:und2} and~\eqref{eq:und8}. The right-hand
+    side being positive by hypothesis, the quotient defining
+    $\lambda_{\mathrm{crit}}$ is at most
+    $\kappa\log p/\{\gainfloorsm-\tfrac12\log(1+g)\}$ for every such
+    $\gamma$, and taking the maximum gives the claim.
+\end{proof}
+
+\subsection{Proofs for \cref{sec:gap}}
+\label{sub:appgap}
+
+\begin{proof}[Proof of \cref{lemma:gap}]
+    By \cref{cor:critical} the drop bound gives
+    $\pi_n^{(\lambda)}(\bar\gamma\mid Y)\leq
+    \pi_n^{(\lambda)}(\mathcal{G}(\bar\gamma)\mid Y)$ at every
+    $\bar\gamma\neq\gamma^{\ast}$ --- each such state being either
+    overfitted or underfitted, and both cases being covered by its
+    hypotheses --- so the inner maximum in~\eqref{eq:rhoreduce} equals
+    one, and \cref{cor:prec} bounds the remaining factor by $4$. Hence
+    $\rho(\mathcal{T})\leq4ps_0\cdot4=16ps_0$. With
+    $\ell(\mathcal{T})\leq4s_0$ from
+    \cref{lemma:paths}\ref{it:pp_ii}, Sinclair's
+    bound~\eqref{eq:sinclair} gives
+    $\mathrm{Gap}(\mathbf{P}_\lambda)\geq(16ps_0\cdot4s_0)^{-1}$, which
+    is~\eqref{eq:gap}; it is the absolute spectral gap by
+    \cref{lemma:kernel}.
+\end{proof}
+
+\begin{proof}[Proof of \cref{prop:conc}]
+    \emph{Step 1: the precedents of $\gamma^{\ast}$ are everything.} By
+    \cref{lemma:paths}\ref{it:pp_i}, every $\bar\gamma\in\mathscr{M}(s_0)$
+    satisfies $\mathcal{G}^{k}(\bar\gamma)=\gamma^{\ast}$ for some
+    $k\geq0$, which is the defining condition~\eqref{eq:precdef} for
+    membership of $\Lambda(\gamma^{\ast})$. Hence
+    $\Lambda(\gamma^{\ast})\supseteq\mathscr{M}(s_0)$, and the reverse
+    inclusion holds by~\eqref{eq:precdef}, so
+    $\Lambda(\gamma^{\ast})=\mathscr{M}(s_0)$. Since
+    $\pi_n^{(\lambda)}(\cdot\mid Y)$ is a probability measure on
+    $\mathscr{M}(s_0)$ by~\eqref{eq:pilambda},
+    \begin{equation}
+        \label{eq:concmass}
+        \pi_n^{(\lambda)}\bigl[\Lambda(\gamma^{\ast})\mid Y\bigr]
+        \ =\ \pi_n^{(\lambda)}\bigl[\mathscr{M}(s_0)\mid Y\bigr]
+        \ =\ 1 .
+    \end{equation}
+
+    \emph{Step 2: \cref{cor:prec} applies at $\gamma=\gamma^{\ast}$.}
+    That corollary is stated for every $\gamma\in\mathscr{M}(s_0)$, and
+    $\gamma^{\ast}$ is covered by Step~2 of its proof, which treats every
+    $\gamma$ with $\gamma\supseteq\gamma^{\ast}$; the case
+    $\gamma=\gamma^{\ast}$ is admissible there because
+    $\gamma^{\ast}\supseteq\gamma^{\ast}$. Substituting
+    \eqref{eq:concmass} into~\eqref{eq:precmass} therefore gives
+    \begin{equation}
+        \label{eq:concinv}
+        \frac{1}{\pi_n^{(\lambda)}(\gamma^{\ast}\mid Y)}
+        \ =\ \frac{\pi_n^{(\lambda)}[\Lambda(\gamma^{\ast})\mid Y]}
+        {\pi_n^{(\lambda)}(\gamma^{\ast}\mid Y)}
+        \ \leq\ \frac{1}
+        {\bigl\{1-(s^{\ast}+1)p^{1-\eta}\bigr\}
+        \bigl\{1-p^{1-\eta}\bigr\}} .
+    \end{equation}
+
+    \emph{Step 3: inverting.} Put
+    $u\coloneq\bigl\{1-(s^{\ast}+1)p^{1-\eta}\bigr\}
+    \bigl\{1-p^{1-\eta}\bigr\}$, the right-hand side
+    of~\eqref{eq:conc}. By~\eqref{eq:etamin} we have
+    $p^{1-\eta}\leq(s^{\ast}+1)p^{1-\eta}\leq\tfrac12$, so both factors
+    of $u$ lie in $[\tfrac12,1]$ and hence
+    \begin{equation}
+        \label{eq:urange}
+        \tfrac14\ \leq\ u\ \leq\ 1 .
+    \end{equation}
+    Also $\pi_n^{(\lambda)}(\gamma^{\ast}\mid Y)\in(0,1]$
+    by~\eqref{eq:pilambda}. Inequality~\eqref{eq:concinv} therefore reads
+    \begin{equation*}
+        \frac{1}{\pi_n^{(\lambda)}(\gamma^{\ast}\mid Y)}
+        \ \leq\ \frac{1}{u},
+    \end{equation*}
+    an inequality between two elements of $(0,\infty)$. The map
+    $x\mapsto1/x$ is strictly decreasing on $(0,\infty)$, so applying it
+    to both sides reverses the inequality and gives
+    $\pi_n^{(\lambda)}(\gamma^{\ast}\mid Y)\geq u$, which is the first
+    inequality of~\eqref{eq:conc}. The second is the left-hand
+    inequality of~\eqref{eq:urange}.
+\end{proof}
+
+\begin{proof}[Proof of \cref{lemma:minmass}]
+    Apply \eqref{eq:master} with $\gamma'=\gamma^{\ast}$:
+    \begin{equation*}
+        \log\frac{\pi_n^{(\lambda)}(\gamma\mid Y)}
+        {\pi_n^{(\lambda)}(\gamma^{\ast}\mid Y)}
+        =\bigl(\abs{\gamma^{\ast}}-\abs{\gamma}\bigr)
+        \Bigl\{\kappa\log p+\frac{\lambda}{2}\log(1+g)\Bigr\}
+        +\frac{\lambda n}{2}
+        \log\frac{g^{-1}+1-R^{2}_{\gamma^{\ast}}}
+        {g^{-1}+1-R^{2}_{\gamma}} .
+    \end{equation*}
+    For the first term, $\abs{\gamma^{\ast}}-\abs\gamma\geq-\abs\gamma
+    \geq-s_0$ and the brace is non-negative, so it is at least
+    $-s_0\{\kappa\log p+\tfrac{\lambda}{2}\log(1+g)\}$. For the second,
+    $R^{2}_{\gamma^{\ast}}\leq1$ and $R^{2}_{\gamma}\geq0$ give
+    \begin{equation*}
+        \frac{g^{-1}+1-R^{2}_{\gamma^{\ast}}}
+        {g^{-1}+1-R^{2}_{\gamma}}
+        \ \geq\ \frac{g^{-1}}{g^{-1}+1}\ =\ \frac{1}{1+g},
+    \end{equation*}
+    so it is at least $-\tfrac{\lambda n}{2}\log(1+g)$. Adding the two
+    and using $\lambda\geq0$ gives~\eqref{eq:minmass}. For
+    \eqref{eq:minmass2}, combine it with $\pi_n^{(\lambda)}
+    (\gamma^{\ast}\mid Y)\geq\tfrac14$ from \cref{prop:conc}.
+\end{proof}
+
+\begin{proof}[Proof of \cref{th:mixing}]
+    \cref{lemma:kernel} makes $\mathbf{P}_\lambda$ lazy and reversible,
+    so~\eqref{eq:sandwich} applies with
+    $\mu=\pi_n^{(\lambda)}(\cdot\mid Y)$. Substitute the gap bound
+    of \cref{lemma:gap} and the mass bound~\eqref{eq:minmass2}, whose
+    logarithm is $\kappa s_0\log p+\tfrac{\lambda(n+s_0)}{2}\log(1+g)
+    +\log4$.
+\end{proof}
+
+\subsection{Proofs for \cref{sec:alltemp}}
+\label{sub:appall}
+
+\begin{proof}[Proof of \cref{lemma:Gvalid}]
+    \ref{it:gv_i} Rules \ref{H:null}, \ref{H:del} and \ref{H:undec}
+    delete a coordinate, so they decrease $\abs\gamma$ and stay in
+    $\mathscr{M}(s_0)$. Rule~\ref{H:add} fires only when
+    $\gamma\subseteq\gamma^{\ast}$, so the result is a subset of
+    $\gamma^{\ast}$ and has size at most $s^{\ast}<s_0$.
+
+    \ref{it:gv_ii} Set
+    \begin{equation}
+        \label{eq:Vprog}
+        V(\gamma)\coloneq\abs{\gamma\setminus\gamma^{\ast}}
+        +\abs{c^{-}_\lambda\setminus\gamma}
+        +\abs{(\gamma\cap\gamma^{\ast})\setminus c^{+}_\lambda}
+        +\abs{\gamma\cap C_\lambda} .
+    \end{equation}
+    Rule~\ref{H:null} decreases the first term by one and leaves the
+    others unchanged, since it deletes an index of $S^{c}$ while
+    $c^{-}_\lambda,c^{+}_\lambda,C_\lambda\subseteq\gamma^{\ast}$. Rule
+    \ref{H:add} decreases the second by one and leaves the others
+    unchanged, since $c^{-}_\lambda\cap C_\lambda=\emptyset$ and
+    $c^{-}_\lambda\subseteq c^{+}_\lambda$. Rule~\ref{H:del} decreases
+    the third by one and leaves the others unchanged, the deleted index
+    lying outside $c^{+}_\lambda\supseteq C_\lambda\cup c^{-}_\lambda$.
+    Rule~\ref{H:undec} decreases the fourth by one and leaves the others
+    unchanged, the deleted index lying in
+    $C_\lambda\subseteq c^{+}_\lambda\setminus c^{-}_\lambda$. So $V$
+    drops by exactly one at each step, and $V(\gamma)=0$ forces
+    $\gamma\subseteq\gamma^{\ast}$, $c^{-}_\lambda\subseteq\gamma$,
+    $\gamma\subseteq c^{+}_\lambda$ and $\gamma\cap C_\lambda=\emptyset$,
+    that is $\gamma=c^{-}_\lambda$; conversely
+    $V(c^{-}_\lambda)=0$ and rule~\ref{H:fix} fixes it. Finally
+    $V(\gamma)\leq\abs{\gamma}+\abs{c^{-}_\lambda}\leq s_0+s^{\ast}
+    \leq2s_0$, because the first, third and fourth terms
+    of~\eqref{eq:Vprog} count disjoint subsets of $\gamma$.
+
+    \ref{it:gv_iii} Rules \ref{H:add}, \ref{H:del} and \ref{H:undec} fire
+    only when $\gamma\subseteq\gamma^{\ast}$ and they keep the state
+    inside $\gamma^{\ast}$, so \ref{H:null} cannot fire afterwards.
+    Rule~\ref{H:undec} deletes an index of $C_\lambda$, which changes
+    neither $c^{-}_\lambda\subseteq\gamma$ nor
+    $\gamma\subseteq c^{+}_\lambda$, so once those two conditions hold
+    they continue to hold.
+\end{proof}
+
+\begin{proof}[Proof of \cref{th:dropG}]
+    All three are~\eqref{eq:onestepG}.
+
+    \emph{Rule~\ref{H:null}.} Here $j=\max(\gamma\setminus\gamma^{\ast})
+    \in S^{c}$ and $\mathcal{G}_\lambda(\gamma)=\gamma\setminus\{j\}$, so
+    \eqref{eq:onestepG} applied at the state $\gamma\setminus\{j\}$,
+    whose size is $<s_0$, gives
+    \begin{equation*}
+        \log\frac{\pi_n^{(\lambda)}(\gamma\mid Y)}
+        {\pi_n^{(\lambda)}(\gamma\setminus\{j\}\mid Y)}
+        =\lambda\psi_j(\gamma\setminus\{j\})-\kappa\log p
+        \ \leq\ \lambda(a_0-\alpha)\log p-\kappa\log p
+        =-\kappa_\lambda\log p
+    \end{equation*}
+    by \cref{ass:null} and $\lambda\geq0$; and
+    $\kappa_\lambda\geq\eta$ by~\eqref{eq:kappalam}.
+
+    \emph{Rules~\ref{H:add} and~\ref{H:del}.} Here
+    $\gamma\subseteq\gamma^{\ast}$, and the state at which
+    \eqref{eq:onestepG} is applied --- $\gamma$ under~\ref{H:add},
+    $\gamma\setminus\{j\}$ under~\ref{H:del} --- is contained in
+    $\gamma^{\ast}\setminus\{j\}$. Hence \eqref{eq:cpmuse} applies, with
+    $j\in c^{-}_\lambda$ in the first case and $j\notin c^{+}_\lambda$ in
+    the second, and in both
+    $\log\{\pi_n^{(\lambda)}(\gamma\mid Y)/
+    \pi_n^{(\lambda)}(\mathcal{G}_\lambda(\gamma)\mid Y)\}
+    \leq-\log(2s^{\ast})$.
+
+    \emph{Rule~\ref{H:undec}.} Identical to rule~\ref{H:del}, with
+    $j\in C_\lambda$ and without the conclusion
+    $\lambda\psi_j^{+}\leq\kappa\log p-\log(2s^{\ast})$, which is
+    precisely what fails for an undecided covariate; the bound
+    $\exp\{\lambda\psi_j^{+}-\kappa\log p\}\leq\Theta_\lambda$ is all that
+    remains.
+\end{proof}
+
+\begin{proof}[Proof of \cref{lemma:countG}]
+    Under~\ref{H:null}, $\bar\gamma=\bar\eta\cup\{\ell\}$ with
+    $\ell\in S^{c}$: at most $p$ choices. Under~\ref{H:add},
+    $\bar\gamma=\bar\eta\setminus\{j\}$ with
+    $j\in c^{-}_\lambda\subseteq\gamma^{\ast}$: at most $s^{\ast}$.
+    Under~\ref{H:del}, $\bar\gamma=\bar\eta\cup\{j\}$ with
+    $j\in\gamma^{\ast}\setminus c^{+}_\lambda$: at most $s^{\ast}$.
+    Under~\ref{H:undec}, $\bar\gamma=\bar\eta\cup\{j\}$ with
+    $j\in C_\lambda$: at most $k_\lambda$.
+\end{proof}
+
+\begin{proof}[Proof of \cref{cor:precG}]
+    By \cref{lemma:Gvalid}\ref{it:gv_iii} the orbit of any $\bar\gamma$
+    consists of a block of \ref{H:null} steps, then a block of
+    \ref{H:add}/\ref{H:del} steps, then a block of \ref{H:undec} steps.
+    Reading this backwards from $\gamma$, a precedent
+    $\bar\gamma\in\Lambda_\lambda(\gamma)$ is obtained from $\gamma$ by
+    undoing $m$ steps of type \ref{H:undec}, then $k_2$ of type
+    \ref{H:add}/\ref{H:del}, then $k_1$ of type \ref{H:null}, for a
+    unique triple $(m,k_2,k_1)$, and by \cref{lemma:Gvalid}\ref{it:gv_ii}
+    the deletions of \ref{H:undec} and the flips of \ref{H:add},
+    \ref{H:del} exhaust $C_\lambda$ and
+    $\gamma^{\ast}\triangle c^{-}_\lambda$ respectively, so
+    $m\leq k_\lambda$ and $k_2\leq2s^{\ast}$.
+
+    Telescoping as in~\eqref{eq:telescope} and applying \cref{th:dropG}
+    at each source state, the ratio
+    $\pi_n^{(\lambda)}(\bar\gamma\mid Y)/\pi_n^{(\lambda)}(\gamma\mid Y)$
+    is at most $\Theta_\lambda^{m}(2s^{\ast})^{-k_2}p^{-\eta k_1}$, while
+    by \cref{lemma:countG} the number of such $\bar\gamma$ is at most
+    $k_\lambda^{m}(2s^{\ast})^{k_2}p^{k_1}$. Summing over the three
+    indices independently,
+    \begin{align*}
+        \frac{\pi_n^{(\lambda)}[\Lambda_\lambda(\gamma)\mid Y]}
+        {\pi_n^{(\lambda)}(\gamma\mid Y)}
+        &\ \leq\
+        \Bigl(\sum_{m=0}^{k_\lambda}(k_\lambda\Theta_\lambda)^{m}\Bigr)
+        \Bigl(\sum_{k_2=0}^{2s^{\ast}}1\Bigr)
+        \Bigl(\sum_{k_1\geq0}p^{(1-\eta)k_1}\Bigr)\\
+        &\ \leq\ \bigl(1+k_\lambda\Theta_\lambda\bigr)^{k_\lambda}
+        \,(2s^{\ast}+1)\,\frac{1}{1-p^{1-\eta}},
+    \end{align*}
+    where the first sum was bounded by the binomial theorem, the second
+    counts $k_2\leq2s^{\ast}$ terms each equal to one, and the third
+    converges because $p^{1-\eta}\leq\tfrac12$, which also bounds it by
+    $2$.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:a0}]
+    Fix $\gamma$ and $j\in S^{c}\setminus\gamma$ and write
+    $\Pi=\Phi_{\gamma\cup\{j\}}-\Phi_\gamma$. By~\eqref{eq:Lik},
+    $\psi_j(\gamma)=-\tfrac12\log(1+g)+\tfrac n2\log\{(g^{-1}
+    +1-R^{2}_{\gamma})/(g^{-1}+1-R^{2}_{\gamma\cup\{j\}})\}$, and the
+    computation~\eqref{eq:over1b}--\eqref{eq:over2}, which used only that
+    $\Pi$ is a rank-one projection and \cref{lemma:residual}, gives
+    \begin{equation*}
+        \psi_j(\gamma)\ \leq\ -\alpha\log p
+        +\frac{4\norm{\Pi Y}_2^{2}}{\sigma_0^{2}} ,
+    \end{equation*}
+    using $\tfrac12\log(1+g)\geq\alpha\log p$ from \cref{ass:C}. Now
+    $\Pi Y=\Pi\signal+\Pi\widetilde w$ by~\eqref{eq:wtilde}, so
+    by~\eqref{eq:elementary}, \cref{lemma:proxy} applied to
+    $\gamma\cup\{j\}$ and $j$, and
+    \cref{lemma:noise}\ref{it:noise_ii} applied to the nested pair
+    $\gamma\subset\gamma\cup\{j\}$,
+    \begin{equation*}
+        \norm{\Pi Y}_2^{2}
+        \ \leq\ 2\norm{\Pi\signal}_2^{2}+2\norm{\Pi\widetilde w}_2^{2}
+        \ \leq\ 2n\,\omega(X)
+        \bigl\|\beta^{\ast}_{\gamma^{\ast}\setminus\gamma}\bigr\|_2^{2}
+        +4(L+\Ltil)\sigma_0^{2}\log p ,
+    \end{equation*}
+    and $\|\beta^{\ast}_{\gamma^{\ast}\setminus\gamma}\|_2^{2}
+    \leq\|\beta^{\ast}_{\gamma^{\ast}}\|_2^{2}$. Multiplying by
+    $4/\sigma_0^{2}$ gives~\eqref{eq:a0}.
+\end{proof}
+
+\subsection{Proofs for \cref{sec:flow}}
+\label{sub:appflow}
+
+\begin{proof}[Proof of \cref{lemma:funnel}]
+    \ref{it:fn_i} None of \ref{H:null}--\ref{H:del} changes
+    $\gamma\cap C_\lambda$, by the three sentences that prove
+    \cref{lemma:Gvalid}\ref{it:gv_ii}, so $F_\lambda$ preserves $B_J$.
+    The function~\eqref{eq:Vprog} without its fourth term drops by
+    exactly one at each step of $F_\lambda$ and vanishes precisely when
+    $\gamma\subseteq\gamma^{\ast}$, $c^{-}_\lambda\subseteq\gamma$ and
+    $\gamma\subseteq c^{+}_\lambda$; within $B_J$ the only such state is
+    $c^{-}_\lambda\cup J=v_J$. Hence every $\gamma\in B_J$ reaches $v_J$,
+    which is~\ref{it:fn_i}.
+
+    \ref{it:fn_ii} The three drop bounds of \cref{th:dropG} for rules
+    \ref{H:null}--\ref{H:del} are all at most
+    $\max\{p^{-\eta},(2s^{\ast})^{-1}\}$, which is at most $1$; the
+    length and single-flip claims are
+    \cref{lemma:Gvalid}\ref{it:gv_i} and $V\leq s_0+s^{\ast}\leq2s_0$.
+
+    \ref{it:fn_iii} Run the proof of \cref{cor:precG} for $F_\lambda$ at
+    the state $v_J$. Since rule~\ref{H:undec} is absent, the third factor
+    is missing and the first two give
+    $\pi_n^{(\lambda)}[\Lambda^{F_\lambda}(v_J)\mid Y]\leq
+    2(2s^{\ast}+1)\,\pi_n^{(\lambda)}(v_J\mid Y)$. By~\ref{it:fn_i} the
+    left-hand side is $\bar\pi_\lambda(J)$.
+\end{proof}
+
+\begin{proof}[Proof of \cref{th:gapflow}]
+    Every edge of $\widetilde{\mathcal{T}}_\lambda$ is a single flip, so
+    \cref{lemma:kernel} gives
+    $\mathbf{Q}_\lambda(e)\geq\tfrac{1}{4p}\min\{\pi_n^{(\lambda)}
+    (\bar\gamma\mid Y),\pi_n^{(\lambda)}(\bar\gamma'\mid Y)\}$ for its two
+    endpoints. There are two kinds.
+
+    \emph{Edges of segments (i) and (iii).} Such an edge is
+    $e=(\bar\gamma,F_\lambda(\bar\gamma))$ for some $\bar\gamma$, and by
+    \cref{lemma:funnel}\ref{it:fn_ii} it is uphill, so the minimum is
+    $\pi_n^{(\lambda)}(\bar\gamma\mid Y)$. A pair
+    $(\gamma,\gamma')$ uses $e$ in the direction of $F_\lambda$ only
+    within its segment~(i), where the argument of
+    \cref{lemma:paths}\ref{it:pp_iii} applies unchanged and forces
+    $\gamma\in\Lambda^{F_\lambda}(\bar\gamma)$; the opposite orientation
+    is the mirror image and gives the same bound because
+    $\mathbf{Q}_\lambda$ is symmetric. Hence, using
+    $\sum_{\gamma'}\pi_n^{(\lambda)}(\gamma'\mid Y)=1$ and
+    \cref{lemma:funnel}\ref{it:fn_iii} applied at $\bar\gamma$ in place of
+    $v_J$, that is the bound
+    $\pi_n^{(\lambda)}[\Lambda^{F_\lambda}(\bar\gamma)\mid Y]\leq
+    2(2s^{\ast}+1)\pi_n^{(\lambda)}(\bar\gamma\mid Y)$ established in its
+    proof,
+    \begin{equation*}
+        \frac{1}{\mathbf{Q}_\lambda(e)}
+        \sum_{\widetilde T_{\gamma,\gamma'}\ni e}
+        \pi_n^{(\lambda)}(\gamma\mid Y)\pi_n^{(\lambda)}(\gamma'\mid Y)
+        \ \leq\ 4p\,\frac{\pi_n^{(\lambda)}
+            [\Lambda^{F_\lambda}(\bar\gamma)\mid Y]}
+        {\pi_n^{(\lambda)}(\bar\gamma\mid Y)}
+        \ \leq\ 8p\,(2s^{\ast}+1) .
+    \end{equation*}
+
+    \emph{Edges of segment (ii).} Such an edge is
+    $e=(v_J,v_{J\triangle\{j\}})$ with $j\in C_\lambda$, and it is used by
+    $(\gamma,\gamma')\in B_{J_1}\times B_{J_2}$ exactly when the
+    increasing-order path from $J_1$ to $J_2$ traverses
+    $(J,J\triangle\{j\})$. Summing $\pi_n^{(\lambda)}(\gamma\mid Y)
+    \pi_n^{(\lambda)}(\gamma'\mid Y)$ over each block gives
+    $\bar\pi_\lambda(J_1)\bar\pi_\lambda(J_2)$, so the numerator is the
+    inner sum of~\eqref{eq:rholam}. For the denominator,
+    \cref{lemma:funnel}\ref{it:fn_iii} gives
+    \begin{equation*}
+        \mathbf{Q}_\lambda(e)\ \geq\ \frac{1}{4p}
+        \min\bigl\{\pi_n^{(\lambda)}(v_J\mid Y),
+        \pi_n^{(\lambda)}(v_{J\triangle\{j\}}\mid Y)\bigr\}
+        \ \geq\ \frac{\min\{\bar\pi_\lambda(J),
+            \bar\pi_\lambda(J\triangle\{j\})\}}{8p\,(2s^{\ast}+1)} ,
+    \end{equation*}
+    so the congestion at $e$ is at most
+    $8p(2s^{\ast}+1)\varrho_\lambda$.
+
+    \emph{Length.} Segments (i) and (iii) have at most $2s_0$ edges each
+    by \cref{lemma:funnel}\ref{it:fn_ii} and segment~(ii) at most
+    $k_\lambda\leq s^{\ast}\leq s_0$, so
+    $\ell(\widetilde{\mathcal{T}}_\lambda)\leq5s_0$. Sinclair's bound and
+    \cref{lemma:kernel} now give~\eqref{eq:gapflow}.
+\end{proof}
+
+\begin{proof}[Proof of \cref{lemma:prodfree}]
+    Write $\bar\pi_\lambda=\bigotimes_{i=1}^{k_\lambda}\mu_i$ and fix the
+    directed edge $(J,J\triangle\{j\})$. A pair $(J_1,J_2)$ traverses it
+    exactly when, at that moment, the coordinates below $j$ have been
+    flipped and those above have not: that is, $J_2$ agrees with $J$
+    below $j$ and takes the value $1-J_j$ at $j$, while $J_1$ agrees with
+    $J$ at $j$ and above. So $J_1$ is free below $j$ and $J_2$ is free
+    above $j$, and by independence
+    \begin{multline*}
+        \sum_{(J_1,J_2)}\bar\pi_\lambda(J_1)\bar\pi_\lambda(J_2)
+        =\Bigl[\sum_{a}\textstyle\prod_{i<j}\mu_i(a_i)\Bigr]
+        \prod_{i\geq j}\mu_i(J_i)\\
+        \cdot\ \prod_{i<j}\mu_i(J_i)\,\mu_j(1-J_j)
+        \Bigl[\sum_{b}\textstyle\prod_{i>j}\mu_i(b_i)\Bigr] ,
+    \end{multline*}
+    the two bracketed sums being $1$. The remaining product is
+    $\bar\pi_\lambda(J)\,\mu_j(1-J_j)$. Since
+    $\bar\pi_\lambda(J\triangle\{j\})=\bar\pi_\lambda(J)\mu_j(1-J_j)
+    /\mu_j(J_j)$, the quotient in~\eqref{eq:rholam} equals
+    \begin{equation*}
+        \frac{\bar\pi_\lambda(J)\,\mu_j(1-J_j)}
+        {\bar\pi_\lambda(J)\min\bigl\{1,\mu_j(1-J_j)/\mu_j(J_j)\bigr\}}
+        =\max\bigl\{\mu_j(J_j),\,\mu_j(1-J_j)\bigr\}\ \leq\ 1 . \qedhere
+    \end{equation*}
+\end{proof}
+
+\begin{proof}[Proof of \cref{lemma:comparison}]
+    The inner sum of~\eqref{eq:rholam} is over the same index set for
+    $\bar\pi_\lambda$ and $\bar\mu$, and each of its terms is a product of
+    two masses, so it is at most $e^{2D}$ times the corresponding sum for
+    $\bar\mu$; the denominator is at least $e^{-D}$ times the
+    corresponding minimum. Apply \cref{lemma:prodfree} to $\bar\mu$.
+\end{proof}
+
+\begin{proof}[Proof of \cref{prop:rhobound}]
+    Let $\bar\mu$ be the product measure on $2^{C_\lambda}$ with odds
+    $\theta_j\coloneq\exp\{\lambda\psi_j(c^{-}_\lambda)-\kappa\log p\}$,
+    normalised, so that
+    $\bar\mu(J)\propto\prod_{j\in J}\theta_j$. Enumerating
+    $J=\{j_1<\dots<j_m\}$ and telescoping~\eqref{eq:onestepG} along
+    $c^{-}_\lambda\subset c^{-}_\lambda\cup\{j_1\}\subset\dots\subset v_J$,
+    \begin{equation*}
+        \log\frac{\pi_n^{(\lambda)}(v_J\mid Y)}
+        {\pi_n^{(\lambda)}(v_\emptyset\mid Y)}
+        =\sum_{i=1}^{m}\bigl\{\lambda\psi_{j_i}
+        (c^{-}_\lambda\cup\{j_1,\dots,j_{i-1}\})-\kappa\log p\bigr\},
+    \end{equation*}
+    and each summand differs from $\log\theta_{j_i}$ by at most
+    $\lambda\Delta^{C}_\lambda\leq\Delta^{C}_\lambda$
+    by~\eqref{eq:DeltaC}, the contexts involved being of the form
+    $c^{-}_\lambda\cup U$ with $U\subseteq C_\lambda\setminus\{j_i\}$.
+    Writing $\widetilde\mu(J)\coloneq\prod_{j\in J}\theta_j$ and
+    $\widetilde g(J)\coloneq\pi_n^{(\lambda)}(v_J\mid Y)/
+    \pi_n^{(\lambda)}(v_\emptyset\mid Y)$ for the two unnormalised
+    weights, the display therefore gives
+    \begin{equation}
+        \label{eq:D1}
+        \Bigl|\log\frac{\widetilde g(J)}{\widetilde\mu(J)}\Bigr|
+        \ \leq\ \abs{J}\,\Delta^{C}_\lambda
+        \ \leq\ k_\lambda\Delta^{C}_\lambda
+        \ \eqcolon\ D_1
+        \qquad\text{for every }J\subseteq C_\lambda .
+    \end{equation}
+    Summing~\eqref{eq:D1} over $J$, the two normalising constants
+    $\sum_J\widetilde g$ and $\sum_J\widetilde\mu=Z_\mu$ also differ by a
+    factor at most $e^{D_1}$, so the two \emph{normalised} measures
+    differ by a factor at most $e^{2D_1}$ pointwise.
+
+    Next, \cref{lemma:funnel}\ref{it:fn_iii} and
+    $\pi_n^{(\lambda)}(v_J\mid Y)\leq\bar\pi_\lambda(J)$ give
+    $\bar\pi_\lambda(J)=\pi_n^{(\lambda)}(v_J\mid Y)\,c(J)$ with
+    $c(J)\in[1,2(2s^{\ast}+1)]$; both $\bar\pi_\lambda$ and the
+    normalisation of $\widetilde g$ being probability measures, they
+    differ pointwise by a factor at most $\{2(2s^{\ast}+1)\}^{2}$, one
+    factor from $c(J)$ and one from the normaliser.
+
+    Combining the two paragraphs, \cref{lemma:comparison} applies with
+    $D=2k_\lambda\Delta^{C}_\lambda+2\log\{2(2s^{\ast}+1)\}$, and
+    $\varrho_\lambda\leq e^{3D}$ is exactly~\eqref{eq:rhobound}.
+\end{proof}

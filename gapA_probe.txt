@@ -1,0 +1,90 @@
+p = 14, n = 100, kappa = 2.0, alpha = 1.5, 25 temperatures
+
+--- equicorr rho=0.0  s0=4 s*=3
+    best-subset profile  t_(m)      :    0.0000   -0.7225   -1.1175   -1.3414
+    marginal gains g_m (= psi-like) :    32.169    15.790     7.237    [kappa log p = 5.278]
+    (G) gains decreasing = log D_(m) convex : True   nested optima: True   (W) unique layer local min: True [1, 1, 1, 1]
+    exact gap: min 1.7948e-02  max 2.0576e-02   [1/(4p) = 1.7857e-02]
+      flips, strength order      varrho max       25.47   dip max        1289   len max   3   available at 25/25
+      matched swaps + flips      varrho max       33.26   dip max        1289   len max   3   available at 25/25
+      steepest ascent of pibar   varrho max       1.008   dip max           1   len max   5   available at 25/25
+      layer descent + staircase  varrho max       2.958   dip max           1   len max   3   available at 25/25
+      concentration index T max 3.104;  funnel ratio pibar/pi max 1.057;  #local maxima of pibar max 1
+
+--- equicorr rho=0.5  s0=4 s*=3
+    best-subset profile  t_(m)      :    0.0000   -1.1329   -1.5584   -1.7018
+    marginal gains g_m (= psi-like) :    52.685    17.317     3.214    [kappa log p = 5.278]
+    (G) gains decreasing = log D_(m) convex : True   nested optima: True   (W) unique layer local min: True [1, 1, 1, 1]
+    exact gap: min 1.6636e-02  max 2.6163e-02   [1/(4p) = 1.7857e-02]
+      flips, strength order      varrho max   1.145e+12   dip max   4.843e+15   len max   3   available at 25/25
+      matched swaps + flips      varrho max       2.029   dip max        4482   len max   3   available at 25/25
+      steepest ascent of pibar   varrho max       1.005   dip max           1   len max   5   available at 25/25
+      layer descent + staircase  varrho max       2.974   dip max           1   len max   3   available at 25/25
+      concentration index T max 3.512;  funnel ratio pibar/pi max 1.057;  #local maxima of pibar max 1
+
+--- equicorr rho=0.85  s0=4 s*=3
+    best-subset profile  t_(m)      :    0.0000   -1.5734   -1.8057   -1.8687
+    marginal gains g_m (= psi-like) :    74.713     7.653    -0.809    [kappa log p = 5.278]
+    (G) gains decreasing = log D_(m) convex : True   nested optima: True   (W) unique layer local min: True [1, 1, 1, 1]
+    exact gap: min 1.6189e-02  max 2.6981e-02   [1/(4p) = 1.7857e-02]
+      flips, strength order      varrho max   1.074e+27   dip max   1.215e+28   len max   3   available at 25/25
+      matched swaps + flips      varrho max      0.9996   dip max       10.88   len max   3   available at 25/25
+      steepest ascent of pibar   varrho max       1.005   dip max           1   len max   5   available at 25/25
+      layer descent + staircase  varrho max       2.996   dip max           1   len max   3   available at 25/25
+      concentration index T max 3.001;  funnel ratio pibar/pi max 1.057;  #local maxima of pibar max 1
+
+--- equicorr rho=0.95  s0=4 s*=3
+    best-subset profile  t_(m)      :    0.0000   -1.7644   -1.8764   -1.9085
+    marginal gains g_m (= psi-like) :    84.259     1.641    -2.351    [kappa log p = 5.278]
+    (G) gains decreasing = log D_(m) convex : True   nested optima: True   (W) unique layer local min: True [1, 1, 1, 1]
+    exact gap: min 1.7953e-02  max 3.0849e-02   [1/(4p) = 1.7857e-02]
+      flips, strength order      varrho max   8.348e+33   dip max   8.416e+33   len max   3   available at 25/25
+      matched swaps + flips      varrho max      0.9995   dip max        3.25   len max   3   available at 25/25
+      steepest ascent of pibar   varrho max       1.005   dip max           1   len max   5   available at 25/25
+      layer descent + staircase  varrho max       3.003   dip max           1   len max   3   available at 25/25
+      concentration index T max 3.581;  funnel ratio pibar/pi max 1.057;  #local maxima of pibar max 1
+
+--- cancelling r=0.9 b=1.0  s0=4 s*=2
+    best-subset profile  t_(m)      :    0.0000   -0.0426   -0.1453
+    marginal gains g_m (= psi-like) :    -1.828     1.175    [kappa log p = 5.278]
+    (G) gains decreasing = log D_(m) convex : False   nested optima: True   (W) unique layer local min: True [1, 1, 1]
+    exact gap: min 1.7768e-02  max 1.7948e-02   [1/(4p) = 1.7857e-02]
+      flips, strength order      varrho max       1.117   dip max       195.4   len max   2   available at 25/25
+      matched swaps + flips      varrho max       1.117   dip max           1   len max   2   available at 25/25
+      steepest ascent of pibar   varrho max       1.016   dip max           1   len max   3   available at 25/25
+      layer descent + staircase  varrho max       1.983   dip max           1   len max   2   available at 25/25
+      concentration index T max 2.003;  funnel ratio pibar/pi max 1.063;  #local maxima of pibar max 1
+
+--- cancelling r=0.9 b=3.0  s0=4 s*=2
+    best-subset profile  t_(m)      :    0.0000   -0.0666   -0.9024
+    marginal gains g_m (= psi-like) :    -0.627    37.830    [kappa log p = 5.278]
+    (G) gains decreasing = log D_(m) convex : False   nested optima: True   (W) unique layer local min: True [1, 1, 1]
+    exact gap: min 2.9089e-05  max 1.7947e-02   [1/(4p) = 1.7857e-02]
+      flips, strength order      varrho max        7749   dip max        7748   len max   2   available at 25/25
+      matched swaps + flips      varrho max        7749   dip max        7748   len max   2   available at 25/25
+      steepest ascent of pibar   varrho max       1.586   dip max           1   len max   3   available at 4/25
+      layer descent + staircase  varrho max       367.9   dip max       366.8   len max   2   available at 25/25
+      concentration index T max 2.279;  funnel ratio pibar/pi max 1.063;  #local maxima of pibar max 2
+
+--- cancelling r=0.95 b=3.0  s0=4 s*=2
+    best-subset profile  t_(m)      :    0.0000   -0.0420   -0.5345
+    marginal gains g_m (= psi-like) :    -1.858    20.664    [kappa log p = 5.278]
+    (G) gains decreasing = log D_(m) convex : False   nested optima: True   (W) unique layer local min: True [1, 1, 1]
+    exact gap: min 1.1220e-05  max 1.7948e-02   [1/(4p) = 1.7857e-02]
+      flips, strength order      varrho max   1.022e+04   dip max   1.022e+04   len max   2   available at 25/25
+      matched swaps + flips      varrho max   1.022e+04   dip max   1.022e+04   len max   2   available at 25/25
+      steepest ascent of pibar   varrho max       1.898   dip max           1   len max   3   available at 7/25
+      layer descent + staircase  varrho max        1257   dip max        1256   len max   2   available at 25/25
+      concentration index T max 2.501;  funnel ratio pibar/pi max 1.063;  #local maxima of pibar max 2
+
+--- cancelling r=0.99 b=3.0  s0=4 s*=2
+    best-subset profile  t_(m)      :    0.0000   -0.0222   -0.1191
+    marginal gains g_m (= psi-like) :    -2.848     0.885    [kappa log p = 5.278]
+    (G) gains decreasing = log D_(m) convex : False   nested optima: True   (W) unique layer local min: True [1, 1, 1]
+    exact gap: min 1.7848e-02  max 1.7948e-02   [1/(4p) = 1.7857e-02]
+      flips, strength order      varrho max       1.021   dip max       195.7   len max   2   available at 25/25
+      matched swaps + flips      varrho max       1.021   dip max           1   len max   2   available at 25/25
+      steepest ascent of pibar   varrho max       1.012   dip max           1   len max   3   available at 25/25
+      layer descent + staircase  varrho max       1.984   dip max           1   len max   2   available at 25/25
+      concentration index T max 2.005;  funnel ratio pibar/pi max 1.063;  #local maxima of pibar max 1
+

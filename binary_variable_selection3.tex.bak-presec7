@@ -1,0 +1,1629 @@
+%% ---------------------------------------------------------------------------
+%%  A tempered analogue of Lemma 4(a) of Yang, Wainwright and Jordan (2016).
+%%
+%%  Notation is theirs throughout.  The only symbols introduced here are the
+%%  inverse temperature lambda, the tempered posterior pi_n^(lambda), and the
+%%  two temperatures lambda_star and lambda_crit that the results produce.
+%%  No other quantity is given a name: every intermediate expression is
+%%  written out, as they write it.
+%%
+%%  Self-contained.  Bibliography: bvs.bib.
+%% ---------------------------------------------------------------------------
+\documentclass[aos]{imsart}
+
+\RequirePackage[authoryear]{natbib}
+\RequirePackage{graphicx}
+
+\usepackage{amsmath, amsfonts, amsthm, amssymb}
+\usepackage{mathtools}
+\usepackage{mathrsfs}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usepackage[colorlinks,citecolor=blue,urlcolor=blue,filecolor=blue]{hyperref}
+\usepackage[capitalise]{cleveref}
+
+\newlist{equivcond}{enumerate}{1}
+\setlist[equivcond,1]{
+    label=\normalfont\bfseries(\alph*),
+    leftmargin=4em,
+    noitemsep,
+    ref=\alph*,
+}
+
+\startlocaldefs
+
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+
+\newcommand{\bbE}[0]{\mathbb{E}}
+\newcommand{\bbR}[0]{\mathbb{R}}
+\newcommand{\calN}[0]{\mathcal{N}}
+\newcommand{\Ind}[0]{\mathbb{I}}
+\newcommand{\opnorm}[1]{|\!|\!|#1|\!|\!|_{\mathrm{op}}}
+\newcommand{\Ltil}{\widetilde{L}}
+
+%% Typesetting shorthands only.  Each expands to the full expression, so the
+%% reader never meets a new symbol; they exist to keep the source readable.
+\newcommand{\gainfloor}{%
+    \min\Bigl\{\frac{n\nu}{16s^{\ast}},\
+    \frac{n\nu^{2}C_\beta^{2}}{64\sigma_0^{2}}\Bigr\}}
+\newcommand{\gainfloorsm}{%
+    \min\bigl\{\tfrac{n\nu}{16s^{\ast}},\,
+    \tfrac{n\nu^{2}C_\beta^{2}}{64\sigma_0^{2}}\bigr\}}
+\newcommand{\signal}{X_{\gamma^{\ast}}\beta^{\ast}_{\gamma^{\ast}}}
+%% average squared coefficient over a set of missing influential covariates
+\newcommand{\betabar}[1]{\overline{\beta^{2}}\bigl(#1\bigr)}
+\newcommand{\gainfloorM}{%
+    \min\Bigl\{\frac{n\nu}{16s^{\ast}},\
+    \frac{n\nu^{2}\,\betabar{\gamma^{\ast}\setminus\gamma}}
+    {64\sigma_0^{2}}\Bigr\}}
+\newcommand{\gainfloorMs}{%
+    \min\bigl\{\tfrac{n\nu}{16s^{\ast}},\,
+    \tfrac{n\nu^{2}\betabar{\gamma^{\ast}\setminus\gamma}}
+    {64\sigma_0^{2}}\bigr\}}
+\newcommand{\OO}{\mathcal{O}}  %
+
+%% Each environment gets its own counter: cleveref resolves the reference
+%% type from the counter, so a shared [theorem] counter would print
+%% "Theorem" for every cross-reference.
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{corollary}{Corollary}[section]
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{assumption}{Assumption}[section]
+\newtheorem{remark}{Remark}[section]
+\crefname{assumption}{Assumption}{Assumptions}
+\endlocaldefs
+
+\begin{document}
+
+    \begin{frontmatter}
+        \title{A tempered drop lemma for Bayesian variable selection}
+
+        \begin{aug}
+            \author[A]{\fnms{Yvann}~\snm{Le Fay}\ead[label=e1]{yvann.lefay@ensae.fr}}
+            \address[A]{CREST, ENSAE, IP Paris\printead[presep={ ,\ }]{e1}}
+        \end{aug}
+
+        \begin{abstract}
+            Sequential Monte Carlo samplers for the Bayesian variable
+            selection model of \citet{YangWainwrightJordan2016} travel along
+            the tempering path obtained by raising the marginal likelihood to
+            a power $\lambda\in[0,1]$, and deliver, besides the posterior,
+            the normalising constant that a Markov chain alone does not give.
+            Their cost is governed by the mixing of the Metropolis--Hastings
+            kernel at \emph{every} intermediate temperature, whereas
+            \citet{YangWainwrightJordan2016} bound the spectral gap at
+            $\lambda=1$ only, by a canonical path ensemble directed at the
+            true model $\gamma^{\ast}$. We ask what survives at $\lambda<1$,
+            where the sparsity prior is untempered while the likelihood is
+            damped, so that the mode of the target slides from the null model
+            at $\lambda=0$ to $\gamma^{\ast}$ at $\lambda=1$.
+        \end{abstract}
+    \end{frontmatter}
+
+    \maketitle
+    %% ==================================================================
+
+
+    \section{Introduction}
+    \label{sec:intro}
+    %% ==================================================================
+
+    \citet{YangWainwrightJordan2016} --- YWJ throughout --- study
+    high-dimensional Bayesian variable selection with a truncated sparsity
+    prior, and prove two things about it. The posterior concentrates on the
+    true model, and a particular Metropolis--Hastings chain targeting that
+    posterior mixes in a number of steps linear in the number $p$ of
+    covariates, up to logarithmic factors. The second statement is the
+    delicate one, and they show by example that it does not follow from the
+    first: a posterior can be sharply concentrated and still be, for a local
+    chain, effectively multimodal. Their proof of it is a canonical path
+    argument, and the paths are the trajectories of a greedy
+    variable-selection algorithm, all of them directed at the true model
+    $\gamma^{\ast}$.
+
+    This note asks what becomes of that argument when the posterior is
+    tempered: when the marginal likelihood is raised to a power
+    $\lambda\in[0,1]$ and the sparsity prior is left alone, so that the
+    target interpolates between the prior at $\lambda=0$ and the posterior
+    at $\lambda=1$.
+
+    \subsection*{Why the tempered targets, and not only the posterior}
+
+    Two quantities are wanted from this model, and only one of them is
+    delivered by a Markov chain. The first is the posterior over models,
+    which an MCMC run approximates directly. The second is the normalising
+    constant
+    \begin{equation*}
+        Z\ =\ \sum_{\gamma}\ \pi(\gamma)\,
+        \mathcal{L}_n(Y\mid\gamma) ,
+    \end{equation*}
+    the sum running over the models the prior retains ---
+    the marginal likelihood of the data under the whole hierarchical model ---
+    which a single MCMC run does not give at all: the chain sees ratios of
+    posterior masses, and $Z$ cancels from every one of them.
+
+    $Z$ is a function of the hyperparameters $(g,\kappa)$
+    of~\eqref{eq:prior}, and the theory does not choose them: \cref{ass:C}
+    constrains $\kappa$ and the exponent $\alpha=\log(1+g)/(2\log p)$ only
+    through $\kappa\geq2$ and $\kappa+\alpha\geq8(L+\Ltil)+2$, and
+    $L,\Ltil$ are unknown.
+    They must therefore be chosen from the data, by maximising $Z(g,\kappa)$
+    or averaging against a hyperprior --- a marginal-likelihood computation
+    over a grid.
+
+    %% ==================================================================
+
+
+    \section{Setting}
+    \label{sec:setting}
+    %% ==================================================================
+
+    We keep the model of YWJ and their transition function, and change one
+    thing only: the marginal likelihood is raised to the power $\lambda$.
+    Every other quantity that occurs is written out rather than named.
+
+    \subsection{The model}
+    \label{sub:model}
+
+    Let $Y\in\bbR^{n}$ be a response vector and $X\in\bbR^{n\times p}$ a
+    design matrix whose columns $X_1,\dots,X_p$ are normalised so that
+    $\norm{X_j}_2^{2}=n$. The data are generated by
+    \begin{equation}
+        \label{eq:linear}
+        Y=X\beta^{\ast}+w,\qquad w\sim\calN(0,\sigma_0^{2}I_n),
+    \end{equation}
+    with $\beta^\ast\in\bbR^{p}$ and $\sigma_0>0$ unknown.
+
+    A subset of covariates is encoded by a binary vector
+    $\gamma\in\{0,1\}^{p}$, and we adopt the dualistic view of YWJ, using the
+    same letter for the vector and for the subset $\{j\in[p]:\gamma_j=1\}$ of
+    $[p]\coloneq\{1,\dots,p\}$ that it indicates, so that $j\in\gamma$,
+    $\gamma\cup\{j\}$, $\gamma\subseteq\gamma'$ and
+    $\abs{\gamma}=\sum_j\gamma_j$ all have their obvious meaning. We write
+    $X_\gamma$ for the submatrix of $X$ with columns indexed by $\gamma$ and
+    \begin{equation}
+        \label{eq:proj}
+        \Phi_\gamma\coloneq
+        X_\gamma(X_\gamma^{\top}X_\gamma)^{-1}X_\gamma^{\top},
+        \qquad \Phi_\emptyset\coloneq0,
+    \end{equation}
+    for the orthogonal projection onto their span. We use repeatedly, and
+    without further comment, the fact that if $\gamma\subseteq\gamma'$ then
+    $\Phi_{\gamma'}\Phi_\gamma=\Phi_\gamma$, so that
+    $\Phi_{\gamma'}-\Phi_\gamma$ is itself an orthogonal projection, and that
+    $\norm{\Phi_\gamma v}_2\leq\norm{v}_2$ for every $v$.
+
+    Fix a threshold $C_\beta>0$. The set of \emph{influential} covariates is
+    \begin{equation}
+        \label{eq:S}
+        S\coloneq\{j\in[p]:\abs{\beta^\ast_j}\geq C_\beta\},
+        \qquad
+        S^{c}\coloneq[p]\setminus S,
+        \qquad
+        s^{\ast}\coloneq\abs{S},
+    \end{equation}
+    For a non-empty $M\subseteq\gamma^{\ast}$ we write
+    \begin{equation}
+        \label{eq:betabar}
+        \betabar{M}\ \coloneq\ \frac{1}{\abs{M}}\sum_{j\in M}
+        \abs{\beta^{\ast}_j}^{2}\ \geq\ C_\beta^{2}
+    \end{equation}
+    for the average squared coefficient over $M$, and
+    $\gamma^{\ast}$ denotes the binary vector indicating $S$, so that
+    $X_S\beta^\ast_S=\signal$; we use the two notations interchangeably, as
+    YWJ do. The coefficients $\beta^\ast_{S^{c}}$ off the support need not
+    vanish; they are only required to be small, which is \cref{ass:A} below.
+
+    The Bayesian model puts a flat prior $\pi(\phi)\propto1/\phi$ on the noise
+    precision, Zellner's $g$-prior $\beta_\gamma\mid
+    \gamma,\phi\sim\calN\bigl(0,g\phi^{-1}(X_\gamma^{\top}
+    X_\gamma)^{-1}\bigr)$ on the regression coefficients, and the truncated
+    sparsity prior
+    \begin{equation}
+        \label{eq:prior}
+        \pi(\gamma)\ \propto\ p^{-\kappa\abs{\gamma}}\,
+        \Ind\bigl[\abs{\gamma}\leq s_0\bigr],
+    \end{equation}
+    on the model space $
+    \mathscr{M}(s_0)\coloneq\bigl\{\gamma\in\{0,1\}^{p}:
+    \abs{\gamma}\leq s_0\bigr\}$,
+    where $\kappa>0$ and $s^\ast<s_0<n$. Integrating out
+    $(\beta_\gamma,\phi)$ gives the marginal likelihood of their
+    equation~(13),
+    \begin{equation}
+        \label{eq:Lik}
+        \mathcal{L}_n(Y\mid\gamma)
+        \propto \frac{1}{\norm Y_2^{n}} \cdot %\frac{\Gamma(n/2)\,(1+g)^{n/2}}{\pi^{n/2}\norm Y_2^{n}}\cdot
+        \frac{(1+g)^{-\abs{\gamma}/2}}
+        {\bigl\{1+g(1-R_\gamma^{2})\bigr\}^{n/2}},
+        \qquad
+        R^{2}_\gamma\coloneq
+        \frac{Y^{\top}\Phi_\gamma Y}{\norm Y_2^{2}}.
+    \end{equation}
+    We assume $Y\neq0$, an event of probability one, so that
+    $R_\gamma^{2}$ is well defined.
+
+    \subsection{The tempered posterior}
+    \label{sub:tempered}
+
+    For $\lambda\geq0$ define
+    \begin{equation}
+        \label{eq:pilambda}
+        \pi_n^{(\lambda)}(\gamma\mid Y)
+        \ \coloneq\ \frac{\pi(\gamma)\,
+        \mathcal{L}_n(Y\mid\gamma)^{\lambda}}
+        {\sum_{\bar\gamma\in\mathscr{M}(s_0)}\pi(\bar\gamma)\,
+        \mathcal{L}_n(Y\mid\bar\gamma)^{\lambda}} ,
+        \qquad \gamma\in\mathscr{M}(s_0) .
+    \end{equation}
+    Since $\mathscr{M}(s_0)$ is finite and
+    $\mathcal{L}_n(Y\mid\cdot)>0$ on it, the denominator lies in
+    $(0,\infty)$ and $\pi_n^{(\lambda)}(\cdot\mid Y)$ is a well-defined
+    probability measure with full support on $\mathscr{M}(s_0)$, for every
+    real $\lambda$. At $\lambda=0$ it is the sparsity prior $\pi$; at
+    $\lambda=1$ it is the posterior $\pi_n(\cdot\mid Y)$ of YWJ.
+    %Only the
+    %likelihood is tempered: the prior $\pi$ is left alone. This is the
+    %convention forced by the tempering path
+    %$\pi(\cdot)\mathcal{L}_n(Y\mid\cdot)^{\lambda_t}$, in which $\pi$ is the
+    %dominating measure from which the initial particles are drawn.
+
+
+    For every $\lambda\geq0$ and every $\gamma,\gamma'\in\mathscr{M}(s_0)$,
+    \begin{equation}
+        \label{eq:master}
+        \log\frac{\pi_n^{(\lambda)}(\gamma\mid Y)}
+        {\pi_n^{(\lambda)}(\gamma'\mid Y)}
+        \ =\ \bigl(\abs{\gamma'}-\abs{\gamma}\bigr)
+        \Bigl\{\kappa\log p+\frac{\lambda}{2}\log(1+g)\Bigr\}
+        \ +\ \frac{\lambda n}{2}
+        \log\frac{g^{-1}+1-R^{2}_{\gamma'}}
+        {g^{-1}+1-R^{2}_{\gamma}} .
+    \end{equation}
+
+
+    The first term of~\eqref{eq:master} is a \emph{penalty}, affine in
+    $\lambda$ with intercept $\kappa\log p$ because the sparsity prior is
+    untempered while the Occam factor $(1+g)^{-1/2}$ is; the second is a
+    \emph{fit} term, proportional to $\lambda$ and switched off at
+    $\lambda=0$. Every statement below compares the two, and the whole
+    difference with the untempered argument of YWJ is that at $\lambda<1$
+    the fit term is damped while $\kappa\log p$ is not. For $\abs{\gamma'}-\abs{\gamma}=1$, \eqref{eq:master}
+    reads
+    \begin{equation}
+        \label{eq:onestep}
+        \log\frac{\pi_n^{(\lambda)}(\gamma\cup\{j\}\mid Y)}
+        {\pi_n^{(\lambda)}(\gamma\mid Y)}
+        =\lambda\log\frac{\mathcal{L}_n(Y\mid\gamma\cup\{j\})}
+        {\mathcal{L}_n(Y\mid\gamma)}-\kappa\log p .
+    \end{equation}
+
+
+    %% ==================================================================
+
+
+    \section{Known results}
+    \label{sec:assumptions}
+    %% ==================================================================
+
+    We restate the assumptions of YWJ, and add one, \cref{ass:nsize}, that
+    their Lemma~4 uses without stating. Two of them must be imposed slightly
+    above the truncation level $s_0$, because \cref{lemma:residual} below
+    compares a model $\gamma\in\mathscr{M}(s_0)$ with
+    $\gamma\cup\gamma^{\ast}$, whose size may exceed $s_0$. We therefore
+    impose their Assumptions~B and~D at the level
+    \begin{equation}
+        \label{eq:slevel}
+        s\ \coloneq\ s_0+s^{\ast}\ \leq\ 2s_0 ,
+    \end{equation}
+    and work with the model class $\mathscr{M}(s)$. Since $s^{\ast}<s_0$ this
+    strengthens their hypotheses by a factor at most two in the model size,
+    and by nothing else.
+
+    \begin{assumption}[Size of $\beta^\ast$; YWJ, Assumption~A]
+        \label{ass:A}
+        There is a constant $\Ltil<\infty$ with
+        \begin{equation*}
+            \norm{X\beta^\ast}_2^{2}\leq g\,\sigma_0^{2}\log p,
+            \qquad
+            \norm{X_{S^{c}}\beta^\ast_{S^{c}}}_2^{2}
+            \leq\Ltil\,\sigma_0^{2}\log p .
+        \end{equation*}
+    \end{assumption}
+
+    \begin{assumption}[Design; YWJ, Assumption~B at level $s$]
+        \label{ass:B}
+        There are constants $\nu\in(0,1]$ and $L<\infty$ with
+        $L\nu\geq4$ such that, with $Z\sim\calN(0,I_n)$,
+        \begin{gather*}
+            \min_{\abs{\gamma}\leq s}
+            \lambda_{\min}\bigl(n^{-1}X_\gamma^{\top}X_\gamma\bigr)\geq\nu,
+            \qquad\text{and}\\
+            \bbE_Z\Bigl[\max_{\abs{\gamma}\leq s}
+            \max_{k\in[p]\setminus\gamma}
+            n^{-1/2}\bigl|\langle(I-\Phi_\gamma)X_k,Z\rangle\bigr|\Bigr]
+            \leq\tfrac12\sqrt{L\,\nu\log p}.
+        \end{gather*}
+    \end{assumption}
+
+    \begin{assumption}[Hyperparameters; YWJ, Assumption~C]
+        \label{ass:C}
+        $g\geq n$, $\kappa\geq2$, and, with $\alpha$ \emph{defined} by
+        \begin{equation}
+            \label{eq:alphadef}
+            \alpha\ \coloneq\ \frac{\log(1+g)}{2\log p},
+            \qquad\text{equivalently}\qquad
+            \tfrac12\log(1+g)\ =\ \alpha\log p ,
+        \end{equation}
+        $\alpha\geq\tfrac12$ and $\kappa+\alpha\geq8(L+\Ltil)+2$.
+    \end{assumption}
+
+    The normalisation $\norm{X_j}_2^{2}=n$ forces
+    $\lambda_{\min}(n^{-1}X_\gamma^{\top}X_\gamma)\leq1$, so $\nu\leq1$ is
+    not a restriction, and $L\nu\geq4$ is what YWJ's proof of
+    \cref{lemma:good} needs to make the deviation exponent of
+    $\mathcal{A}_n$ at least $\tfrac12$; together they give $L\geq4$, which
+    is used only through \cref{cor:below1}. \cref{ass:C} is their
+    $\kappa\geq2$, $\alpha\geq\tfrac12$, $g\asymp p^{2\alpha}$, $g\geq n$
+    and $\kappa+\alpha\geq4(L+\Ltil)+2$, with two changes. The constant
+    $4$ is $8$ because our overfitted bound~\eqref{eq:drop_over} carries
+    $8(L+\Ltil)\log p$ where theirs carries $4(L+\Ltil)\log p$; and
+    $\alpha$ is \emph{defined} by~\eqref{eq:alphadef} rather than declared
+    to satisfy $g\asymp p^{2\alpha}$. The second change costs nothing and
+    removes a genuine ambiguity: the underfitted case needs
+    $\tfrac12\log(1+g)\leq\alpha\log p$ and the overfitted case needs
+    $\tfrac12\log(1+g)\geq\alpha\log p$, and an $\asymp$ supplies neither
+    with a constant of $1$. With~\eqref{eq:alphadef} both hold as
+    equalities and every inequality below in which $\alpha$ occurs is
+    exact. The requirement $g\geq n$ is the one under which YWJ state their
+    event $\mathcal{D}_n$ below; it holds automatically when
+    $\alpha\geq\tfrac12$, since $p\geq n$, and it is satisfied by each of
+    the choices $g=n$ and $g=\max\{n,p^{2}\}$ that they discuss in their
+    Section~3.1.
+
+    \begin{assumption}[Sparsity control; YWJ, Assumption~D at level $s$]
+        \label{ass:D}
+        With
+        $\omega(X)\coloneq\max_{\abs \gamma\leq s}
+        \opnorm{(X_\gamma^{\top}X_\gamma)^{-1}X_\gamma^{\top}
+            X_{S\setminus\gamma}}^{2}$,
+        \begin{equation}
+            \label{eq:Dassumption}
+            \max\{1, \bigl(4\nu^{-2}\omega(X)+1\bigr)s^{\ast}\}
+            \ \leq\ s_0\ \leq\ s\ \leq\
+            \frac{1}{256}\left\{\frac{n}{\log p}-32\Ltil\right\} .
+        \end{equation}
+    \end{assumption}
+
+    The only difference with YWJ here is the constant $4$ in place of their
+    $2$ on the left, which buys the margin that
+    \cref{lemma:forward}\ref{it:fs_b} needs and that their proof of the
+    saturated case does not in fact have (see \cref{rem:ywj_constant}); on
+    the right they have $\tfrac1{32}\{n/\log p-8\Ltil\}$, at the level $s_0$.
+
+    \begin{assumption}[$\beta_{\min}$ condition; YWJ, equation~(23)]
+        \label{ass:betamin}
+        $n\,\nu^{2}C_\beta^{2}\ \geq\
+        128\,(L+\Ltil+\alpha+\kappa)\,\sigma_0^{2}\log p$.
+    \end{assumption}
+
+    This is their $\beta_{\min}$ condition
+    $C_\beta^{2}\geq128\nu^{-2}(L+\Ltil+\alpha+\kappa)
+    \sigma_0^{2}\log p/n$, verbatim, with the factor $\nu^{2}$ folded in. It
+    is worth separating the two uses made of it below, because they are
+    unrelated. The part $128(L+\Ltil)$ controls the noise carried by a
+    rank-one increment, and is what \cref{lemma:noise}\ref{it:noise_ii}
+    consumes; the part $128(\alpha+\kappa)$ never meets the noise at all, and
+    is what raises the fit term of \cref{th:drop} above the Occam factor of
+    the $g$-prior --- that is, it is one of the two hypotheses that make
+    \cref{cor:critical} non-vacuous, by \cref{cor:below1}. The other is the
+    following, which YWJ do not state.
+
+    \begin{assumption}[Sample size]
+        \label{ass:nsize}
+        $n\,\nu\ \geq\ 32\,s^{\ast}\,(L+\Ltil+\alpha+\kappa)\,\log p$.
+    \end{assumption}
+
+    \begin{lemma}[Good event; YWJ, Lemma~3]
+        \label{lemma:good}
+        Define
+        \begin{align}
+            \label{eq:events}
+            \mathcal{A}_n&\coloneq\Bigl\{
+            \max_{\gamma_2\subset\gamma_1\in\mathscr{M}(s)}
+            \frac{w^{\top}(\Phi_{\gamma_1}-\Phi_{\gamma_2})w}
+            {\abs{\gamma_1}-\abs{\gamma_2}}
+            \leq L\sigma_0^{2}\log p\Bigr\},
+            &
+            \mathcal{B}_n&\coloneq\Bigl\{
+            \max_{\gamma\in\mathscr{M}(s)}
+            \frac{w^{\top}\Phi_\gamma w}{\abs{\gamma}}
+            \leq 8\sigma_0^{2}\log p\Bigr\},
+            \\
+            \nonumber
+            \mathcal{C}_n&\coloneq\Bigl\{
+            \Bigl|\frac{\norm{w}_2^{2}}{n\sigma_0^{2}}-1
+            \Bigr|\leq\tfrac12\Bigr\},
+            &
+            \mathcal{D}_n&\coloneq\Bigl\{
+            \frac{\norm{Y}_2^{2}}{g}\leq
+            \bigl(2\log p+3\bigr)\sigma_0^{2}\Bigr\} .
+        \end{align}
+        Under \cref{ass:A,ass:B,ass:C,ass:D},
+        $\mathbb{P}(\mathcal{A}_n\cap\mathcal{B}_n\cap\mathcal{C}_n
+        \cap\mathcal{D}_n)\geq1-6p^{-c}$ for a universal constant $c>0$.
+    \end{lemma}
+
+    This is Lemma~3 of YWJ with their model class $\mathscr{M}(s_0)$ replaced
+    by $\mathscr{M}(s)$, which their proof allows because the truncation
+    level enters it only through that class.
+
+    \emph{From here on, every statement made ``on the good event'' is a
+    deterministic statement about a fixed realisation of $(Y,w)$ lying in
+        $\mathcal{A}_n\cap\mathcal{B}_n\cap\mathcal{C}_n\cap\mathcal{D}_n$.} No
+    further probabilistic argument occurs.
+
+    %% ==================================================================
+
+
+    \label{sec:ywj}
+    %% ==================================================================
+
+    Under \cref{ass:A,ass:B,ass:C,ass:D,ass:betamin}, YWJ prove two separate
+    statements about the
+    posterior $\pi_n(\cdot\mid Y)=\pi_n^{(1)}(\cdot\mid Y)$: that
+    it concentrates on $\gamma^{\ast}$, and that the Metropolis--Hastings
+    chain targeting it mixes in $\tilde{\OO}(ps_0^2)$ steps.
+
+    \subsection{Posterior concentration}
+    \label{sub:ywjconc}
+
+    \begin{theorem}[Posterior concentration; YWJ, Theorem~1]
+        \label{th:ywj1}
+        Suppose \cref{ass:A} and~\cref{ass:C}; \cref{ass:B} at the level
+        $s=2(\kappa+\alpha+\Ltil+1)\max\{1,s^{\ast}\}$; the sparsity
+        prior~\eqref{eq:prior} left untruncated, $s_0=p$, together with
+        \begin{gather*}
+            \max\{1,s^{\ast}\}\ \leq\ \frac{1}{32}
+            \Bigl\{\frac{n}{\log p}-8\Ltil\Bigr\}
+            \qquad\text{in place of \cref{ass:D}},\\
+            \text{and}\qquad
+            C_\beta^{2}\ \geq\ \frac{128}{\nu^{2}}\,
+            \bigl(L+\Ltil+\alpha+\kappa\bigr)\,
+            \frac{\sigma_0^{2}\log p}{n} .
+        \end{gather*}
+        Then $\pi_n(\gamma^{\ast}\mid Y)\geq1-c_1p^{-1}$ with probability at
+        least $1-c_2p^{-c_3}$, the $c_i$ being universal.
+    \end{theorem}
+
+    \subsection{The Metropolis--Hastings chain}
+    \label{sub:kernel}
+
+    The sampler is that of YWJ, and it depends on the distribution it
+    targets only through the acceptance ratio. We therefore set it up once,
+    for an arbitrary probability measure $\mu$ with full support on
+    $\mathscr{M}(s_0)$, and carry no temperature until there is something
+    for it to do. For $\gamma\in\mathscr{M}(s_0)$ put
+    \begin{equation}
+        \label{eq:neigh}
+        \begin{aligned}
+            \mathcal{N}_1(\gamma)&\coloneq\bigl\{\gamma':
+            d_H(\gamma,\gamma')=1\bigr\},\\
+            \mathcal{N}_2(\gamma)&\coloneq\bigl\{\gamma':
+            d_H(\gamma,\gamma')=2\ \text{and}\ \exists\,
+            (k,\ell)\in\gamma\times(\,[p]\setminus\gamma)\ \text{with}\
+            \gamma'=\gamma\cup\{\ell\}\setminus\{k\}\bigr\},
+        \end{aligned}
+    \end{equation}
+    and $\mathcal{N}(\gamma)\coloneq\mathcal{N}_1(\gamma)\cup
+    \mathcal{N}_2(\gamma)$. The chain proposes, with probability $1/2$ each, a
+    single flip of a uniform coordinate of $[p]$ or an exchange of a uniform
+    pair in $\gamma\times([p]\setminus\gamma)$, and accepts by the
+    Metropolis rule; a proposal outside $\mathscr{M}(s_0)$ is rejected, which
+    is automatic since $\mu$ vanishes there. Writing
+    $\widetilde{\mathbf{P}}$ for the resulting transition matrix,
+    \begin{equation}
+        \label{eq:MH}
+        \widetilde{\mathbf{P}}(\gamma,\gamma')=
+        \begin{cases}
+            \dfrac{1}{2p}\,
+            \min\Bigl\{1,\dfrac{\mu(\gamma')}{\mu(\gamma)}\Bigr\},
+            & \gamma'\in\mathcal{N}_1(\gamma)\cap\mathscr{M}(s_0),\\[3mm]
+            \dfrac{1}{2\abs{\gamma}\,(p-\abs{\gamma})}\,
+            \min\Bigl\{1,\dfrac{\mu(\gamma')}{\mu(\gamma)}\Bigr\},
+            & \gamma'\in\mathcal{N}_2(\gamma),\\[3mm]
+            0, & \gamma'\notin\mathcal{N}(\gamma)\cup\{\gamma\},
+        \end{cases}
+    \end{equation}
+    the diagonal being fixed by $\sum_{\gamma'}\widetilde{\mathbf{P}}
+    (\gamma,\gamma')=1$, and we analyse the lazy chain
+    \begin{equation}
+        \label{eq:lazy}
+        \mathbf{P}\ \coloneq\ \tfrac12\mathbf{I}
+        +\tfrac12\widetilde{\mathbf{P}},
+        \qquad
+        \mathbf{Q}(\gamma,\gamma')\ \coloneq\
+        \mu(\gamma)\,\mathbf{P}(\gamma,\gamma') .
+    \end{equation}
+
+    \begin{lemma}[The kernel]
+        \label{lemma:kernel}
+        $\mathbf{P}$ is $\mu$-reversible, irreducible and aperiodic on
+        $\mathscr{M}(s_0)$, and non-negative definite, so that its smallest
+        eigenvalue is at least $0$ and
+        $\mathrm{Gap}(\mathbf{P})=1-\lambda_2(\mathbf{P})$ is its absolute
+        spectral gap. Moreover $\mathbf{Q}$ is symmetric and, for every
+        $\gamma\in\mathscr{M}(s_0)$ and every
+        $\gamma'\in\mathcal{N}(\gamma)\cap\mathscr{M}(s_0)$,
+        \begin{equation}
+            \label{eq:edge}
+            \mathbf{Q}(\gamma,\gamma')\ \geq\ \frac{1}{4\,p\,s_0}\,
+            \min\bigl\{\mu(\gamma),\,\mu(\gamma')\bigr\} .
+        \end{equation}
+    \end{lemma}
+
+    \emph{Convention.} From \cref{sec:main} onwards the target is
+    $\mu=\pi_n^{(\lambda)}(\cdot\mid Y)$, and we then write
+    $\widetilde{\mathbf{P}}_\lambda$, $\mathbf{P}_\lambda$,
+    $\mathbf{Q}_\lambda$ and $\tau_\epsilon(\mathbf{P}_\lambda)$ for the
+    objects just defined, to record which target they refer to; at
+    $\lambda=1$ they are the chain of YWJ. Only the acceptance ratio
+    in~\eqref{eq:MH} changes with the temperature. The proposal, the
+    laziness, the underlying graph and every statement of the present
+    subsection and of \cref{sub:sinclair} do not, and are used below without
+    a subscript wherever the target is immaterial.
+
+    \subsection{Canonical paths and Sinclair's bound}
+    \label{sub:sinclair}
+
+    The spectral gap of a reversible chain can be bounded below by
+    exhibiting, for each ordered pair of states, a path between them, and
+    checking that no edge of the graph is asked to carry too much
+    probability mass.
+
+    Identify $\mathbf{P}$ with the weighted directed graph on
+    $\mathscr{M}(s_0)$ whose edges are the ordered pairs
+    $e=(\gamma,\gamma')$ with $\mathbf{P}(\gamma,\gamma')>0$, each
+    carrying the weight $\mathbf{Q}(e)$ of~\eqref{eq:lazy}, which is
+    symmetric by \cref{lemma:kernel}. A \emph{canonical path ensemble}
+    $\mathcal{T}$ assigns to every ordered pair $(\gamma,\gamma')$ of
+    distinct states a simple path $T_{\gamma,\gamma'}$ in that graph. Its
+    two characteristics are the \emph{path congestion} and the
+    \emph{maximal length},
+    \begin{equation}
+        \label{eq:congdef}
+        \rho(\mathcal{T})\ \coloneq\ \max_{e}\ \frac{1}{\mathbf{Q}(e)}
+        \sum_{T_{\gamma,\gamma'}\ni e}\mu(\gamma)\,\mu(\gamma'),
+        \qquad
+        \ell(\mathcal{T})\ \coloneq\ \max_{\gamma\neq\gamma'}
+        \abs{T_{\gamma,\gamma'}},
+    \end{equation}
+    the maximum being over directed edges $e$, and Sinclair's bound
+    \citep[Corollary~6$'$]{Sinclair1992} reads
+    \begin{equation}
+        \label{eq:sinclair}
+        \mathrm{Gap}(\mathbf{P})\ \geq\
+        \frac{1}{\rho(\mathcal{T})\,\ell(\mathcal{T})} .
+    \end{equation}
+
+    An arbitrary ensemble is unmanageable, and the device that makes
+    \eqref{eq:sinclair} usable is to generate the ensemble from a map.
+    Following YWJ, call
+    $\mathcal{G}:\mathscr{M}(s_0)\to\mathscr{M}(s_0)$ a \emph{valid
+    transition function} with centre $\gamma^{\ast}$ if
+    $\mathcal{G}(\gamma^{\ast})=\gamma^{\ast}$ and, for every
+    $\gamma\neq\gamma^{\ast}$, the pair $(\gamma,\mathcal{G}(\gamma))$ is an
+    edge of the graph and
+    $d_H(\mathcal{G}(\gamma),\gamma^{\ast})<d_H(\gamma,\gamma^{\ast})$. The
+    orbit $\gamma\to\mathcal{G}(\gamma)\to\mathcal{G}^{2}(\gamma)\to\dots$
+    then reaches $\gamma^{\ast}$ in finitely many steps and is taken as
+    $T_{\gamma,\gamma^{\ast}}$; for a general pair, $T_{\gamma,\gamma'}$
+    follows $T_{\gamma,\gamma^{\ast}}$ up to the first state it shares with
+    $T_{\gamma',\gamma^{\ast}}$ and then follows $T_{\gamma',\gamma^{\ast}}$
+    backwards. This is Lemma~1 of YWJ. The ensemble so obtained is
+    \emph{memoryless}: how a path continues depends on the state it has
+    reached and on nothing else.
+
+    \begin{definition}[Precedents; YWJ, Section~4.1]
+        \label{def:prec}
+        For $\gamma\in\mathscr{M}(s_0)$ put
+        \begin{equation}
+            \label{eq:precdef}
+            \Lambda(\gamma)\ \coloneq\
+            \bigl\{\bar\gamma\in\mathscr{M}(s_0):\
+            \mathcal{G}^{k}(\bar\gamma)=\gamma\ \text{for some }
+            k\geq0\bigr\},
+        \end{equation}
+        the states whose canonical path to $\gamma^{\ast}$ passes through
+        $\gamma$; it contains $\gamma$ itself, at $k=0$. For
+        $\bar\gamma\in\Lambda(\gamma)$ we write $k(\bar\gamma)$ for the
+        smallest such $k$, and
+        $\Lambda_k(\gamma)\coloneq\{\bar\gamma:k(\bar\gamma)=k\}$.
+    \end{definition}
+
+    Memorylessness now does all the combinatorial work. A directed edge
+    $e=(\bar\gamma,\mathcal{G}(\bar\gamma))$ is traversed in the direction
+    of $\mathcal{G}$, so it can occur only in the first segment of a path,
+    which forces the source of that path to be a precedent of $\bar\gamma$;
+    this is \cref{lemma:paths}\ref{it:pp_iii}. Since
+    $\sum_{\gamma'}\mu(\gamma')=1$, the numerator of~\eqref{eq:congdef} is
+    at most $\mu[\Lambda(\bar\gamma)]$; the reverse orientation
+    $(\mathcal{G}(\bar\gamma),\bar\gamma)$ obeys the same bound, by the
+    same argument with the roles of the two endpoints exchanged and because
+    $\mathbf{Q}$ is symmetric. Bounding the denominator
+    by~\eqref{eq:edge},
+    \begin{equation}
+        \label{eq:rhoreduce}
+        \rho(\mathcal{T})\ \leq\ 4\,p\,s_0\
+        \max_{\bar\gamma\neq\gamma^{\ast}}\
+        \max\Bigl\{1,\
+        \frac{\mu(\bar\gamma)}{\mu(\mathcal{G}(\bar\gamma))}\Bigr\}
+        \cdot
+        \frac{\mu[\Lambda(\bar\gamma)]}{\mu(\bar\gamma)} .
+    \end{equation}
+    The length is combinatorial too: each step of $\mathcal{G}$ decreases
+    $d_H(\cdot,\gamma^{\ast})$, so $\ell(\mathcal{T})\leq4s_0$, by
+    \cref{lemma:paths}\ref{it:pp_ii}.
+
+    Nothing so far has mentioned the temperature, and nothing has used any
+    property of $\mu$. The whole dependence on the target sits in the two
+    factors of~\eqref{eq:rhoreduce}, and it is there --- and only there ---
+    that $\lambda$ will enter. Written out for the target that concerns us,
+    those two factors ask for the two halves of Lemma~4 of YWJ:
+    \begin{itemize}[leftmargin=3.2em]
+        \item[(D$_\lambda$)] a \emph{drop bound}: the target does not
+        increase along $\mathcal{G}$, that is
+        $\pi_n^{(\lambda)}(\gamma\mid Y)\leq
+        \pi_n^{(\lambda)}(\mathcal{G}(\gamma)\mid Y)$ for every
+        $\gamma\neq\gamma^{\ast}$, and preferably by a definite factor:
+        $p^{-2}$ at an overfitted state and $p^{-3}$ at an underfitted one,
+        as in Lemma~4(a) of YWJ;
+        \item[(P$_\lambda$)] a \emph{precedent mass bound}:
+        $\pi_n^{(\lambda)}[\Lambda(\gamma)\mid Y]\leq
+        c\,\pi_n^{(\lambda)}(\gamma\mid Y)$ for a constant $c$ and every
+        $\gamma$.
+    \end{itemize}
+    Given both, \eqref{eq:rhoreduce} gives $\rho(\mathcal{T})\leq4cps_0$ and
+    \eqref{eq:sinclair} gives a gap of order $1/(ps_0^{2})$. Moreover
+    (P$_\lambda$) is a consequence of (D$_\lambda$) and of counting alone: by
+    telescoping the drop bound along the path, a precedent at distance $k$
+    carries at most $p^{-3k}$ times the mass of $\gamma$ when the states
+    between them are underfitted and at most $p^{-2k}$ when they are
+    overfitted, and by \cref{lemma:count} there are at most
+    $\{(s^{\ast}+1)p\}^{k}$ of the first kind and at most $p^{k}$ of the
+    second; the two geometric series have ratios $(s^{\ast}+1)p^{-2}$ and
+    $p^{-1}$, and converge. So
+    a single inequality, the drop bound, stands between the assumptions and
+    the spectral gap.
+
+    \subsection{The transition function}
+    \label{sec:G}
+
+
+    We now recall the map that drives the canonical path ensemble of YWJ. It
+    is defined in terms of the design and of $\beta^\ast$ only, and does
+    \emph{not} depend on $\lambda$.
+
+    \begin{definition}[States; YWJ, Section~4.1]
+        \label{def:states}
+        A state $\gamma\in\mathscr{M}(s_0)$ with $\gamma\neq\gamma^{\ast}$ is
+        \begin{itemize}[noitemsep,leftmargin=2.2em]
+            \item \emph{overfitted} if $\gamma\supseteq\gamma^{\ast}$, and
+            \emph{underfitted} otherwise, that is if
+            $\gamma^{\ast}\setminus\gamma\neq\emptyset$;
+            \item \emph{saturated} if $\abs \gamma=s_0$, and
+            \emph{unsaturated} if $\abs \gamma<s_0$.
+        \end{itemize}
+        An overfitted $\gamma\neq\gamma^\ast$ satisfies
+        $\gamma\setminus\gamma^{\ast}\neq\emptyset$, and an underfitted state
+        can only exist if $s^{\ast}\geq1$.
+    \end{definition}
+
+    \begin{definition}[Greedy transition function; YWJ, Section~4.1]
+        \label{def:G}
+        For $\gamma\in\mathscr{M}(s_0)\setminus\{\gamma^{\ast}\}$ define
+        $\mathcal{G}(\gamma)$ by the first applicable rule:
+        \begin{enumerate}[label=(G\arabic*),leftmargin=3.4em]
+            \item\label{G:del} \emph{$\gamma$ overfitted.} Let
+            \begin{equation}
+                \label{eq:elldef}
+                \ell_\gamma\ \in\ \operatorname*{arg\,min}
+                _{\ell\in\gamma\setminus\gamma^{\ast}}
+                \Bigl\{\norm{\Phi_\gamma\signal}_2^{2}
+                -\norm{\Phi_{\gamma\setminus\{\ell\}}\signal}_2^{2}
+                \Bigr\},
+            \end{equation}
+            the least influential uninfluential covariate present, and set
+            $\mathcal{G}(\gamma)\coloneq\gamma\setminus\{\ell_\gamma\}$.
+            \item\label{G:add} \emph{$\gamma$ underfitted and unsaturated.}
+            Let
+            \begin{equation}
+                \label{eq:jdef}
+                j_\gamma\ \in\ \operatorname*{arg\,max}
+                _{j\in\gamma^{\ast}\setminus\gamma}
+                \norm{\Phi_{\gamma\cup\{j\}}\signal}_2^{2},
+            \end{equation}
+            the missing influential covariate explaining most signal, and set
+            $\mathcal{G}(\gamma)\coloneq\gamma\cup\{j_\gamma\}$.
+            \item\label{G:exch} \emph{$\gamma$ underfitted and saturated.}
+            With $j_\gamma$ as in~\eqref{eq:jdef} and
+            $\widetilde\gamma\coloneq\gamma\cup\{j_\gamma\}$, let
+            \begin{equation}
+                \label{eq:kdef}
+                k_\gamma\ \in\ \operatorname*{arg\,min}
+                _{k\in\gamma\setminus\gamma^{\ast}}
+                \Bigl\{\norm{\Phi_{\widetilde\gamma}\signal}_2^{2}
+                -\norm{\Phi_{\widetilde\gamma\setminus\{k\}}\signal}_2^{2}
+                \Bigr\},
+            \end{equation}
+            and set
+            $\mathcal{G}(\gamma)\coloneq
+            \widetilde\gamma\setminus\{k_\gamma\}
+            =\gamma\cup\{j_\gamma\}\setminus\{k_\gamma\}$.
+        \end{enumerate}
+        Ties in~\eqref{eq:elldef}--\eqref{eq:kdef} are broken by the
+        lexicographic order, and
+        $\mathcal{G}(\gamma^{\ast})\coloneq\gamma^{\ast}$.
+    \end{definition}
+
+    Rules~\ref{G:del} and~\ref{G:add} decrease
+    $d_H(\cdot,\gamma^{\ast})$ by one and rule~\ref{G:exch} decreases it by
+    two, so $\mathcal{G}$ is a valid transition function in the sense of
+    YWJ's Lemma~1 and generates a memoryless canonical path ensemble directed
+    at $\gamma^{\ast}$, of maximal path length at most $2s_0$.
+
+
+    We record the three size changes once and for all, since they are what
+    \eqref{eq:master} feeds on:
+    \begin{equation}
+        \label{eq:sizechange}
+        \abs{\mathcal{G}(\gamma)}-\abs \gamma=
+        \begin{cases}
+            -1 & \text{under rule~\ref{G:del}},\\
+            +1 & \text{under rule~\ref{G:add}},\\
+            \phantom{+}0 & \text{under rule~\ref{G:exch}}.
+        \end{cases}
+    \end{equation}
+
+    \subsection{From the spectral gap to the mixing time}
+    \label{sub:gap2mix}
+
+    A spectral gap is not yet a mixing time. For the lazy chain $\mathbf{P}$
+    of \cref{sub:kernel}, or indeed any lazy reversible chain with
+    stationary law $\mu$ on a finite state space, the
+    $\epsilon$-mixing time
+    $\tau_\epsilon\coloneq\max_\gamma\min\{t:\
+    \norm{\mathbf{P}^{t'}(\gamma,\cdot)-\mu}_{\mathrm{TV}}\leq\epsilon\
+    \forall t'\geq t\}$ obeys
+    \begin{equation}
+        \label{eq:sandwich}
+        \tau_\epsilon\ \leq\
+        \frac{\log\bigl[1/\min_\gamma\mu(\gamma)\bigr]
+        +\log(1/\epsilon)}{\mathrm{Gap}(\mathbf{P})} ,
+    \end{equation}
+    which is the upper half of the sandwich used by YWJ in their
+    equation~(14); see \citet{Sinclair1992}.
+
+    The numerator of~\eqref{eq:sandwich} is where posterior concentration
+    re-enters, and it enters modestly. YWJ bound
+    $\min_\gamma\pi_n(\gamma\mid Y)$ below by factorising
+    $\pi_n(\gamma\mid Y)=\pi_n(\gamma^{\ast}\mid Y)\cdot
+    \{\pi_n(\gamma\mid Y)/\pi_n(\gamma^{\ast}\mid Y)\}$: the first factor is
+    bounded below by \cref{th:ywj1} and the second by the explicit
+    ratio~\eqref{eq:master} at $\lambda=1$, whose worst case costs a factor
+    $p^{-\kappa s_0}(1+g)^{-(n+s_0)/2}$ --- this is \cref{lemma:minmass} at
+    $\lambda=1$. Taking logarithms, the numerator is
+    $\mathcal{O}\{(\alpha n+\alpha s_0+\kappa s_0)\log p+\log(1/\epsilon)\}$,
+    and their gap bound $\mathrm{Gap}(\mathbf{P})\geq1/(24ps_0^{2})$ turns
+    this into their Theorem~2,
+    \begin{equation*}
+        \tau_\epsilon\ \leq\ 12\,p\,s_0^{2}
+        \bigl\{(\alpha n+\alpha s_0+2\kappa s_0)\log p
+        +\log(1/\epsilon)+\log2\bigr\} .
+    \end{equation*}
+
+    Two features of this last step are worth isolating, because both survive
+    tempering unchanged. The concentration statement is used only through
+    the smallest mass, so any constant lower bound on
+    $\pi_n(\gamma^{\ast}\mid Y)$ would serve equally well: the
+    $(n+s_0)\log p$ term comes from the ratio, not from the quality of the
+    concentration. And that term is a burn-in cost; started at
+    $\gamma^{\ast}$ rather than at the worst state, the chain does not pay
+    it.
+
+
+    %% ==================================================================
+
+
+    \section{The drop bound at temperature $\lambda$}
+    \label{sec:main}
+    %% ==================================================================
+
+    We come to (D$_\lambda$), for $\pi_n^{(\lambda)}(\cdot\mid Y)$ along the
+    map $\mathcal{G}$ of \cref{def:G}. This section establishes it, together
+    with its consequence~(P$_\lambda$), above an explicit threshold, and
+    shows that no such threshold can be dispensed with.
+
+    \begin{theorem}[Drop bound at temperature $\lambda$]
+        \label{th:drop}
+        Assume \cref{ass:A,ass:B,ass:C,ass:D,ass:betamin},
+        and work on the good event. Let $\lambda\geq0$ and let
+        $\gamma\in\mathscr{M}(s_0)$ with $\gamma\neq\gamma^{\ast}$. Then, if $\gamma$ is overfitted,
+        \begin{equation}
+            \label{eq:drop_over}
+            \log\frac{\pi_n^{(\lambda)}(\gamma\mid Y)}
+            {\pi_n^{(\lambda)}(\mathcal{G}(\gamma)\mid Y)}
+            \ \leq\ -\kappa\log p
+            -\lambda\Bigl\{\tfrac12\log(1+g)-8(L+\Ltil)\log p\Bigr\} ;
+        \end{equation}
+        if $\gamma$ is underfitted and unsaturated,
+        \begin{equation}
+            \label{eq:drop_unsat}
+            \log\frac{\pi_n^{(\lambda)}(\gamma\mid Y)}
+            {\pi_n^{(\lambda)}(\mathcal{G}(\gamma)\mid Y)}
+            \ \leq\ \kappa\log p
+            +\lambda\Bigl\{\tfrac12\log(1+g)-\gainfloorMs\Bigr\} ;
+        \end{equation}
+        and if $\gamma$ is underfitted and saturated,
+        \begin{equation}
+            \label{eq:drop_sat}
+            \log\frac{\pi_n^{(\lambda)}(\gamma\mid Y)}
+            {\pi_n^{(\lambda)}(\mathcal{G}(\gamma)\mid Y)}
+            \ \leq\ -\frac{\lambda}{2}\,\gainfloorMs .
+        \end{equation}
+    \end{theorem}
+
+    The proof is deferred to \cref{sub:over,sub:under,sub:sat}. It is three
+    applications of~\eqref{eq:master}, one per rule of \cref{def:G}, with
+    the size change read off from~\eqref{eq:sizechange}; the estimates it
+    uses are the deterministic bounds of \cref{sec:app}, none of which
+    involves $\lambda$.
+
+    Read the three bounds as functions of $\lambda$. Each is affine, and the
+    three intercepts and the three slopes tell the whole story.
+
+    \begin{enumerate}[label=(\roman*),leftmargin=2.6em]
+        \item \eqref{eq:drop_over} has intercept $-\kappa\log p$ and slope
+        $-\{\tfrac12\log(1+g)-8(L+\Ltil)\log p\}$, which is at most
+        $-\{\alpha-8(L+\Ltil)\}\log p$ by \cref{ass:C}. It uses no condition
+        on $\lambda$ whatsoever, and when $\alpha>8(L+\Ltil)$ its worst
+        value on $[0,1]$ is at $\lambda=0$, where it reads $-\kappa\log p$.
+        Deleting an uninfluential covariate is favourable at every
+        temperature, and least favourable at the prior, where the sparsity
+        exponent $\kappa$ alone does the work.
+        \item \eqref{eq:drop_unsat} has intercept $+\kappa\log p$ and slope
+        $\tfrac12\log(1+g)-\gainfloorsm$. The intercept is positive: at
+        $\lambda=0$ the bound is useless, and \cref{prop:sharp} shows that
+        this is not a defect of the bound. The slope is negative precisely
+        when the greedy gain exceeds the Occam factor of the $g$-prior, and
+        then the bound becomes useful above the temperature at which the two
+        cross.
+        \item \eqref{eq:drop_sat} has no intercept at all: the inclusion
+        penalty cancels identically in an exchange, both models having the
+        same size and the prior depending on the model only through its
+        size, so that $\pi_n^{(0)}(\gamma\mid Y)=\pi_n^{(0)}(\gamma'\mid Y)$
+        exactly. Exchange is neutral under the prior and favourable as soon
+        as the likelihood is switched on; the temperature it needs to reach
+        the exponent $p^{-3}$ differs from the one case~(ii) needs by the
+        factor $\{6/(\kappa+3)\}\{1-\tfrac12\log(1+g)/\gainfloorsm\}$, so it
+        is the smaller of the two whenever $\kappa\geq3$, and can be the
+        larger only when $\kappa<3$ and the Occam discount in the second
+        brace is close to $1$. Which of them determines $\lambda_\star$
+        in~\eqref{eq:lambdastar} therefore depends on the design.
+    \end{enumerate}
+
+    Behind the three cases is the tension already visible
+    in~\eqref{eq:master}: the untempered prior charges $\kappa\log p$ per
+    covariate at every temperature, while the fit term is damped by
+    $\lambda$. The map $\mathcal{G}$ knows nothing of it, being built from
+    $X$ and $\beta^{\ast}$ alone and directed at $\gamma^{\ast}$ whatever
+    the temperature. At $\lambda=1$ that is the right destination; at
+    $\lambda=0$ the target is the prior, whose mode is the null model, and
+    each of the $s^{\ast}$ additions $\mathcal{G}$ must make divides the
+    target by exactly $p^{\kappa}$. So no such map can satisfy
+    (D$_\lambda$) at every temperature. What is true, and is what this
+    section proves, is that the failure occupies an initial segment and
+    nothing more: there is an explicit $\lambda_\star$ above which the
+    argument of \cref{sec:ywj} transposes with no change beyond the
+    substitution of $\pi_n^{(\lambda)}$ for $\pi_n$.
+
+    \subsection{The critical temperature}
+    \label{sub:critical}
+
+    We ask for the conclusion in the form Lemma~4(a) of YWJ gives it --- each
+    ratio at most $p^{-2}$ at an overfitted state and at most $p^{-3}$ at an
+    underfitted one --- rather than merely ``at most one'', because
+    \cref{sub:sinclair} needs a definite factor to sum the precedents
+    against, and because those are the two exponents the two cases can
+    afford.
+
+    \begin{corollary}[Drop bound at temperature $\lambda$; YWJ, Lemma~4(a)]
+        \label{cor:critical}
+        Assume the hypotheses of \cref{th:drop}, and write $\gainfloorsm$
+        for the floor of \cref{th:drop} at its worst, that is with
+        $\betabar{\gamma^{\ast}\setminus\gamma}$ replaced by its lower bound
+        $C_\beta^{2}$ from~\eqref{eq:betabar}.
+        \begin{equivcond}
+            \item\label{it:crit_over} For every $\lambda\in[0,1]$ and every
+            overfitted $\gamma\in\mathscr{M}(s_0)\setminus\{\gamma^{\ast}\}$,
+            \begin{equation}
+                \label{eq:overconc}
+                \frac{\pi_n^{(\lambda)}(\gamma\mid Y)}
+                {\pi_n^{(\lambda)}(\mathcal{G}(\gamma)\mid Y)}
+                \ \leq\ p^{-\{(1-\lambda)\kappa
+                +\lambda[\kappa+\alpha-8(L+\Ltil)]\}}
+                \ \leq\ p^{-2} .
+            \end{equation}
+            \item\label{it:crit_under} Suppose
+            $\gainfloorsm>\tfrac12\log(1+g)$ and set
+            \begin{equation}
+                \label{eq:lambdastar}
+                \lambda_\star\ \coloneq\ \max\left\{
+                                                 \frac{(\kappa+3)\log p}
+                                                 {\gainfloorsm-\tfrac12\log(1+g)}\ ,\quad
+                                                 \frac{6\log p}{\gainfloorsm}\right\} .
+            \end{equation}
+            Then, for every $\lambda\geq\lambda_\star$ and every underfitted
+            $\gamma\in\mathscr{M}(s_0)$,
+            \begin{equation}
+                \label{eq:underconc}
+                \frac{\pi_n^{(\lambda)}(\gamma\mid Y)}
+                {\pi_n^{(\lambda)}(\mathcal{G}(\gamma)\mid Y)}
+                \ \leq\ p^{-3} .
+            \end{equation}
+        \end{equivcond}
+    \end{corollary}
+
+    At $\lambda=1$ this is Lemma~4(a) of YWJ, exponents included. The two
+    halves behave quite differently in $\lambda$, and~\eqref{eq:overconc}
+    says why the overfitted one needs no threshold: by~\eqref{eq:master} the
+    log-ratio is affine in $\lambda$, hence is the interpolation
+    \begin{equation}
+        \label{eq:interp}
+        \log\frac{\pi_n^{(\lambda)}(\gamma\mid Y)}
+        {\pi_n^{(\lambda)}(\mathcal{G}(\gamma)\mid Y)}
+        \ =\ (1-\lambda)\log\frac{\pi(\gamma)}{\pi(\mathcal{G}(\gamma))}
+        \ +\ \lambda\log\frac{\pi_n(\gamma\mid Y)}
+        {\pi_n(\mathcal{G}(\gamma)\mid Y)}
+    \end{equation}
+    between the prior ratio and the posterior ratio, and at an overfitted
+    state \emph{both} endpoints are favourable: the first is exactly
+    $-\kappa\log p$ and the second is at most
+    $-\{\kappa+\alpha-8(L+\Ltil)\}\log p$ by~\eqref{eq:drop_over}, so the
+    whole segment lies below the smaller of the two, which \cref{ass:C}
+    puts at $-2\log p$. Deleting an uninfluential covariate is favoured by
+    the sparsity prior and by the likelihood alike --- the Occam factor
+    $(1+g)^{-1/2}$ charges for the extra parameter, and a covariate outside
+    $\gamma^{\ast}$ buys only noise --- so there is nothing for a
+    temperature to arbitrate. At an underfitted state the endpoints no
+    longer agree. For an addition the prior one is $+\kappa\log p$, of the
+    opposite sign, and the segment reaches $-3\log p$ only at the first term
+    of~\eqref{eq:lambdastar}; for an exchange it is exactly $0$, the
+    inclusion penalty cancelling, and the crossing is at the second. Above
+    the larger of the two, which is $\lambda_\star$, both are past it, and
+    \cref{prop:sharp} shows that below it the first genuinely is not.
+
+    Part~\ref{it:crit_under} is a conditional statement, and says nothing
+    until one knows that $\lambda_\star$ is below $1$. That is where the two
+    hypotheses of \cref{sec:assumptions} which do the arithmetic enter, one
+    per term of the minimum defining the floor.
+
+    \begin{corollary}[The critical temperature is below one]
+        \label{cor:below1}
+        Assume \cref{ass:A,ass:B,ass:C,ass:D,ass:betamin,ass:nsize}. Then
+        \begin{equation}
+            \label{eq:floorlower}
+            \gainfloorsm\ \geq\ 2\,(L+\Ltil+\alpha+\kappa)\log p
+            \ >\ \tfrac12\log(1+g) ,
+        \end{equation}
+        so \cref{cor:critical}\ref{it:crit_under} applies, and
+        \begin{equation}
+            \label{eq:below1}
+            \lambda_\star\ \leq\ 1 .
+        \end{equation}
+    \end{corollary}
+
+    \subsection{The mass of the precedents}
+    \label{sub:precedents}
+
+
+    Bound~(P$_\lambda$) transposes with the two exponents that
+    \cref{cor:critical} supplies, and the counting is again theirs.
+
+    \begin{corollary}[Mass of the precedents at temperature $\lambda$;
+    YWJ, Lemma~4(b)]
+        \label{cor:prec}
+        Let $\lambda\in[\lambda_\star,1]$ satisfy the hypotheses of
+        \cref{cor:critical}, and let $p\geq3$. Then, for every
+        $\gamma\in\mathscr{M}(s_0)$,
+        \begin{equation}
+            \label{eq:precmass}
+            \frac{\pi_n^{(\lambda)}[\Lambda(\gamma)\mid Y]}
+            {\pi_n^{(\lambda)}(\gamma\mid Y)}
+            \ \leq\ \frac{1}
+            {\bigl\{1-(s^{\ast}+1)p^{-2}\bigr\}
+            \bigl\{1-p^{-1}\bigr\}}
+            \ \leq\ 4 .
+        \end{equation}
+    \end{corollary}
+
+    The two ratios summed here are
+    $a\coloneq(s^{\ast}+1)p^{-2}$, over the underfitted precedents, where
+    each step costs $p^{-3}$ and there are at most $(s^{\ast}+1)p$ choices,
+    and $b\coloneq p^{-1}$, over the overfitted ones, where each step costs
+    $p^{-2}$ and there are at most $p$ choices. Since $s^{\ast}\leq p$, both
+    are at most $\tfrac12$ for every $p\geq3$: unlike the condition
+    $(s^{\ast}+1)p^{-1}\leq\tfrac12$ that a single common exponent $2$ would
+    impose, YWJ's pair asks nothing of $s^{\ast}$ relative to $p$. The
+    constant $4$ is $\{(1-a)(1-b)\}^{-1}$ and tends to $1$ with $p$; theirs
+    is $6$.
+
+    \subsection{The restriction on $\lambda$ is real}
+
+    Item~(ii) above asserted that the positive intercept
+    of~\eqref{eq:drop_unsat} belongs to the problem and not to the estimate.
+    The following identity, valid for every design and every realisation of
+    the data, is that assertion.
+
+    \begin{proposition}[Exact threshold]
+        \label{prop:sharp}
+        Let $\gamma\in\mathscr{M}(s_0)$ be underfitted and unsaturated, so
+        that $\mathcal{G}(\gamma)=\gamma\cup\{j_\gamma\}$. Then, for every
+        $\lambda\geq0$,
+        \begin{equation}
+            \label{eq:sharpid}
+            \log\frac{\pi_n^{(\lambda)}(\gamma\mid Y)}
+            {\pi_n^{(\lambda)}(\mathcal{G}(\gamma)\mid Y)}
+            \ =\ \kappa\log p-\lambda
+            \log\frac{\mathcal{L}_n(Y\mid\mathcal{G}(\gamma))}
+            {\mathcal{L}_n(Y\mid\gamma)} .
+        \end{equation}
+        Defining
+        \begin{multline}
+            \label{eq:lambdacrit}
+            \lambda_{\mathrm{crit}}\ \coloneq\
+            \max\Bigl\{\frac{\kappa\log p}
+            {\log\bigl\{\mathcal{L}_n(Y\mid\mathcal{G}(\gamma))/
+            \mathcal{L}_n(Y\mid\gamma)\bigr\}}\ :\\
+            \gamma\in\mathscr{M}(s_0)\ \text{underfitted and unsaturated}
+            \Bigr\}\ \in\ (0,\infty],
+        \end{multline}
+        the map $\mathcal{G}$ is non-decreasing for
+        $\pi_n^{(\lambda)}(\cdot\mid Y)$ at every underfitted unsaturated
+        state if and only if $\lambda\geq\lambda_{\mathrm{crit}}$. Finally, on
+        the good event and under the hypotheses of \cref{th:drop},
+        \begin{equation}
+            \label{eq:lambdacritbound}
+            \lambda_{\mathrm{crit}}\ \leq\
+            \frac{\kappa\log p}{\gainfloorsm-\tfrac12\log(1+g)}
+            \ =\ \lambda_\star(0)
+        \end{equation}
+        whenever $\gainfloorsm>\tfrac12\log(1+g)$.
+    \end{proposition}
+
+
+    %% ==================================================================
+
+
+    \section{The spectral gap and the mixing time above $\lambda_\star$}
+    \label{sec:gap}
+    %% ==================================================================
+
+    \cref{cor:critical,cor:prec} supply (D$_\lambda$) and (P$_\lambda$)
+    above $\lambda_\star$, so the machinery of \cref{sec:ywj} runs
+    unchanged. Nothing in this section is new relative to that one, and that
+    is the point.
+
+    \subsection{The ensemble and its congestion}
+    \label{sub:congestion}
+
+    Let $\mathcal{T}$ be the canonical path ensemble generated by
+    $\mathcal{G}$ in the sense of \cref{sub:sinclair}: $\mathcal{G}$ is a
+    valid transition function with centre $\gamma^{\ast}$, by the second
+    remark after \cref{def:G}, so $T_{\gamma,\gamma^{\ast}}$ is the orbit
+    $\gamma\to\mathcal{G}(\gamma)\to\dots\to\gamma^{\ast}$ and a general
+    $T_{\gamma,\gamma'}$ is obtained from two such orbits. Every edge it
+    uses joins some $\bar\gamma$ to $\mathcal{G}(\bar\gamma)$, hence lies in
+    $\mathcal{N}(\bar\gamma)$ and carries positive weight by
+    \cref{lemma:kernel}.
+
+    \begin{lemma}[Spectral gap at temperature $\lambda$]
+        \label{lemma:gap}
+        Let $\lambda$ satisfy the hypotheses of \cref{cor:prec}. Then, on
+        the good event,
+        \begin{equation}
+            \label{eq:gap}
+            \rho(\mathcal{T})\ \leq\ 16\,p\,s_0
+            \qquad\text{and}\qquad
+            \mathrm{Gap}(\mathbf{P}_\lambda)\ \geq\ \frac{1}{64\,p\,s_0^{2}} .
+        \end{equation}
+    \end{lemma}
+
+
+    Two features are worth recording. The bound does not involve the
+    exponents of \cref{cor:critical}: those fix only the interval
+    $[\lambda_\star,1]$ of temperatures on which it applies, an interval
+    that \cref{cor:below1} makes non-empty. And it does not involve
+    $\lambda$ either, so the
+    same rate $1/(64ps_0^{2})$ holds simultaneously at every temperature in
+    that interval --- which is what an SMC complexity bound needs, since it
+    requires a gap at each intermediate distribution and not only at the
+    last.
+
+    \subsection{Concentration at temperature $\lambda$}
+    \label{sub:concentration}
+
+    No statement of the form of \cref{th:ywj1} can hold at every
+    $\lambda<1$: at $\lambda=0$ the target is the sparsity prior, which
+    places mass of order $p^{-\kappa s^{\ast}}$ on $\gamma^{\ast}$. Above
+    $\lambda_\star$, however, concentration comes for free from
+    \cref{cor:prec}, because $\gamma^{\ast}$ is the state all canonical
+    paths end at.
+
+    \begin{proposition}[Concentration at temperature $\lambda$]
+        \label{prop:conc}
+        Under the hypotheses of \cref{cor:prec}, on the good event,
+        \begin{equation}
+            \label{eq:conc}
+            \pi_n^{(\lambda)}(\gamma^{\ast}\mid Y)
+            \ \geq\ \bigl\{1-(s^{\ast}+1)p^{-2}\bigr\}
+            \bigl\{1-p^{-1}\bigr\}\ \geq\ \tfrac14 .
+        \end{equation}
+    \end{proposition}
+
+
+    The bound~\eqref{eq:conc} is $1-\mathcal{O}(p^{-1})$, which is the rate
+    of \cref{th:ywj1}; a common exponent $2$ in \cref{cor:critical} would
+    have given only $1-\mathcal{O}(s^{\ast}p^{-1})$, and this is the one
+    place where YWJ's third power earns something. Unlike \cref{th:ywj1} the
+    bound is deterministic on the good event and holds at every
+    $\lambda\geq\lambda_\star$, and it needs no separate argument:
+    concentration and rapid mixing are here two readings of the same drop
+    bound.
+
+    \subsection{The smallest mass and the mixing time}
+    \label{sub:tau}
+
+    Only one ingredient of the sandwich~\eqref{eq:sandwich} is still
+    missing, the smallest mass, and \cref{prop:conc} supplies it: a target
+    that puts at least a quarter of its mass on $\gamma^{\ast}$ cannot put
+    too little anywhere, because~\eqref{eq:master} bounds every ratio to
+    $\gamma^{\ast}$ explicitly.
+
+    \begin{lemma}[Lower bound on the smallest mass]
+        \label{lemma:minmass}
+        For every $\lambda\in[0,1]$ and every $\gamma\in\mathscr{M}(s_0)$,
+        \begin{equation}
+            \label{eq:minmass}
+            \log\frac{\pi_n^{(\lambda)}(\gamma^{\ast}\mid Y)}
+            {\pi_n^{(\lambda)}(\gamma\mid Y)}
+            \ \leq\ \kappa\,s_0\log p
+            +\frac{\lambda\,(n+s_0)}{2}\log(1+g) .
+        \end{equation}
+        Consequently, under the hypotheses of \cref{cor:prec},
+        \begin{equation}
+            \label{eq:minmass2}
+            \min_{\gamma\in\mathscr{M}(s_0)}
+            \pi_n^{(\lambda)}(\gamma\mid Y)
+            \ \geq\ \frac14\,p^{-\kappa s_0}\,
+            (1+g)^{-\lambda(n+s_0)/2} .
+        \end{equation}
+    \end{lemma}
+
+
+    Feeding \cref{lemma:gap,lemma:minmass} into~\eqref{eq:sandwich} gives
+    the tempered form of Theorem~2 of \citet{YangWainwrightJordan2016}.
+
+    \begin{theorem}[Mixing time at temperature $\lambda$]
+        \label{th:mixing}
+        Let $\lambda$ satisfy the hypotheses of \cref{cor:prec}. Then, on
+        the good event, for every
+        $\epsilon\in(0,1)$,
+        \begin{equation}
+            \label{eq:tau}
+            \tau_\epsilon(\mathbf{P}_\lambda)\ \leq\
+            64\,p\,s_0^{2}\Bigl\{\kappa\,s_0\log p
+            +\frac{\lambda\,(n+s_0)}{2}\log(1+g)
+            +\log\frac1\epsilon+\log4\Bigr\} .
+        \end{equation}
+        %In particular, under \cref{ass:C}, so that
+        %$\tfrac12\log(1+g)=\alpha\log p+\mathcal{O}(1)$,
+        %\begin{equation}
+        %    \label{eq:tauorder}
+        %    \tau_\epsilon(\mathbf{P}_\lambda)\ =\
+        %    \mathcal{O}\Bigl(p\,s_0^{2}\bigl\{
+        %    \alpha\,(n+s_0)\log p+\log(1/\epsilon)\bigr\}\Bigr),
+        %\end{equation}
+        %uniformly over the admissible $\lambda$.
+    \end{theorem}
+
+
+    %% ==================================================================
+
+
+    \section{A gap at every temperature}
+    \label{sec:alltemp}
+    %% ==================================================================
+
+    \cref{prop:sharp} says that no ensemble directed at $\gamma^{\ast}$ can
+    work below $\lambda_\star$: at $\lambda=0$ the ratio along
+    $\mathcal{G}$ is exactly $p^{\kappa}$. It says nothing worse than that.
+    By~\eqref{eq:onestep} the two directions $\gamma\to\gamma\cup\{j\}$ and
+    $\gamma\cup\{j\}\to\gamma$ have log-ratios that are exact negatives, so
+    for every state and every coordinate one of them is uphill; what fails
+    below $\lambda_\star$ is not the existence of an uphill move but the
+    assertion that it is the addition. Below $\lambda_\star$ it is the
+    deletion.
+
+    The construction of this section therefore keeps the rules of
+    \cref{def:G} and changes only where they point. Its centre is not
+    $\gamma^{\ast}$ but a subset $m_\lambda\subseteq\gamma^{\ast}$ that grows
+    with the temperature, from $m_0=\emptyset$ to $m_1=\gamma^{\ast}$, and
+    which covariate joins it at which temperature is read off the drop bound
+    of \cref{th:drop} --- one threshold per covariate rather than the single
+    $\lambda_\star$ of \cref{cor:critical}.
+
+    Between the two there is always a third class, the covariates the
+    thresholds do not separate, and \cref{rem:third} shows that no choice of
+    margin removes it. A map that resolves such a covariate by deciding it
+    one way pays for the decision, and pays a power of $p$. We therefore do
+    not decide: the map is allowed $2^{k_\lambda}$ fixed points, one for
+    each configuration of the undecided covariates, and the resulting blocks
+    are joined at a second level by routing \emph{uphill}, through the mode
+    of the induced measure. The exchange move of~\eqref{eq:neigh}, which
+    \cref{sec:gap} needed only at saturated states, is what makes that
+    second level short.
+
+    \subsection{Log-gains}
+    \label{sub:psi}
+
+    For $\gamma\in\mathscr{M}(s_0)$ with $\abs\gamma<s_0$ and
+    $j\in[p]\setminus\gamma$ put
+    \begin{equation}
+        \label{eq:psidef}
+        \psi_j(\gamma)\ \coloneq\
+        \log\frac{\mathcal{L}_n(Y\mid\gamma\cup\{j\})}
+        {\mathcal{L}_n(Y\mid\gamma)} ,
+    \end{equation}
+    so that~\eqref{eq:master} with $\abs{\gamma'}-\abs{\gamma}=1$ reads
+    \begin{equation}
+        \label{eq:onestepG}
+        \log\frac{\pi_n^{(\lambda)}(\gamma\cup\{j\}\mid Y)}
+        {\pi_n^{(\lambda)}(\gamma\mid Y)}
+        \ =\ \lambda\,\psi_j(\gamma)-\kappa\log p ,
+    \end{equation}
+    which is~\eqref{eq:onestep}.
+
+    \subsection{The staircase of thresholds}
+    \label{sub:staircase}
+
+    The single threshold $\lambda_\star$ comes from a single floor. In
+    \cref{th:drop} the underfitted bound carries
+    $\gainfloorMs$, and \cref{lemma:forward}\ref{it:fs_a} produces that
+    floor as $n\nu^{2}\betabar{\gamma^{\ast}\setminus\gamma}$ before it is
+    weakened to $n\nu^{2}C_\beta^{2}$ --- that is, the floor is set by the
+    covariates \emph{still missing}, not by the weakest covariate in
+    $\gamma^{\ast}$. Keeping it in that form is what produces a staircase.
+
+    \begin{definition}[The greedy chain and its thresholds]
+        \label{def:chain}
+        Let $\emptyset=\gamma_0\subset\gamma_1\subset\dots\subset
+        \gamma_{s^{\ast}}=\gamma^{\ast}$ be the orbit of $\emptyset$ under
+        the additions~\eqref{eq:jdef}, so that
+        $\gamma_{r+1}=\gamma_r\cup\{j_{\gamma_r}\}$. Put
+        \begin{equation}
+            \label{eq:Psir}
+            \Psi_r\ \coloneq\ \min\Bigl\{\frac{n\nu}{16s^{\ast}},\
+            \frac{n\nu^{2}\,\betabar{\gamma^{\ast}\setminus\gamma_r}}
+            {64\sigma_0^{2}}\Bigr\},
+            \qquad r=0,\dots,s^{\ast}-1,
+        \end{equation}
+        and
+        \begin{equation}
+            \label{eq:lambdar}
+            \lambda_r\ \coloneq\
+            \frac{(\kappa+3)\log p}
+            {\Psi_r-\tfrac12\log(1+g)}\ \in\ (0,\infty] ,
+        \end{equation}
+        with $\lambda_r=\infty$ when
+        $\Psi_r\leq\tfrac12\log(1+g)$. Finally
+        \begin{equation}
+            \label{eq:mlambda}
+            m_\lambda\ \coloneq\ \gamma_{r(\lambda)},
+            \qquad
+            r(\lambda)\ \coloneq\
+            \max\bigl\{r\leq s^{\ast}:\ \lambda\geq\lambda_{r'-1}
+            \ \text{for every } r'\leq r\bigr\} .
+        \end{equation}
+    \end{definition}
+
+    Three properties, all immediate. The family is nested and
+    non-decreasing in $\lambda$, because $r(\lambda)$ is; $m_0=\emptyset$,
+    since $\lambda_0>0$; and $m_1=\gamma^{\ast}$ exactly when
+    $\max_r\lambda_r\leq1$, which by~\eqref{eq:lambdar} and
+    $\betabar{\gamma^{\ast}\setminus\gamma_r}\geq C_\beta^{2}$ is implied by
+    $\lambda_\star\leq1$, hence holds under \cref{cor:below1}: the staircase
+    reaches the top of $\gamma^{\ast}$ under exactly the hypotheses that
+    make \cref{cor:critical}\ref{it:crit_under} non-vacuous, and it starts
+    climbing much earlier.
+
+    \subsection{Log-gains, decided and undecided}
+    \label{sub:twosided}
+
+    \cref{th:drop} bounds $\psi_j$ from below, which is what an addition
+    needs; a deletion needs a bound from above. We record both, and the
+    third possibility, that neither is decisive.
+
+    \begin{assumption}[Log-gains]
+        \label{ass:twosided}
+        There is $a_0<\infty$ such that, on the good event,
+        $\psi_j(\gamma)\leq(a_0-\alpha)\log p$ for every
+        $\gamma\in\mathscr{M}(s_0)$ with $\abs\gamma<s_0$ and every
+        $j\in S^{c}\setminus\gamma$. We assume $\kappa+\alpha\geq2+a_0$,
+        which with $\kappa\geq2$ from \cref{ass:C} gives
+        \begin{equation}
+            \label{eq:kappalam}
+            \kappa_\lambda\ \coloneq\ \kappa-\lambda(a_0-\alpha)\ \geq\ 2
+            \qquad\text{for every }\lambda\in[0,1] .
+        \end{equation}
+        This is~\eqref{eq:overconc} with $\mathcal{G}$ replaced by the map
+        of \cref{def:Mlambda}: the same exponent $2$, uniform in $\lambda$
+        by the same interpolation, but now required at every underfitted
+        state and not only at the overfitted ones, which is what $a_0$
+        pays for.
+    \end{assumption}
+
+    This is the null half of the story, and \cref{prop:a0} supplies a value
+    of $a_0$. For the influential covariates nothing needs to be assumed:
+    we simply name the two extremes
+    \begin{equation}
+        \label{eq:psipm}
+        \underline\psi_j\ \coloneq\
+        \min_{\gamma\subseteq\gamma^{\ast}\setminus\{j\}}\psi_j(\gamma),
+        \qquad
+        \overline\psi_j\ \coloneq\
+        \max_{\gamma\subseteq\gamma^{\ast}\setminus\{j\}}\psi_j(\gamma),
+        \qquad j\in\gamma^{\ast},
+    \end{equation}
+    and observe that \cref{th:drop} bounds the first from below along the
+    greedy chain: reading~\eqref{eq:drop_unsat} at $\gamma_r$ gives
+    $\underline\psi_{j_{\gamma_r}}\geq\Psi_r-\tfrac12\log(1+g)$, which is
+    what makes the thresholds~\eqref{eq:lambdar} computable.
+
+    \begin{definition}[Decided and undecided covariates]
+        \label{def:cpm}
+        For $\lambda\in[0,1]$ let $m^{-}_\lambda\subseteq m^{+}_\lambda$ be
+        the longest prefixes of the greedy chain of \cref{def:chain} with
+        \begin{equation}
+            \label{eq:cpm}
+            \lambda\underline\psi_j\ \geq\ \kappa\log p+\log(2s^{\ast})
+            \quad\text{on } m^{-}_\lambda,
+            \qquad
+            \lambda\overline\psi_j\ >\ \kappa\log p-\log(2s^{\ast})
+            \quad\text{on } m^{+}_\lambda,
+        \end{equation}
+        and put $W_\lambda\coloneq m^{+}_\lambda\setminus m^{-}_\lambda$,
+        $k_\lambda\coloneq\abs{W_\lambda}\leq s^{\ast}$ and
+        \begin{equation}
+            \label{eq:Theta}
+            \Theta_\lambda\ \coloneq\ \max_{j\in W_\lambda}
+            \exp\bigl\{\lambda\overline\psi_j-\kappa\log p\bigr\},
+        \end{equation}
+        a maximum over the empty set being $1$. Thus, for every
+        $\gamma\subseteq\gamma^{\ast}\setminus\{j\}$,
+        \begin{equation}
+            \label{eq:cpmuse}
+            j\in m^{-}_\lambda\ \Longrightarrow\
+            \lambda\psi_j(\gamma)-\kappa\log p\geq\log(2s^{\ast}),
+            \qquad
+            j\notin m^{+}_\lambda\ \Longrightarrow\
+            \lambda\psi_j(\gamma)-\kappa\log p\leq-\log(2s^{\ast}) .
+        \end{equation}
+    \end{definition}
+
+    A covariate is certainly worth having when it beats the penalty in its
+    worst context and certainly not when it loses in its best; the margin
+    $\log(2s^{\ast})$ makes the drop of \cref{lemma:funnel}\ref{it:fn_ii}
+    equal to $1/(2s^{\ast})$ rather than $1$, which is what pays for the
+    branching in \cref{lemma:funnel}\ref{it:fn_iii}. The two prefixes are nested and non-decreasing in
+    $\lambda$, with $m^{\mp}_0=\emptyset$, and $m^{-}_\lambda$ is the
+    staircase $m_\lambda$ of~\eqref{eq:mlambda} up to the exponent used in
+    the threshold.
+
+    \subsection{The funnel map and its blocks}
+    \label{sub:Mlambda}
+
+    \begin{definition}[The funnel map]
+        \label{def:Mlambda}
+        For $\gamma\in\mathscr{M}(s_0)$ define $F_\lambda(\gamma)$ by the
+        first applicable rule:
+        \begin{enumerate}[label=(M\arabic*),leftmargin=3.4em]
+            \item\label{M:null} if $\gamma\not\subseteq\gamma^{\ast}$,
+            delete $\max(\gamma\setminus\gamma^{\ast})$;
+            \item\label{M:del} else if
+            $\gamma\not\subseteq m^{+}_\lambda$, delete
+            $\min(\gamma\setminus m^{+}_\lambda)$;
+            \item\label{M:add} else if
+            $m^{-}_\lambda\not\subseteq\gamma$, add
+            $\min(m^{-}_\lambda\setminus\gamma)$;
+            \item\label{M:fix} else $F_\lambda(\gamma)=\gamma$.
+        \end{enumerate}
+        For $J\subseteq W_\lambda$ put
+        \begin{equation}
+            \label{eq:blocks}
+            B_J\coloneq\{\gamma\in\mathscr{M}(s_0):
+            \gamma\cap W_\lambda=J\},
+            \qquad
+            v_J\coloneq m^{-}_\lambda\cup J,
+            \qquad
+            \bar\pi_\lambda(J)\coloneq\pi_n^{(\lambda)}(B_J\mid Y) .
+        \end{equation}
+    \end{definition}
+
+    The undecided covariates are the ones $F_\lambda$ leaves alone. It has
+    $2^{k_\lambda}$ fixed points, one in each block, rather than a single
+    one: where the previous draft deleted an undecided covariate and paid
+    $\Theta_\lambda$ for the privilege, $F_\lambda$ declines to decide.
+
+    \begin{lemma}[The funnel]
+        \label{lemma:funnel}
+        Let $\lambda\in[0,1]$ and $p\geq2$, assume \cref{ass:twosided}, and
+        work on the good event. For every $J\subseteq W_\lambda$:
+        \begin{equivcond}
+            \item\label{it:fn_i} $F_\lambda$ maps $B_J$ into itself and
+            $v_J$ is its unique fixed point there, so
+            $B_J=\Lambda^{F_\lambda}(v_J)$, the precedents under
+            $F_\lambda$;
+            \item\label{it:fn_ii} every step of $F_\lambda$ is
+            $\pi_n^{(\lambda)}$-increasing, and the orbit of any
+            $\gamma\in B_J$ has at most $2s_0$ edges, all single flips;
+            \item\label{it:fn_iii}
+            $\pi_n^{(\lambda)}[\Lambda^{F_\lambda}(\gamma)\mid Y]
+            \leq2(2s^{\ast}+1)\,\pi_n^{(\lambda)}(\gamma\mid Y)$ for every
+            $\gamma$, and in particular
+            $\pi_n^{(\lambda)}(v_J\mid Y)\geq
+            \bar\pi_\lambda(J)/\{2(2s^{\ast}+1)\}$.
+        \end{equivcond}
+    \end{lemma}
+
+    Part~\ref{it:fn_iii} is what makes a funnel admissible: routing all the
+    traffic of a block through the single state $v_J$ costs a factor
+    $2(2s^{\ast}+1)$ and no more, because $v_J$ already carries that share
+    of the block.
+
+    \subsection{The second level, and where it must go}
+    \label{sub:secondlevel}
+
+    It remains to connect the $2^{k_\lambda}$ blocks. This is where the
+    previous draft lost everything, and the loss was in the \emph{route},
+    not in the estimates.
+
+    \begin{definition}[Two-level ensemble]
+        \label{def:flowens}
+        Fix, for each ordered pair $J\neq J'$ of subsets of $W_\lambda$, a
+        path $R_{J,J'}$ from $v_J$ to $v_{J'}$ all of whose states are of
+        the form $v_{J''}$, consecutive states differing by one flip or one
+        exchange. For $\gamma\in B_J$ and $\gamma'\in B_{J'}$ let
+        $\widetilde T_{\gamma,\gamma'}$ be the concatenation of the
+        $F_\lambda$-orbit from $\gamma$ to $v_J$, then $R_{J,J'}$, then the
+        reverse of the $F_\lambda$-orbit from $\gamma'$ to $v_{J'}$,
+        truncated at the first repeated state; and for $J=J'$ let it be the
+        path of \cref{sub:congestion} built from $F_\lambda$ inside $B_J$.
+        Write $\varrho_\lambda$ for the congestion of
+        $\{R_{J,J'}\}$ on $\bigl(2^{W_\lambda},\ \text{flips and
+        exchanges}\bigr)$ under $\bar\pi_\lambda$, and $L_\lambda$ for its
+        longest route.
+    \end{definition}
+
+    The previous draft took $R_{J,J'}$ to flip the coordinates of
+    $J\triangle J'$ in increasing order. That is the worst available choice.
+    Two competing collinear covariates put almost all of
+    $\bar\pi_\lambda$ on the two singletons and almost none on
+    $\emptyset$, and the increasing-order route from $\{j\}$ to $\{j'\}$
+    passes through exactly that hole. The remedy is to route \emph{uphill}.
+
+    \begin{assumption}[Unimodal blocks]
+        \label{ass:unimodal}
+        For every $\lambda\in[0,1]$, $\bar\pi_\lambda$ has exactly one local
+        maximum on $2^{W_\lambda}$ with respect to flips and exchanges.
+    \end{assumption}
+
+    \begin{lemma}[Ascent routing]
+        \label{lemma:ascent}
+        Under \cref{ass:unimodal}, let $A_\lambda$ send $J$ to the
+        $\bar\pi_\lambda$-largest of its neighbours when that is larger than
+        $J$, and take $R_{J,J'}$ to be the $A_\lambda$-orbit of $J$ followed
+        by the reverse of that of $J'$, truncated at their first common
+        state. Then $R$ is admissible in the sense of \cref{def:flowens},
+        and
+        \begin{equation}
+            \label{eq:rhoascent}
+            \varrho_\lambda\ \leq\ 2^{k_\lambda},
+            \qquad
+            L_\lambda\ \leq\ 2^{k_\lambda}-1 .
+        \end{equation}
+    \end{lemma}
+
+    \subsection{The gap}
+    \label{sub:gapM}
+
+    \begin{theorem}[A gap at every temperature]
+        \label{th:gapM}
+        Let $\lambda\in[0,1]$ and $p\geq2$, assume \cref{ass:twosided}, and
+        work on the good event. Then, for any admissible second level,
+        \begin{equation}
+            \label{eq:gapT}
+            \mathrm{Gap}(\mathbf{P}_\lambda)\ \geq\
+            \frac{1}{8\,p\,(2s^{\ast}+1)\,
+            \max\{1,s^{\ast}\varrho_\lambda\}\,
+            \bigl(4s_0+2L_\lambda\bigr)} ,
+        \end{equation}
+        and under \cref{ass:unimodal}, with the ascent routing of
+        \cref{lemma:ascent},
+        \begin{equation}
+            \label{eq:gapM}
+            \mathrm{Gap}(\mathbf{P}_\lambda)\ \geq\
+            \frac{1}{8\,p\,(2s^{\ast}+1)\,
+            \max\{1,s^{\ast}2^{k_\lambda}\}\,
+            \bigl(4s_0+2^{k_\lambda+1}\bigr)} .
+        \end{equation}
+        In particular, whenever $k_\lambda=0$,
+        \begin{equation}
+            \label{eq:gapM0}
+            \mathrm{Gap}(\mathbf{P}_\lambda)\ \geq\
+            \frac{1}{32\,p\,s_0\,(2s^{\ast}+1)} .
+        \end{equation}
+    \end{theorem}
+
+    \subsection{A sufficient $a_0$}
+    \label{sub:a0}
+
+    In \cref{sub:over} we bounded $\psi_j(\gamma)$ for $j\in S^{c}$ when
+    $\gamma\supseteq\gamma^{\ast}$, where
+    $(\Phi_{\gamma\cup\{j\}}-\Phi_\gamma)\signal=0$. When influential
+    covariates are missing that term no longer vanishes, and what replaces it
+    is $\omega(X)$, already present in \cref{ass:D}.
+
+    \begin{proposition}[A value of $a_0$]
+        \label{prop:a0}
+        On the good event, and under~\eqref{eq:Dassumption},
+        \cref{ass:twosided} holds with
+        \begin{equation}
+            \label{eq:a0}
+            a_0\ =\ 16(L+\Ltil)
+            +\frac{8\,n\,\omega(X)\,
+            \|\beta^{\ast}_{\gamma^{\ast}}\|_2^{2}}
+            {\sigma_0^{2}\log p} .
+        \end{equation}
+    \end{proposition}
+
+    \begin{remark}
+        \label{rem:a0cost}
+        In the regime of interest $n\|\beta^{\ast}_{\gamma^{\ast}}\|_2^{2}
+        /\sigma_0^{2}\asymp s^{\ast}\,nC_\beta^{2}/\sigma_0^{2}$, so the
+        second term of~\eqref{eq:a0} is of order
+        $\omega(X)s^{\ast}nC_\beta^{2}/(\sigma_0^{2}\log p)$ and
+        \cref{ass:twosided} asks, in effect, for
+        $\omega(X)\lesssim1/s^{\ast}$. \cref{ass:D} already asks
+        $\omega(X)\leq\nu^{2}(s_0-s^{\ast})/(4s^{\ast})$, so this is a
+        tightening of \cref{ass:D} by a factor of order $\nu^{2}s_0$, not a
+        hypothesis of a new kind. It is the one ingredient here that no
+        choice of centre removes: if a covariate outside $S$ reproduces the
+        missing signal, then keeping it genuinely raises
+        $\pi_n^{(\lambda)}(\cdot\mid Y)$, and that is a property of the
+        target.
+    \end{remark}
+
+
+    \bibliographystyle{imsart-nameyear}
+    \bibliography{bvs}
+    \appendix
+    \input{bvs3_app}
+\end{document}
+

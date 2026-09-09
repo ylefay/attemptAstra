@@ -1,0 +1,25 @@
+(1) supremum of the eq:lambdastar bound over the admissible region
+
+    exponent q = 2:  sup lambda_star_bound = 0.499933   at (L+Ltilde, alpha, kappa) = (4, 0.5, 1.675e+04)
+    exponent q = 3:  sup lambda_star_bound = 0.499963   at (L+Ltilde, alpha, kappa) = (4, 0.5, 1.675e+04)
+    exponent q = 4:  sup lambda_star_bound = 0.499993   at (L+Ltilde, alpha, kappa) = (4, 0.5, 1.675e+04)
+
+    limit as kappa -> infinity with alpha = 1/2, L+Lt = B:
+      q=2 B=4: 0.498880 0.499999 0.500000   (theoretical limit 1/2)
+      q=2 B=10: 0.495917 0.499996 0.500000   (theoretical limit 1/2)
+      q=2 B=40: 0.481615 0.499981 0.500000   (theoretical limit 1/2)
+      q=3 B=4: 0.499378 0.499999 0.500000   (theoretical limit 1/2)
+      q=3 B=10: 0.496412 0.499996 0.500000   (theoretical limit 1/2)
+      q=3 B=40: 0.482096 0.499981 0.500000   (theoretical limit 1/2)
+
+(2) the cold end against the critical temperature (p=14, n=100, kappa=2, alpha=1.5)
+
+    design                    max psi  min greedy gain   lam_cold   lam_*emp     ratio  meas{k>0}
+    equicorr rho=0.0           45.761            7.237    0.05767    1.82334      31.6      0.920
+    equicorr rho=0.5           54.862            3.214    0.04810    4.10605      85.4      0.935
+    equicorr rho=0.85          78.089           -0.809    0.03380        inf       inf      0.950
+    equicorr rho=0.95          88.392           -2.351    0.02986        inf       inf      0.955
+    cancelling r=0.9 b=1.0      3.797           -1.828    0.69509        inf       inf      0.000
+    cancelling r=0.9 b=3.0     43.740           -0.627    0.06033        inf       inf      0.905
+    cancelling r=0.95 b=3.0     24.777           -1.858    0.10651        inf       inf      0.830
+    cancelling r=0.99 b=3.0      1.939           -2.848    1.36124        inf       inf      0.000

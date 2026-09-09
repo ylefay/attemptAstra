@@ -1,0 +1,1452 @@
+%% ---------------------------------------------------------------------------
+%%  Section: SMC on a binary space (Bayesian variable selection).
+%%  To be inserted in main.tex, e.g. just before \section{Conclusion}.
+%%  Uses only macros already defined in main.tex, except the four below.
+%%  Requires the bibliography keys YangWainwrightJordan2016, Sinclair1992,
+%%  Schafer2013-yq, 10.1214/aos/1033066201.
+%% ---------------------------------------------------------------------------
+\documentclass[aos]{imsart}%change to aos, custom is for arXiv
+
+%% Packages
+%\RequirePackage[numbers,sort&compress]{natbib}
+\RequirePackage[authoryear]{natbib}%% uncomment this for author-year citations
+%\RequirePackage[colorlinks,citecolor=blue,urlcolor=blue]{hyperref}
+\RequirePackage{graphicx}
+
+
+%% ours
+
+%essentials
+\usepackage{amsmath, amsfonts, amsthm, amssymb}
+\usepackage{mathtools}
+
+% table
+\usepackage[table]{xcolor}
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{hhline}
+
+% temporary
+\usepackage{todonotes}
+
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\pgfplotsset{compat=1.18}
+% \usepackage{tikz}
+\usepackage{dsfont}
+\usepackage[titlenumbered,ruled,noend,vlined]{algorithm2e}
+
+\makeatletter
+\renewcommand*{\@algocf@post@ruled}{}
+\makeatother
+
+\usepackage{stmaryrd}
+\usepackage{relsize}
+\usepackage{subcaption}
+\usetikzlibrary{spy}
+\usepackage{nicematrix}
+% \usepackage[legalpaper, margin=1in]{geometry}
+\usepackage{enumitem}
+\usepackage{accents}
+\usepackage{algpseudocode}
+
+\newlist{equivcond}{enumerate}{1}
+\setlist[equivcond,1]{
+    label=\normalfont\bfseries(\roman*),
+    leftmargin=4em,
+    noitemsep,
+    ref=\roman*,
+}
+
+\usepackage[toc,page]{appendix}
+\usepackage[colorlinks,citecolor=blue,urlcolor=blue,filecolor=blue,backref=page]{hyperref}
+\usepackage[capitalise]{cleveref}
+%%
+
+
+\startlocaldefs
+
+
+
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclarePairedDelimiter{\bignorm}{\left\lVert}{\right\rVert}
+
+\DeclareMathOperator{\vect}{vec}
+\newcommand{\yvann}[1]{\textcolor{red}{Y: #1}}
+
+\newcommand{\TVNorm}[1]{\norm{#1}_{\textup{TV}}}
+\newcommand{\TV}[0]{\textup{TV}}
+
+\newcommand{\ambientspace}[0]{\mathcal{X}}
+\newcommand{\ambientalgebra}[0]{\mathbb{X}}
+
+\renewcommand{\Pr}[0]{\textup{Pr}}
+
+\newcommand{\bfA}[0]{\mathbf{A}}
+\newcommand{\bfB}[0]{\mathbf{B}}
+\newcommand{\bfC}[0]{\mathbf{C}}
+\newcommand{\bfr}[0]{\mathbf{r}}
+
+\newcommand{\dd}[0]{\mathrm{d}}
+\newcommand{\bbE}[0]{\mathbb{E}}
+\newcommand{\bbR}[0]{\mathbb{R}}
+\newcommand{\bbRp}[0]{\bbR^{+}}
+\newcommand{\bbV}[0]{\mathbb{V}}
+\newcommand{\bbC}[0]{\mathbb{C}}
+\newcommand{\calL}[0]{\mathcal{L}}
+\newcommand{\calN}[0]{\mathcal{N}}
+\newcommand{\calU}[0]{\mathcal{U}}
+\newcommand{\wtX}[0]{\widetilde{X}}
+\newcommand{\OO}{\mathcal{O}}  % complexity, e.g. O(N^2)
+\newcommand{\oo}{o}  % small o notation, e.g. o(N^2)
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\KL}{\mathrm{KL}}
+
+% color background in Table 1
+\newcommand{\newres}{\cellcolor{blue!15}}
+\newcommand{\obviouscor}{\cellcolor{green!15}}
+\newcommand{\na}{\cellcolor{red!15}}
+\renewcommand{\arraystretch}{2.5} % make table cells larger
+
+\newcommand\munderbar[1]{%
+    \underaccent{\bar}{#1}}
+
+
+\theoremstyle{plain}
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{remark}{Remark}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{refproof}{Proof}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                          %%
+%% For Assumption, Definition, Example,     %%
+%% Notation, Property, Remark, Fact         %%
+%% use \theoremstyle{definition}            %%
+%%                                          %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem*{example}{Example}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Please put your definitions here:        %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\endlocaldefs
+
+\begin{document}
+
+    \begin{frontmatter}
+        \title{TITLE}
+%\runtitle{A sample running head title}
+
+        \begin{aug}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Only one address is permitted per author. %%
+%% Only division, organization and e-mail is %%
+%% included in the address.                  %%
+%% Additional information such as            %%
+%% identifying the corresponding author must %%
+%% be included in in the Acknowledgments     %%
+%% section if necessary.                     %%
+%% ORCID can be inserted by command:         %%
+%% \orcid{0000-0000-0000-0000}               %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            \author[A]{\fnms{Yvann}~\snm{Le Fay}\ead[label=e1]{yvann.lefay@ensae.fr}}
+            \author[A]{\fnms{Nicolas}~\snm{Chopin}\ead[label=e2]{nicolas.chopin@math.cnrs.fr}}%\orcid{0000-0000-0000-0000}
+            \author[B]{\fnms{Matti}~\snm{Vihola}\ead[label=e3]{matti.s.vihola@jyu.fi}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Addresses                                %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            \address[A]{CREST, ENSAE, IP Paris\printead[presep={ ,\ }]{e1,e2}}
+
+            \address[B]{Department of Mathematics and Statistics,
+                University of Jyväskylä\printead[presep={,\ }]{e3}}
+        \end{aug}
+
+
+        \begin{abstract}
+        \end{abstract}
+
+
+        \begin{keyword}[class=MSC]
+            \kwd[Primary ]{65C05}
+            \kwd{65C35}
+            \kwd[; secondary ]{62L20}
+        \end{keyword}
+
+        \begin{keyword}
+            \kwd{Monte Carlo methods}
+            \kwd{Stochastic particle methods}
+            \kwd{Finite-sample bounds}
+        \end{keyword}
+
+    \end{frontmatter}
+
+    \maketitle
+
+
+    \providecommand{\Ltil}{\widetilde{L}}
+    \providecommand{\Proj}{\mathrm{P}}
+    \providecommand{\Prec}{\mathrm{Prec}}
+    \providecommand{\Gap}{\mathrm{Gap}}
+    \providecommand{\RE}{\mathrm{RE}}
+    \providecommand{\IC}{\mathrm{IC}}
+
+
+
+    \section{Application to a binary sampling problem}
+    \label{sec:binary}
+
+    Sections~\ref{sec:application} and~\ref{sec:spectral_gap_limitation} applied
+    our bounds on $\ambientspace\subseteq\bbR^d$. We now apply them on a finite
+    space, $\ambientspace\subseteq\{0,1\}^d$, for the Bayesian variable selection
+    problem. The sampler of~\citet{Schafer2013-yq} for this problem already fixes
+    the algorithmic choices, and~\citet{YangWainwrightJordan2016} give a lower
+    bound on the spectral gap of the natural local Markov kernel for the target
+    $\pi$. Our task is to supply the two inputs that
+    Sections~\ref{sec:smc}--\ref{sec:spectral_gap_limitation} need and that
+    neither paper provides: a bound on the number $T$ of distributions for which
+    Assumption~\ref{ass:chisquare_is_small} holds
+    (Proposition~\ref{prop:binary_horizon}), and a lower bound on the spectral gap
+    of the Markov kernel at \emph{every} temperature of the path, not only at the
+    endpoint (Theorem~\ref{th:binary_gap_all}).
+
+    \subsection{The target, the path and the sampler}
+    \label{sub:binary_setting}
+
+    Let $y\in\bbR^{n}$ and $X\in\bbR^{n\times d}$ be linked by
+    $y=X\beta^\star+w$, $w\sim\calN(0,\sigma_0^2 I_n)$. A subset of the $d$
+    covariates is encoded by $x\in\{0,1\}^d$, with $\abs{x}=\sum_{j=1}^d x_j$; we
+    write $X_x$ for the corresponding columns of $X$ and $\Proj_x$ for the
+    orthogonal projection onto their span, and we use the same letter for a
+    binary vector and for the subset of $[d]=\{1,\dots,d\}$ that it indicates.
+    Fix $C_\beta>0$, let $S=\{j:\abs{\beta^\star_j}\geq C_\beta\}$, let $x^\star$
+    indicate $S$ and let $s^\star=\abs{x^\star}$. Following
+    \citet{YangWainwrightJordan2016} we put a flat prior on the noise precision,
+    Zellner's prior
+    $\beta_x\mid x\sim\calN(0,g\phi^{-1}(X_x^{\top}X_x)^{-1})$ with $1\leq g\leq
+    c_2d^{2\alpha}$, and the sparsity prior
+    \begin{equation}
+        \label{eq:binary_prior}
+        p(x)=\frac{d^{-\kappa\abs{x}}}{\sum_{z\in\ambientspace}d^{-\kappa\abs{z}}}
+        \quad\text{on}\quad
+        \ambientspace\coloneq\bigl\{x\in\{0,1\}^d:\abs{x}\leq s_0\bigr\},
+        \qquad s^\star<s_0<n .
+    \end{equation}
+    Integrating out $(\beta,\phi)$ gives the marginal likelihood
+    \begin{equation}
+        \label{eq:binary_m}
+        m(x)= (1+g)^{-\abs{x}/2}\bigl\{1+g(1-R_x^2)\bigr\}^{-n/2},
+        \qquad R^2_x=\frac{\norm{\Proj_x y}_2^2}{\norm{y}_2^2},
+    \end{equation}
+    and the posterior is $\pi(x)\propto p(x)m(x)$.
+
+    \paragraph{The path.}
+    We take the prior as the dominating measure of
+    Section~\ref{sub:background} and temper the marginal likelihood:
+    \begin{equation}
+        \label{eq:binary_path}
+        \nu=p,\qquad g_t=m^{\lambda_t},\qquad
+        \pi_t(\dd x)=\frac{m(x)^{\lambda_t}\,p(\dd x)}{Z(\lambda_t)},
+        \qquad Z(\lambda)\coloneq p(m^{\lambda}),
+    \end{equation}
+    with $0=\lambda_{-1}<\lambda_0<\dots<\lambda_T=1$. Then
+    $G_t=m^{\lambda_t-\lambda_{t-1}}$, $\pi_{-1}=\nu=p$, $Z_{-1}=Z(0)=1$ and
+    $\pi_T=\pi$, $Z_T=p(m)$, which is exactly the marginal likelihood of the
+    variable selection problem, that is the quantity used for model comparison.
+    We write $\pi_\lambda(\dd x)\propto m(x)^{\lambda}p(\dd x)$ for the target at
+    an arbitrary temperature $\lambda\in[0,1]$, so that $\pi_t=\pi_{\lambda_t}$.
+    Three properties of~\eqref{eq:binary_path} are used repeatedly.
+    \begin{enumerate}[label=(P\arabic*),leftmargin=3.2em]
+        \item\label{P:exact} $\nu$ can be sampled exactly: draw $k$ from the law
+        on $\{0,\dots,s_0\}$ proportional to $\binom{d}{k}d^{-\kappa k}$, then a
+        uniform $k$-subset of $[d]$.
+        \item\label{P:level} $p$ depends on $x$ through $\abs{x}$ only. Hence
+        $\pi_\lambda$ restricted to a level $\{\abs{x}=k\}$ is proportional to
+        $m^\lambda$ there, and at $\lambda=0$ it is uniform on that level.
+        \item\label{P:penalty} The per-covariate prior penalty is $d^{-\kappa}$ at
+        \emph{every} temperature, since $p$ is not raised to the power $\lambda$.
+    \end{enumerate}
+
+    \paragraph{The kernel.}
+    $K_\lambda$ is the lazy local Metropolis kernel
+    of~\citet{YangWainwrightJordan2016} with target $\pi_\lambda$, which we call
+    the \emph{flip-and-exchange} kernel: with
+    probability $1/2$ stay; otherwise, with probability $1/2$ pick
+    $j\in[d]$ uniformly and propose $x'$ with $x'_j=1-x_j$, and with probability
+    $1/2$ pick $(k,\ell)$ uniformly in $\{j:x_j=1\}\times\{j:x_j=0\}$ and propose
+    $x'$ with $x'_k=0$, $x'_\ell=1$; accept with probability
+    $\min\{1,\pi_\lambda(x')/\pi_\lambda(x)\}$, and reject if
+    $x'\notin\ambientspace$. So for $x'\neq x$ a proposal state,
+    \begin{equation}
+        \label{eq:binary_edge}
+        \pi_\lambda(x)K_\lambda(x,x')\ \geq\ \frac{1}{4ds_0}
+        \min\{\pi_\lambda(x),\pi_\lambda(x')\},
+    \end{equation}
+    because the proposal probability is $1/(4d)$ for a single flip and at least
+    $1/(4ds_0)$ for an exchange, and
+    $\pi_\lambda(x)\min\{1,\pi_\lambda(x')/\pi_\lambda(x)\}
+    =\min\{\pi_\lambda(x),\pi_\lambda(x')\}$. $K_\lambda$ is lazy, hence
+    non-negative definite, so its spectral gap is the largest $\gamma$ with
+    $\gamma\Var_{\pi_\lambda}(f)\leq\mathcal{E}_{K_\lambda,\pi_\lambda}(f)$ for all
+    $f$, where
+    $\mathcal{E}_{K,\mu}(f)=\tfrac12\sum_{x,y}\mu(x)K(x,y)\{f(x)-f(y)\}^2$ is the
+    Dirichlet form. One Markov step costs one evaluation of $m$, that is
+    $\OO(ns_0+s_0^2)$ operations with a rank-one Cholesky update.
+
+    \paragraph{Standing assumptions.}
+    We assume throughout Assumptions~A (size of $\beta^\star$), B with $s=s_0$
+    (restricted eigenvalue constant $C_m$, sparse projection constant $L$),
+    C ($g\asymp d^{2\alpha}$, $\kappa+\alpha\geq c_\alpha(L+\Ltil)+2$) and
+    D($s_0$) of~\citet{YangWainwrightJordan2016}, together with their high
+    signal-to-noise condition. We write $\mathcal{H}_n$ for the intersection of
+    the events $A_n,B_n,C_n,D_n$ of their proof of Theorem~2, on which
+    $\Pr(\mathcal{H}_n)\geq 1-6d^{-c}$, and $r$ for the constant in $B_n$.
+
+    \subsection{How many distributions are needed}
+    \label{sub:binary_horizon}
+
+    Theorem~\ref{th:chi_log_concave} gives a schedule satisfying
+    Assumption~\ref{ass:chisquare_is_small} when $\ambientspace=\bbR^d$ and the
+    densities are log-concave and smooth. Neither hypothesis is available here.
+    What replaces them is that the family $\lambda\mapsto\pi_\lambda$ is an
+    exponential family in $\lambda$, so the $\chi^2$-divergence between two of its
+    members has an exact expression in terms of $\log Z$, which is smooth and
+    convex. Everything is then controlled by
+    \begin{equation}
+        \label{eq:binary_V}
+        V(\lambda)\coloneq \Var_{\pi_\lambda}[\log m],
+    \end{equation}
+    and, after integration in $\lambda$, by the two Kullback--Leibler divergences
+    between the endpoints $\nu$ and $\pi$. Since $\ambientspace$ is finite,
+    $\pi_\lambda$ and $V(\lambda)$ are defined for every $\lambda\geq0$; we use
+    them on $[0,2]$.
+
+    \begin{proposition}
+        \label{prop:binary_horizon}
+        Let $\ambientspace$ be finite, let $m:\ambientspace\to(0,\infty)$, let
+        $\nu$ be a probability measure with $\nu(x)>0$ for all
+        $x\in\ambientspace$, and let
+        $\pi_\lambda(\dd x)=m(x)^{\lambda}\nu(\dd x)/Z(\lambda)$ with
+        $Z(\lambda)=\nu(m^{\lambda})$. Let $V$ be as in~\eqref{eq:binary_V} and
+        $\bar V=\max_{\lambda\in[0,2]}V(\lambda)$.
+        \begin{equivcond}
+            \item For all $\lambda\geq 0$ and $\Delta\geq 0$,
+            \begin{equation}
+                \label{eq:binary_chi_identity}
+                1+\chi^2(\pi_{\lambda+\Delta}\mid\pi_{\lambda})
+                =\frac{Z(\lambda+2\Delta)Z(\lambda)}{Z(\lambda+\Delta)^2},
+                \qquad
+                \log\bigl\{1+\chi^2(\pi_{\lambda+\Delta}\mid\pi_{\lambda})\bigr\}
+                =\int_0^{\Delta}\!\!\int_0^{\Delta}\! V(\lambda+u+v)\,\dd u\,\dd v .
+            \end{equation}
+            \item Define $\lambda_{-1}=0$ and, for $t\geq0$,
+            $\lambda_t=\lambda_{t-1}+\Delta_t$ with $\Delta_t$ the largest number
+            in $(0,1-\lambda_{t-1}]$ such that
+            \begin{equation}
+                \label{eq:binary_schedule}
+                \Delta_t^2\max\bigl\{V(\lambda):\lambda\in[\lambda_{t-1},
+                \lambda_{t-1}+2\Delta_t]\bigr\}\ \leq\ \log 2 .
+            \end{equation}
+            Then $(\pi_t)_{t=-1}^{T}$ satisfies
+            Assumption~\ref{ass:chisquare_is_small} and
+            $T+1\leq\lceil\sqrt{\bar V/\log 2}\,\rceil$.
+            \item Assume moreover that there is $\kappa_R\geq1$ with
+            $V(\mu)\leq\kappa_R V(\lambda)$ whenever $\lambda\in[0,1]$,
+            $\mu\in[0,2]$ and $\abs{\mu-\lambda}\leq2\sqrt{\log2/V(\lambda)}$.
+            Then the schedule of~(ii) satisfies
+            \begin{equation*}
+                T+1\ \leq\ \frac{\kappa_R}{\sqrt{\log 2}}\int_0^1\sqrt{V(\lambda)}\,\dd\lambda
+                \ \leq\ \frac{\kappa_R}{\sqrt{\log 2}}\sqrt{\mathcal{J}},
+                \qquad
+                \mathcal{J}\coloneq\KL(\nu\mid\pi)+\KL(\pi\mid\nu),
+            \end{equation*}
+            where $\pi=\pi_1$.
+        \end{equivcond}
+    \end{proposition}
+
+    \begin{proof}
+        \emph{(i)} Since $\ambientspace$ is finite and $m>0$,
+        $Z(\lambda)\in(0,\infty)$ for every $\lambda\in\bbR$, and
+        $\pi_{\lambda+\Delta}\ll\pi_\lambda$ because both have full support. By
+        the definition of the $\chi^2$-divergence,
+        \begin{equation*}
+            1+\chi^2(\pi_{\lambda+\Delta}\mid\pi_\lambda)
+            =\sum_{x}\frac{\pi_{\lambda+\Delta}(x)^2}{\pi_\lambda(x)}
+            =\frac{Z(\lambda)}{Z(\lambda+\Delta)^2}
+            \sum_{x}\nu(x)m(x)^{2(\lambda+\Delta)-\lambda}
+            =\frac{Z(\lambda+2\Delta)Z(\lambda)}{Z(\lambda+\Delta)^2}.
+        \end{equation*}
+        Let $\psi=\log Z$, the cumulant generating function of $\log m$ under
+        $\nu$; it is infinitely differentiable with
+        $\psi'(\lambda)=\bbE_{\pi_\lambda}[\log m]$ and $\psi''(\lambda)=V(\lambda)$.
+        Fix $\lambda$ and set, for $\Delta\geq0$,
+        $\Phi(\Delta)=\psi(\lambda+2\Delta)+\psi(\lambda)-2\psi(\lambda+\Delta)$ and
+        $\Psi(\Delta)=\int_0^{\Delta}\!\int_0^{\Delta}V(\lambda+u+v)\dd u\dd v$.
+        The left-hand side of the second identity is $\Phi(\Delta)$. We have
+        $\Phi(0)=\Psi(0)=0$ and, differentiating under the integral sign,
+        \begin{equation*}
+            \Psi'(\Delta)=\int_0^{\Delta}\!V(\lambda+\Delta+v)\dd v
+            +\int_0^{\Delta}\!V(\lambda+u+\Delta)\dd u
+            =2\bigl\{\psi'(\lambda+2\Delta)-\psi'(\lambda+\Delta)\bigr\}=\Phi'(\Delta),
+        \end{equation*}
+        so $\Phi\equiv\Psi$.
+
+        \emph{(ii)} By~\eqref{eq:binary_chi_identity} the integrand is evaluated
+        only on $[\lambda_{t-1},\lambda_{t-1}+2\Delta_t]$, so
+        \eqref{eq:binary_schedule} gives
+        $\log\{1+\chi^2(\pi_t\mid\pi_{t-1})\}\leq\log2$, which is
+        Assumption~\ref{ass:chisquare_is_small}. The left-hand side
+        of~\eqref{eq:binary_schedule} is at most $\Delta_t^2\bar V$, because
+        $\lambda_{t-1}+2\Delta_t\leq2-\lambda_{t-1}\leq2$; so the constraint is met
+        by any $\Delta\leq\sqrt{\log2/\bar V}$, and since $\Delta_t$ is the largest
+        admissible step, $\Delta_t\geq\min\{1-\lambda_{t-1},\sqrt{\log2/\bar V}\}$.
+        Hence at most $\lceil\sqrt{\bar V/\log2}\,\rceil$ steps reach $1$, and
+        $\lambda_{-1},\dots,\lambda_T$ counts $T+1$ steps.
+
+        \emph{(iii)} Under the regularity hypothesis, any
+        $\Delta\leq\sqrt{\log2/(\kappa_RV(\lambda_{t-1}))}$ satisfies
+        $2\Delta\leq2\sqrt{\log2/V(\lambda_{t-1})}$, hence
+        $\max_{[\lambda_{t-1},\lambda_{t-1}+2\Delta]}V\leq\kappa_RV(\lambda_{t-1})$
+        and the constraint holds; so
+        $\Delta_t\geq\sqrt{\log2/(\kappa_RV(\lambda_{t-1}))}$. Applying regularity
+        a second time, $V(\lambda_{t-1})\leq\kappa_RV(\lambda)$ for
+        $\lambda\in[\lambda_{t-1},\lambda_t]$, so
+        \begin{equation*}
+            T+1=\sum_t\frac{\Delta_t}{\Delta_t}
+            \leq\sum_t\Delta_t\sqrt{\frac{\kappa_RV(\lambda_{t-1})}{\log2}}
+            \leq\frac{\kappa_R}{\sqrt{\log2}}\sum_t\int_{\lambda_{t-1}}^{\lambda_t}
+            \sqrt{V(\lambda)}\,\dd\lambda
+            =\frac{\kappa_R}{\sqrt{\log2}}\int_0^1\sqrt{V(\lambda)}\,\dd\lambda .
+        \end{equation*}
+        Cauchy--Schwarz gives $\int_0^1\sqrt V\leq(\int_0^1V)^{1/2}$, and
+        $\int_0^1V=\psi'(1)-\psi'(0)=\bbE_\pi[\log m]-\bbE_\nu[\log m]$. Since
+        $\dd\pi/\dd\nu=m/Z(1)$, we have $\KL(\pi\mid\nu)=\bbE_\pi[\log m]-\log Z(1)$
+        and $\KL(\nu\mid\pi)=\log Z(1)-\bbE_\nu[\log m]$, whose sum is
+        $\mathcal{J}$.
+    \end{proof}
+
+    It remains to bound $\mathcal{J}$. Write
+    \begin{equation}
+        \label{eq:binary_E}
+        \mathcal{E}\coloneq\frac{\norm{X\beta^\star}_2^2}{\sigma_0^2}
+    \end{equation}
+    for the signal energy.
+
+    \begin{corollary}
+        \label{cor:binary_J}
+        Assume $\kappa\geq1+c$ with $d^{-c}\leq1/2$, $n\geq32(rs_0+\Ltil)\log d$,
+        place yourself on $\mathcal{H}_n$, and assume
+        $m(x^\star)=\max_{x\in\ambientspace}m(x)$. Then
+        \begin{equation*}
+            \mathcal{J}\ \leq\ \alpha\,s^\star_+\log d+c_g s^\star_++24\,\mathcal{E}
+            +\bigl(36\Ltil+12rs^\star\bigr)\log d,
+            \qquad c_g\coloneq\tfrac12\log(2c_2),
+            \quad s^\star_+\coloneq\max(s^\star,2).
+        \end{equation*}
+    \end{corollary}
+
+    \begin{proof}
+        From the proof of Proposition~\ref{prop:binary_horizon}(iii),
+        $\mathcal{J}=\bbE_\pi[\log m]-\bbE_\nu[\log m]$. By hypothesis $m$ attains
+        its maximum at $x^\star$, so $\bbE_\pi[\log m]\leq\log m(x^\star)$ and
+        $\mathcal{J}\leq\bbE_{x\sim\nu}\bigl[\log\{m(x^\star)/m(x)\}\bigr]$.
+        By~\eqref{eq:binary_m}, for any $x\in\ambientspace$,
+        \begin{equation*}
+            \log\frac{m(x^\star)}{m(x)}
+            =\tfrac12\log(1+g)\bigl(\abs{x}-s^\star\bigr)
+            +\frac n2\log\frac{1+g(1-R^2_{x})}{1+g(1-R^2_{x^\star})} .
+        \end{equation*}
+        For the first term, $g\geq1$ and $g\leq c_2d^{2\alpha}$ give
+        $\tfrac12\log(1+g)\leq\alpha\log d+c_g$, and $\abs{x}-s^\star\leq\abs{x}$,
+        so it is at most $(\alpha\log d+c_g)\bbE_\nu[\abs{x}]$. Since
+        $\nu(\abs{x}=k)/\nu(\abs{x}=0)\leq\binom dkd^{-\kappa k}\leq d^{k(1-\kappa)}
+        \leq2^{-k}$ under $\kappa\geq1+c$ and $d^{-c}\leq1/2$, we get
+        $\bbE_\nu[\abs{x}]\leq\sum_{k\geq1}k2^{-k}=2\leq s^\star_+$, where
+        $s^\star_+\coloneq\max(s^\star,2)$, and the first term is at most
+        $(\alpha\log d+c_g)s^\star_+$.
+        For the second term, write $A=\norm{(I-\Proj_{x^\star})y}_2^2$, so that
+        $1-R^2_{x^\star}=A/\norm{y}_2^2$. If $R^2_{x^\star}<R^2_x$ the ratio is
+        less than $1$ and there is nothing to prove, so assume
+        $R^2_{x^\star}\geq R^2_x$; then
+        \begin{equation*}
+            \frac{1+g(1-R^2_{x})}{1+g(1-R^2_{x^\star})}
+            =1+\frac{g(R^2_{x^\star}-R^2_{x})}{1+g(1-R^2_{x^\star})}
+            \leq1+\frac{R^2_{x^\star}-R^2_x}{1-R^2_{x^\star}}
+            \leq1+\frac{\norm{\Proj_{x^\star}y}_2^2}{A},
+        \end{equation*}
+        using $1+g(1-R^2_{x^\star})\geq g(1-R^2_{x^\star})$ and dropping
+        $-\norm{\Proj_xy}_2^2\leq0$. Hence, by $\log(1+u)\leq u$, the second term
+        is at most $\tfrac n2\norm{\Proj_{x^\star}y}_2^2/A$.
+        Since $(I-\Proj_{x^\star})X_{x^\star}\beta^\star_{x^\star}=0$, we have
+        $(I-\Proj_{x^\star})y=(I-\Proj_{x^\star})(X_{S^c}\beta^\star_{S^c}+w)$, and
+        $\norm{a-b}_2^2\geq\tfrac12\norm a_2^2-\norm b_2^2$ gives
+        $A\geq\tfrac12\norm{(I-\Proj_{x^\star})w}_2^2-\norm{X_{S^c}\beta^\star_{S^c}}_2^2$.
+        On $B_n$, $w^{\top}\Proj_{x^\star}w\leq s_0r\sigma_0^2\log d$; on $C_n$,
+        $\norm w_2^2\geq n\sigma_0^2/2$; and Assumption~A gives
+        $\norm{X_{S^c}\beta^\star_{S^c}}_2^2\leq\Ltil\sigma_0^2\log d$. With
+        $n\geq32(rs_0+\Ltil)\log d$ this gives $A\geq n\sigma_0^2/8$. For the
+        numerator, $\norm{a+b+c}_2^2\leq3(\norm a^2+\norm b^2+\norm c^2)$ and
+        $\norm{\Proj_{x^\star}u}_2\leq\norm u_2$ give
+        $\norm{\Proj_{x^\star}y}_2^2\leq3\norm{X_S\beta^\star_S}_2^2
+        +3\Ltil\sigma_0^2\log d+3rs^\star\sigma_0^2\log d$ and
+        $\norm{X_S\beta^\star_S}_2^2\leq2\sigma_0^2\mathcal{E}+2\Ltil\sigma_0^2\log d$.
+        Combining, $\tfrac n2\norm{\Proj_{x^\star}y}_2^2/A
+        \leq4\norm{\Proj_{x^\star}y}_2^2/\sigma_0^2
+        \leq24\mathcal{E}+(36\Ltil+12rs^\star)\log d$, uniformly in $x$.
+    \end{proof}
+
+    At the detection threshold, where
+    $C_\beta^2\asymp(L+\Ltil+\alpha+\kappa)\sigma_0^2\log d/n$, one has
+    $\mathcal{E}=\OO(s^\star\log d)$ and therefore
+    \begin{equation}
+        \label{eq:binary_T}
+        \mathcal{J}=\OO\bigl((\alpha+L+\Ltil)\,s^\star_+\log d\bigr),
+        \qquad
+        T=\OO\bigl(\sqrt{(\alpha+L+\Ltil)\,s^\star_+\log d}\bigr).
+    \end{equation}
+    The horizon is governed by the true sparsity $s^\star$, not by the truncation
+    level $s_0$, and $n$ enters only through $\mathcal{E}$.
+
+    \subsection{The spectral gap at every temperature}
+    \label{sub:binary_gap}
+
+    Theorem~2 of~\citet{YangWainwrightJordan2016} bounds the spectral gap of
+    $K_1$. Assumption~\ref{ass:spg} needs a bound for all $T+1$ targets of the
+    path~\eqref{eq:binary_path}, and Theorem~\ref{th:main_thm} needs one for
+    $\tau_\beta$ as well. Their proof uses a canonical path ensemble on the whole
+    of $\ambientspace$, directed at $x^\star$. That ensemble is the wrong object
+    away from $\lambda=1$: at $\lambda=0$ the target is the prior, which
+    concentrates on the null model, so paths directed at $x^\star$ are congested
+    near $x^\star$ and the resulting bound is vacuous. We therefore use a
+    different route, in which no path ensemble on $\ambientspace$ appears. Write
+    \begin{equation}
+        \label{eq:binary_blocks}
+        \mathcal{N}\coloneq[d]\setminus x^\star,
+        \qquad
+        B_T\coloneq\{x\in\ambientspace: x\cap x^\star=T\}
+        =\{T\cup U: U\subseteq\mathcal{N},\ \abs{U}\leq s_0-\abs{T}\},
+        \qquad T\subseteq x^\star,
+    \end{equation}
+    so that $\ambientspace=\bigsqcup_{T\subseteq x^\star}B_T$. Inside a block the
+    influential covariates are frozen and only null covariates move; between
+    blocks only influential covariates move. We bound the two parts separately
+    and combine them with Lemma~\ref{lemma:binary_decomposition} below. The point
+    of the path~\eqref{eq:binary_path} is~\ref{P:penalty}: the factor $d^{-\kappa}$
+    charged for each null covariate does not weaken as $\lambda$ decreases, so the
+    within-block bound is uniform in $\lambda$; the across-block part lives on
+    $2^{s^\star}$ states and is bounded by brute force.
+
+    \subsubsection{A decomposition inequality}
+
+    \begin{lemma}
+        \label{lemma:binary_decomposition}
+        Let $\mu$ be a probability measure with full support on a finite set
+        $\ambientspace$, let $K$ be $\mu$-reversible, and let
+        $\ambientspace=\bigsqcup_{a\in\mathcal{A}}B_a$ be a partition. Write
+        $a(x)$ for the index with $x\in B_{a(x)}$, $\mu_a=\mu(\cdot\mid B_a)$,
+        $\bar\mu(a)=\mu(B_a)$, $\bar f(a)=\bbE_{\mu_a}[f]$, and let $\bar K$ be
+        the kernel on $\mathcal{A}$ with
+        $\bar K(a,b)=\bar\mu(a)^{-1}\sum_{x\in B_a}\mu(x)K(x,B_b)$ for $a\neq b$.
+        Suppose that for all $f$ and all $\bar g$
+        \begin{equation}
+            \label{eq:binary_two_poincare}
+            \sum_{a}\bar\mu(a)\Var_{\mu_a}(f)\ \leq\ \frac{1}{\gamma_{\mathrm{in}}}
+            \mathcal{E}_{K,\mu}(f),
+            \qquad
+            \Var_{\bar\mu}(\bar g)\ \leq\ \frac{1}{\bar\gamma}
+            \mathcal{E}_{\bar K,\bar\mu}(\bar g).
+        \end{equation}
+        Then for all $f$,
+        \begin{equation*}
+            \Var_\mu(f)\ \leq\
+            \left(\frac{1}{\gamma_{\mathrm{in}}}+\frac{3}{\bar\gamma}
+            +\frac{3}{\bar\gamma\,\gamma_{\mathrm{in}}}\right)
+            \mathcal{E}_{K,\mu}(f).
+        \end{equation*}
+        In particular, if $K$ is non-negative definite and
+        $\gamma_{\mathrm{in}},\bar\gamma\leq1$, then
+        $\Gap(K)\geq\gamma_{\mathrm{in}}\bar\gamma/7$.
+    \end{lemma}
+
+    \begin{proof}
+        $\bar K$ is $\bar\mu$-reversible, because
+        $\bar\mu(a)\bar K(a,b)=\sum_{x\in B_a,y\in B_b}\mu(x)K(x,y)$ is symmetric
+        in $(a,b)$ by the reversibility of $K$. Write $Q(x,y)=\mu(x)K(x,y)$,
+        $Q_{ab}=\sum_{x\in B_a,y\in B_b}Q(x,y)$ and
+        $V_{\mathrm{in}}=\sum_a\bar\mu(a)\Var_{\mu_a}(f)$.
+
+        Fix $a\neq b$, $x\in B_a$, $y\in B_b$. From
+        $\bar f(a)-\bar f(b)=\{\bar f(a)-f(x)\}+\{f(x)-f(y)\}+\{f(y)-\bar f(b)\}$
+        and $(u+v+w)^2\leq3(u^2+v^2+w^2)$,
+        \begin{equation*}
+            \{\bar f(a)-\bar f(b)\}^2\leq
+            3\bigl[\{f(x)-\bar f(a)\}^2+\{f(x)-f(y)\}^2+\{f(y)-\bar f(b)\}^2\bigr].
+        \end{equation*}
+        Multiply by $Q(x,y)$, sum over $x\in B_a$ and $y\in B_b$, sum over ordered
+        pairs $a\neq b$, and halve. The middle term gives at most
+        $3\mathcal{E}_{K,\mu}(f)$. For the first term,
+        \begin{equation*}
+            \sum_{a\neq b}\sum_{x\in B_a,y\in B_b}\!\!Q(x,y)\{f(x)-\bar f(a)\}^2
+            =\sum_{x}\mu(x)K(x,\ambientspace\setminus B_{a(x)})\{f(x)-\bar f(a(x))\}^2
+            \leq V_{\mathrm{in}},
+        \end{equation*}
+        using $K(x,\cdot)\leq1$ and
+        $\sum_x\mu(x)\{f(x)-\bar f(a(x))\}^2=V_{\mathrm{in}}$. The third term is
+        the same by symmetry. Hence
+        \begin{equation}
+            \label{eq:binary_proj_ineq}
+            \mathcal{E}_{\bar K,\bar\mu}(\bar f)
+            =\tfrac12\sum_{a\neq b}Q_{ab}\{\bar f(a)-\bar f(b)\}^2
+            \ \leq\ 3\,\mathcal{E}_{K,\mu}(f)+3V_{\mathrm{in}} .
+        \end{equation}
+        By the law of total variance and then
+        \eqref{eq:binary_two_poincare}, \eqref{eq:binary_proj_ineq},
+        \begin{equation*}
+            \Var_\mu(f)=V_{\mathrm{in}}+\Var_{\bar\mu}(\bar f)
+            \leq V_{\mathrm{in}}+\frac{3\mathcal{E}_{K,\mu}(f)+3V_{\mathrm{in}}}{\bar\gamma}
+            \leq\left(\frac{1}{\gamma_{\mathrm{in}}}+\frac{3}{\bar\gamma}
+            +\frac{3}{\bar\gamma\gamma_{\mathrm{in}}}\right)\mathcal{E}_{K,\mu}(f).
+        \end{equation*}
+        The last claim follows from
+        $1/\gamma_{\mathrm{in}}+3/\bar\gamma+3/(\bar\gamma\gamma_{\mathrm{in}})
+        \leq7/(\bar\gamma\gamma_{\mathrm{in}})$ when
+        $\gamma_{\mathrm{in}},\bar\gamma\leq1$.
+    \end{proof}
+
+    \subsubsection{One condition on the design}
+
+    Everything below rests on one bound, which says that a covariate outside
+    $x^\star$ never buys much likelihood.
+
+    \begin{assumption}
+        \label{ass:binary_null}
+        There is $a_0\geq0$ with $a_0\leq\alpha$ such that, for every
+        $x\in\ambientspace$ with $\abs x<s_0$ and every $j\in\mathcal{N}\setminus x$,
+        \begin{equation*}
+            \frac{m(x\cup\{j\})}{m(x)}\ \leq\ d^{\,a_0-\alpha}.
+        \end{equation*}
+    \end{assumption}
+
+    \begin{remark}
+        \label{rem:binary_null}
+        For $x\supseteq x^\star$ the bound holds on $\mathcal{H}_n$ with
+        $a_0=8(L+\Ltil)-1$: this is the overfitted computation
+        of~\citet[proof of Th.~2, overfitted case]{YangWainwrightJordan2016},
+        which gives $h(x\cup\{j\})/h(x)\leq d^{8(L+\Ltil)-1-\alpha-\kappa}$ for
+        every $j\notin x\cup x^\star$, and $h=p\,m$ contributes the factor
+        $d^{-\kappa}$. The only random quantity in that computation is
+        $w^{\top}(\Proj_{x\cup\{j\}}-\Proj_x)w$, which the event $A_n$ bounds by
+        $L\sigma_0^2\log d$ simultaneously over all nested pairs, so the bound is
+        uniform in $(x,j)$. Assumption~\ref{ass:binary_null} extends it to
+        underfitted $x$, where a null covariate could in principle stand in for a
+        missing influential one; it holds with the same $a_0$ when the residualised
+        columns $(I-\Proj_{x^\star})X_j$, $j\in\mathcal{N}$, are orthogonal to
+        $X_{x^\star}$, and more generally it is a condition on the quantity
+        $\omega(X)$ of Assumption~D of~\citet{YangWainwrightJordan2016}. The
+        requirement $a_0\leq\alpha$ is a condition on $g$ alone, and Assumption~C
+        constrains only $\kappa+\alpha$ from below, so it can always be met.
+    \end{remark}
+
+    The two structural consequences we need are immediate.
+
+    \begin{lemma}
+        \label{lemma:binary_block_mass}
+        Assume~\ref{ass:binary_null} and $\kappa\geq1+c$ with $d^{-c}\leq1/2$.
+        Then for every $\lambda\in[0,1]$, every $T\subseteq x^\star$ and every
+        $U\subseteq\mathcal{N}$ with $\abs T+\abs U\leq s_0$,
+        \begin{equation}
+            \label{eq:binary_Uratio}
+            \frac{\pi_\lambda(T\cup U)}{\pi_\lambda(T)}\ \leq\ d^{-\kappa\abs U},
+            \qquad\text{and consequently}\qquad
+            \pi_\lambda(T)\ \leq\ \pi_\lambda(B_T)\ \leq\ 2\,\pi_\lambda(T).
+        \end{equation}
+    \end{lemma}
+
+    \begin{proof}
+        Order $U=\{j_1,\dots,j_u\}$ and write $U_i=\{j_1,\dots,j_i\}$. Every
+        $T\cup U_i$ lies in $\ambientspace$ and has $\abs{T\cup U_i}<s_0$ for
+        $i<u$, so Assumption~\ref{ass:binary_null} applies at each step and
+        \begin{equation*}
+            \frac{\pi_\lambda(T\cup U)}{\pi_\lambda(T)}
+            =d^{-\kappa u}\prod_{i=1}^{u}
+            \left\{\frac{m(T\cup U_i)}{m(T\cup U_{i-1})}\right\}^{\lambda}
+            \leq d^{-\kappa u}\,d^{\,\lambda u(a_0-\alpha)}\leq d^{-\kappa u},
+        \end{equation*}
+        the last step because $a_0\leq\alpha$ and $\lambda\geq0$. Summing over $U$
+        and using $\binom du\leq d^u$,
+        $\pi_\lambda(B_T)/\pi_\lambda(T)\leq\sum_{u\geq0}(d^{1-\kappa})^u
+        \leq(1-d^{-c})^{-1}\leq2$.
+    \end{proof}
+
+    \subsubsection{Inside a block}
+
+    \begin{proposition}
+        \label{prop:binary_within}
+        Assume~\ref{ass:binary_null} and $\kappa\geq1+c$ with $d^{-c}\leq1/2$.
+        Then for every $\lambda\in[0,1]$ and every $f:\ambientspace\to\bbR$,
+        \begin{equation*}
+            \sum_{T\subseteq x^\star}\pi_\lambda(B_T)\Var_{\pi_\lambda(\cdot\mid B_T)}(f)
+            \ \leq\ 16\,d\,s_0\ \mathcal{E}_{K_\lambda,\pi_\lambda}(f),
+            \qquad\text{that is}\qquad
+            \gamma_{\mathrm{in}}\ \geq\ \frac{1}{16\,d\,s_0}.
+        \end{equation*}
+    \end{proposition}
+
+    \begin{proof}
+        Fix $T$ and write $\mu_T=\pi_\lambda(\cdot\mid B_T)$ and $K_T$ for the
+        restriction of $K_\lambda$ to $B_T$, that is $K_T(x,y)=K_\lambda(x,y)$ for
+        $x\neq y$ in $B_T$ and $K_T(x,x)=1-\sum_{y\in B_T\setminus\{x\}}K_\lambda(x,y)$.
+        $K_T$ is $\mu_T$-reversible and lazy, hence non-negative definite, and
+        \begin{equation}
+            \label{eq:binary_within_form}
+            \sum_T\pi_\lambda(B_T)\,\mathcal{E}_{K_T,\mu_T}(f)
+            \ \leq\ \mathcal{E}_{K_\lambda,\pi_\lambda}(f),
+        \end{equation}
+        because $\pi_\lambda(B_T)\mu_T(x)K_T(x,y)=\pi_\lambda(x)K_\lambda(x,y)$
+        for $x\neq y$ in $B_T$, and the pairs inside blocks are a subset of all
+        pairs. It is therefore enough to prove $\Gap(K_T)\geq1/(16ds_0)$.
+
+        Identify $B_T$ with $\{U\subseteq\mathcal{N}:\abs U\leq s_0-\abs T\}$. We
+        use canonical paths with centre $U=\emptyset$: from $U$, delete the
+        elements of $U$ one at a time in decreasing order of index; the path from
+        $U$ to $U'$ is the path from $U$ to $\emptyset$ followed by the reverse of
+        the path from $U'$ to $\emptyset$. All the states visited lie in $B_T$,
+        and every edge is a single flip of a null covariate, so it is a proposal
+        of $K_T$. The longest path has at most $2s_0$ edges.
+
+        Consider the edge $e=(V,V\setminus\{j\})$ with $j=\max V$. By
+        Lemma~\ref{lemma:binary_block_mass} applied twice,
+        $\pi_\lambda(V\setminus\{j\})\geq\pi_\lambda(V)$, hence
+        \begin{equation*}
+            Q(e)=\pi_\lambda(T\cup V)K_\lambda\bigl(T\cup V,T\cup V\setminus\{j\}\bigr)
+            \ \geq\ \frac{1}{4d}\min\bigl\{\pi_\lambda(T\cup V),
+            \pi_\lambda(T\cup V\setminus\{j\})\bigr\}
+            =\frac{\pi_\lambda(T\cup V)}{4d},
+        \end{equation*}
+        using~\eqref{eq:binary_edge} with a single flip, whose proposal
+        probability is $1/(4d)$. A pair $(U,U')$ has $e$ on its path only if $e$
+        lies on the path from $U$ to $\emptyset$ or on the path from $U'$ to
+        $\emptyset$, which forces $U\supseteq V$ with $\min(U\setminus V)>j$, or
+        the same for $U'$. Writing $\mathcal{P}(V)$ for the set of such $U$, and
+        using~\eqref{eq:binary_Uratio} together with $\binom du\leq d^u$,
+        \begin{equation*}
+            \sum_{U\in\mathcal{P}(V)}\frac{\pi_\lambda(T\cup U)}{\pi_\lambda(T\cup V)}
+            \ \leq\ \sum_{W\subseteq\mathcal{N}\setminus V}d^{-\kappa\abs W}
+            \ \leq\ \sum_{w\geq0}(d^{1-\kappa})^w\ \leq\ 2 ,
+        \end{equation*}
+        where the first inequality follows by applying the argument of
+        Lemma~\ref{lemma:binary_block_mass} with $T\cup V$ in place of $T$. Hence
+        the congestion satisfies
+        \begin{equation*}
+            \varrho\ \leq\ \max_{e}\frac{1}{Q(e)}
+            \sum_{(U,U'):\,e\in\Gamma_{U,U'}}\mu_T(U)\mu_T(U')
+            \ \leq\ \max_{V}\frac{4d\,\mu_T[\mathcal{P}(V)]}{\mu_T(V)}
+            \ \leq\ 8d,
+        \end{equation*}
+        where we bounded the sum over $U'$ by $\sum_{U'}\mu_T(U')=1$. Sinclair's
+        bound~\citep{Sinclair1992} gives
+        $\Gap(K_T)\geq\{\varrho\cdot2s_0\}^{-1}\geq1/(16ds_0)$, and the claim
+        follows from~\eqref{eq:binary_within_form}.
+    \end{proof}
+
+    \subsubsection{Between blocks}
+
+    The projected chain lives on the subsets of $x^\star$, of which there are
+    $2^{s^\star}$. We bound its gap by the mass of its lightest state, which
+    Lemma~\ref{lemma:binary_ratio} below controls.
+
+    \begin{proposition}
+        \label{prop:binary_across}
+        Assume~\ref{ass:binary_null} and $\kappa\geq1+c$ with $d^{-c}\leq1/2$.
+        Let $\bar\pi_\lambda(T)=\pi_\lambda(B_T)$ and let $\bar K_\lambda$ be the
+        projected kernel of Lemma~\ref{lemma:binary_decomposition}. Then
+        \begin{equation*}
+            \Gap(\bar K_\lambda)\ \geq\ \frac{\min_{T}\bar\pi_\lambda(T)}{8\,d\,s^\star} .
+        \end{equation*}
+    \end{proposition}
+
+    \begin{proof}
+        For $T\subsetneq x^\star$ and $j\in x^\star\setminus T$, the states $T$ and
+        $T\cup\{j\}$ belong to $B_T$ and $B_{T\cup\{j\}}$ and differ by a single
+        flip, and $\abs T<s^\star\leq s_0$, so~\eqref{eq:binary_edge} and
+        Lemma~\ref{lemma:binary_block_mass} give
+        \begin{equation*}
+            \bar Q(T,T\cup\{j\})\ \geq\ \pi_\lambda(T)K_\lambda(T,T\cup\{j\})
+            \ \geq\ \frac{1}{4d}\min\{\pi_\lambda(T),\pi_\lambda(T\cup\{j\})\}
+            \ \geq\ \frac{1}{8d}\min\{\bar\pi_\lambda(T),\bar\pi_\lambda(T\cup\{j\})\},
+        \end{equation*}
+        so $\bar Q(e)\geq\min_T\bar\pi_\lambda(T)/(8d)$ for every such edge $e$.
+        Take as canonical path from $T$ to $T'$ the path $T\to T\cap T'\to T'$,
+        which removes the elements of $T\setminus T'$ one at a time and then adds
+        those of $T'\setminus T$; it has at most $s^\star$ edges, all of the above
+        form. Bounding the sum over pairs by
+        $\sum_{T,T'}\bar\pi_\lambda(T)\bar\pi_\lambda(T')=1$, the congestion is at
+        most $8d/\min_T\bar\pi_\lambda(T)$, and Sinclair's
+        bound~\citep{Sinclair1992} gives the claim.
+    \end{proof}
+
+    \begin{lemma}
+        \label{lemma:binary_ratio}
+        Assume~\ref{ass:binary_null}, $\kappa\geq1+c$ with $d^{-c}\leq1/2$,
+        $n\geq32(rs_0+\Ltil)\log d$, and place yourself on $\mathcal{H}_n$. Then
+        for every $\lambda\in[0,1]$,
+        \begin{equation*}
+            \min_{T\subseteq x^\star}\bar\pi_\lambda(T)\ \geq\
+            \frac{1}{2^{s^\star+1}}\,d^{-\kappa s^\star}e^{-\Omega_\star},
+            \qquad
+            \Omega_\star\coloneq\alpha s^\star_+\log d+c_gs^\star_++24\,\mathcal{E}
+            +\bigl(36\Ltil+12rs^\star\bigr)\log d .
+        \end{equation*}
+    \end{lemma}
+
+    \begin{proof}
+        Let $T,T'\subseteq x^\star$. By Lemma~\ref{lemma:binary_block_mass},
+        $\bar\pi_\lambda(T)/\bar\pi_\lambda(T')\geq\tfrac12\pi_\lambda(T)/\pi_\lambda(T')$,
+        and
+        $\pi_\lambda(T)/\pi_\lambda(T')=d^{-\kappa(\abs T-\abs{T'})}
+        \{m(T)/m(T')\}^{\lambda}\geq d^{-\kappa s^\star}\{m(T)/m(T')\}^{\lambda}$.
+        It remains to bound $m(T')/m(T)$ from above by $e^{\Omega_\star}$, since
+        then $\{m(T)/m(T')\}^\lambda\geq e^{-\lambda\Omega_\star}\geq e^{-\Omega_\star}$.
+        As in the proof of Corollary~\ref{cor:binary_J},
+        \begin{equation*}
+            \log\frac{m(T')}{m(T)}
+            =\tfrac12\log(1+g)\bigl(\abs{T}-\abs{T'}\bigr)
+            +\frac n2\log\frac{1+g(1-R^2_{T})}{1+g(1-R^2_{T'})} ,
+        \end{equation*}
+        whose first term is at most $(\alpha\log d+c_g)s^\star_+$. For the second,
+        both $T$ and $T'$ are subsets of $x^\star$, so
+        $\norm{(I-\Proj_{T'})y}_2^2\geq\norm{(I-\Proj_{x^\star})y}_2^2\geq n\sigma_0^2/8$
+        and $\norm{\Proj_Ty}_2^2\leq\norm{\Proj_{x^\star}y}_2^2$, the two bounds
+        established in that proof. The computation there then applies verbatim with
+        $x^\star$ replaced by $T$ in the numerator and by $T'$ in the denominator,
+        and bounds the second term by $24\mathcal{E}+(36\Ltil+12rs^\star)\log d$.
+        Finally $\max_T\bar\pi_\lambda(T)\geq2^{-s^\star}$, since the
+        $\bar\pi_\lambda(T)$ sum to $1$ over at most $2^{s^\star}$ states, so
+        $\min_T\bar\pi_\lambda(T)\geq2^{-s^\star}\min_{T,T'}
+        \bar\pi_\lambda(T)/\bar\pi_\lambda(T')$.
+    \end{proof}
+
+    \subsubsection{The bound}
+
+    \begin{theorem}
+        \label{th:binary_gap_all}
+        Assume~\ref{ass:binary_null}, $\kappa\geq1+c$ with $d^{-c}\leq1/2$,
+        $n\geq32(rs_0+\Ltil)\log d$, and place yourself on the event
+        $\mathcal{H}_n$, which has probability at least $1-6d^{-c'}$. Then, with
+        $\Omega_\star$ as in Lemma~\ref{lemma:binary_ratio}, for
+        \textbf{every} $\lambda\in[0,1]$,
+        \begin{equation}
+            \label{eq:binary_gap_all}
+            \Gap(K_\lambda)\ \geq\
+            \frac{1}{1792\ d^{2}\,s_0\,s^\star\ 2^{\,s^\star}\,d^{\,\kappa s^\star}\,
+            e^{\Omega_\star}} .
+        \end{equation}
+        In particular, if $\kappa,\alpha,L,\Ltil,r,c_2,s^\star=\OO(1)$ and the
+        signal sits at the detection threshold, so that
+        $\mathcal{E}=\OO(s^\star\log d)$ and $e^{\Omega_\star}=d^{\OO(1)}$, then
+        $\Gap(K_\lambda)\geq d^{-\OO(1)}/s_0$ uniformly in $\lambda\in[0,1]$, and
+        Assumption~\ref{ass:spg} holds along the whole
+        schedule~\eqref{eq:binary_schedule} with $\gamma$ equal to the right-hand
+        side of~\eqref{eq:binary_gap_all}.
+    \end{theorem}
+
+    \begin{proof}
+        Apply Lemma~\ref{lemma:binary_decomposition} with $\mu=\pi_\lambda$,
+        $K=K_\lambda$ and the partition~\eqref{eq:binary_blocks}.
+        Proposition~\ref{prop:binary_within} gives
+        $\gamma_{\mathrm{in}}\geq1/(16ds_0)$, and
+        Propositions~\ref{prop:binary_across} with
+        Lemma~\ref{lemma:binary_ratio} give
+        $\bar\gamma\geq2^{-s^\star-1}d^{-\kappa s^\star}e^{-\Omega_\star}/(8ds^\star)$.
+        Both are at most $1$, and $K_\lambda$ is lazy, hence non-negative definite,
+        so the last claim of Lemma~\ref{lemma:binary_decomposition} gives
+        $\Gap(K_\lambda)\geq\gamma_{\mathrm{in}}\bar\gamma/7$, which
+        is~\eqref{eq:binary_gap_all} after multiplying the constants
+        $7\cdot16\cdot8\cdot2=1792$.
+    \end{proof}
+
+    \begin{remark}
+        \label{rem:binary_price}
+        At $\lambda=1$ the bound~\eqref{eq:binary_gap_all} is weaker than the
+        bound $\OO(1/(ds_0^2))$ of Theorem~2
+        of~\citet{YangWainwrightJordan2016}, by a factor $d^{\OO(s^\star)}$. The
+        two are not competing: theirs holds at one temperature and is sharp there,
+        while~\eqref{eq:binary_gap_all} holds at every temperature, which is what
+        Assumption~\ref{ass:spg} requires. The loss has one source, the crude
+        bound $\min_T\bar\pi_\lambda(T)\geq2^{-s^\star}e^{-\Omega_\star}d^{-\kappa s^\star}$
+        of Lemma~\ref{lemma:binary_ratio}, which pays the full ratio between the
+        heaviest and the lightest subset of $x^\star$. That ratio is genuinely
+        large near $\lambda=1$, where $\bar\pi_1(\emptyset)$ is exponentially
+        small in $\mathcal{E}$; what is not genuine is paying it, since a walk on
+        $2^{s^\star}$ states with a unimodal profile mixes in $\OO(d\,s^\star)$
+        steps. Making that precise needs a statement that the free energy
+        $T\mapsto\log\bar\pi_\lambda(T)$ has no local maximum other than its mode,
+        for every $\lambda$. That statement holds when the log-likelihood gains of
+        the influential covariates are additive, that is when the residualised
+        columns $(I-\Proj_{x^\star\setminus\{j\}})X_j$, $j\in x^\star$, are
+        orthogonal; and it fails in the intermediate signal-to-noise example
+        of~\citet{YangWainwrightJordan2016}, where the chain is slowly mixing. So
+        the $2^{s^\star}$ and the $e^{\Omega_\star}$ in~\eqref{eq:binary_gap_all}
+        cannot both be removed without a condition ruling out that example.
+        Section~\ref{sub:binary_adapted} removes them by a different route:
+        an ensemble that follows the mode of $\pi_\lambda$.
+    \end{remark}
+
+    \subsubsection{A temperature-adapted path ensemble}
+    \label{sub:binary_adapted}
+
+    The bound of Theorem~\ref{th:binary_gap_all} pays, through
+    Lemma~\ref{lemma:binary_ratio}, the full ratio between the heaviest and the
+    lightest subset of $x^\star$. That factor is not real. We remove it with a
+    canonical path ensemble that moves with the temperature. The ensemble of
+    \citet{YangWainwrightJordan2016} is directed at $x^\star$, which is the mode
+    of $\pi_\lambda$ only at $\lambda=1$; we direct ours at the mode of
+    $\pi_\lambda$ itself. Write
+    \begin{equation}
+        \label{eq:binary_psi}
+        \psi_j(x)\coloneq\log\frac{m(x\cup\{j\})}{m(x)},
+        \qquad\text{so that}\qquad
+        \frac{\pi_\lambda(x\cup\{j\})}{\pi_\lambda(x)}
+        =\exp\bigl\{\lambda\psi_j(x)-\kappa\log d\bigr\},
+    \end{equation}
+    and, for $j\in x^\star$,
+    \begin{equation}
+        \label{eq:binary_spread}
+        \psi_j^-\coloneq\min_{x\subseteq x^\star\setminus\{j\}}\psi_j(x),
+        \qquad
+        \psi_j^+\coloneq\max_{x\subseteq x^\star\setminus\{j\}}\psi_j(x),
+        \qquad
+        \Delta\coloneq\max_{j\in x^\star}\bigl(\psi_j^+-\psi_j^-\bigr).
+    \end{equation}
+    $\Delta$ is the \emph{interaction spread}: the amount by which the gain from
+    adding an influential covariate depends on which other influential covariates
+    are already present. It vanishes when the residualised columns
+    $(I-\Proj_{x^\star\setminus\{j\}})X_j$, $j\in x^\star$, are orthogonal.
+    Assumption~\ref{ass:binary_null} plays the same role for the covariates
+    outside $x^\star$: it makes $\psi_j(x)\leq(a_0-\alpha)\log d\leq0$ there, so
+    those coordinates never move with $\lambda$.
+
+    \begin{definition}
+        \label{def:binary_ensemble}
+        Let $c_\lambda\subseteq x^\star$ maximise $\pi_\lambda$ over the subsets
+        of $x^\star$, ties broken by the lexicographic order. Define
+        $F_\lambda:\ambientspace\to\ambientspace$ by:
+        \begin{enumerate}[label=(\alph*),leftmargin=3em,noitemsep]
+            \item if $x\cap\mathcal{N}\neq\emptyset$, delete its largest index;
+            \item else if $c_\lambda\not\subseteq x$, add the smallest index of
+            $c_\lambda\setminus x$;
+            \item else if $x\supsetneq c_\lambda$, delete the smallest index of
+            $x\setminus c_\lambda$;
+            \item else $F_\lambda(x)=x=c_\lambda$.
+        \end{enumerate}
+        Let $\Gamma_{x,c_\lambda}$ be the orbit of $x$ under $F_\lambda$, and let
+        $\Gamma^\lambda$ be the ensemble whose path from $x$ to $x'$ follows
+        $\Gamma_{x,c_\lambda}$ to the first state it shares with
+        $\Gamma_{x',c_\lambda}$, then follows $\Gamma_{x',c_\lambda}$ backwards.
+    \end{definition}
+
+    \begin{lemma}
+        \label{lemma:binary_ensemble_valid}
+        $\Gamma^\lambda$ is a canonical path ensemble. Every edge it uses is a
+        single-flip proposal of $K_\lambda$, no exchange proposal is needed, and
+        the longest path has at most $2(s_0+s^\star)\leq4s_0$ edges.
+    \end{lemma}
+
+    \begin{proof}
+        The function $\Phi(x)=\abs{x\cap\mathcal{N}}+\abs{c_\lambda\triangle(x\cap x^\star)}$
+        drops by exactly $1$ at each of (a), (b), (c), and $\Phi(x)=0$ only at
+        $x=c_\lambda$; so each orbit reaches $c_\lambda$ in $\Phi(x)\leq s_0+s^\star$
+        steps and visits distinct states, and the concatenation in
+        Definition~\ref{def:binary_ensemble} is a simple path. Rule~(b) fires only
+        when $x\subseteq x^\star$, so the state it produces has at most
+        $s^\star<s_0$ elements and lies in $\ambientspace$; rules~(a) and~(c) only
+        delete. Each rule changes one coordinate, so each edge is a single flip.
+    \end{proof}
+
+    The next lemma is the reason the ensemble works at every temperature. It says
+    that although $F_\lambda$ need not move uphill, it can never move far
+    downhill, and the bound involves $\Delta$ alone --- not the ratio between the
+    heaviest and the lightest state, which is what
+    Lemma~\ref{lemma:binary_ratio} had to pay.
+
+    \begin{lemma}
+        \label{lemma:binary_drop}
+        Assume~\ref{ass:binary_null} and $\kappa\geq1+c$ with $d^{-c}\leq1/2$. For
+        every $\lambda\in[0,1]$ and every $z\in\ambientspace$ with
+        $z\neq c_\lambda$,
+        \begin{equation*}
+            \frac{\pi_\lambda(z)}{\pi_\lambda(F_\lambda(z))}\ \leq\ e^{\Delta}.
+        \end{equation*}
+        If moreover every $j\in x^\star$ satisfies the margin condition
+        \begin{equation}
+            \label{eq:binary_margin}
+            \text{either}\quad\lambda\psi_j^-\geq\kappa\log d+\log(2s^\star)
+            \quad\text{or}\quad\lambda\psi_j^+\leq\kappa\log d-\log(2s^\star),
+            \tag{$M_\lambda$}
+        \end{equation}
+        then $\pi_\lambda(F_\lambda(z))\geq2s^\star\pi_\lambda(z)$ for the edges
+        produced by rules~(b) and~(c), and
+        $\pi_\lambda(F_\lambda(z))\geq d^{\kappa}\pi_\lambda(z)$ for those
+        produced by rule~(a).
+    \end{lemma}
+
+    \begin{proof}
+        Rule~(a) deletes $j\in\mathcal{N}$, and by
+        Assumption~\ref{ass:binary_null} and~\eqref{eq:binary_psi},
+        $\pi_\lambda(z)/\pi_\lambda(z\setminus\{j\})
+        =\exp\{\kappa\log d-\lambda\psi_j(z\setminus\{j\})\}^{-1}\!\!$, that is
+        $\pi_\lambda(z\setminus\{j\})/\pi_\lambda(z)
+        =\exp\{\kappa\log d-\lambda\psi_j(z\setminus\{j\})\}\geq d^{\kappa}$,
+        since $\psi_j\leq0$ there. This proves both claims for rule~(a).
+
+        Rule~(b) adds $j\in c_\lambda\setminus z$ with $z\subseteq x^\star$. Since
+        $c_\lambda$ maximises $\pi_\lambda$ over the subsets of $x^\star$ and
+        $c_\lambda\setminus\{j\}$ is such a subset,
+        $\pi_\lambda(c_\lambda\setminus\{j\})\leq\pi_\lambda(c_\lambda)$, which
+        by~\eqref{eq:binary_psi} reads
+        \begin{equation}
+            \label{eq:binary_modeon}
+            \lambda\psi_j\bigl(c_\lambda\setminus\{j\}\bigr)\ \geq\ \kappa\log d .
+        \end{equation}
+        Hence
+        \begin{equation*}
+            \log\frac{\pi_\lambda(z)}{\pi_\lambda(z\cup\{j\})}
+            =\kappa\log d-\lambda\psi_j(z)
+            \ \overset{\eqref{eq:binary_modeon}}{\leq}\
+            \lambda\bigl\{\psi_j(c_\lambda\setminus\{j\})-\psi_j(z)\bigr\}
+            \ \leq\ \lambda(\psi_j^+-\psi_j^-)\ \leq\ \Delta,
+        \end{equation*}
+        the last two steps because both arguments are subsets of
+        $x^\star\setminus\{j\}$ and $\lambda\leq1$.
+
+        Rule~(c) deletes $j\in z\setminus c_\lambda$ with $z\subseteq x^\star$.
+        Now $c_\lambda\cup\{j\}$ is a subset of $x^\star$, so
+        $\pi_\lambda(c_\lambda\cup\{j\})\leq\pi_\lambda(c_\lambda)$, that is
+        $\lambda\psi_j(c_\lambda)\leq\kappa\log d$, and
+        \begin{equation*}
+            \log\frac{\pi_\lambda(z)}{\pi_\lambda(z\setminus\{j\})}
+            =\lambda\psi_j(z\setminus\{j\})-\kappa\log d
+            \ \leq\ \lambda\bigl\{\psi_j(z\setminus\{j\})-\psi_j(c_\lambda)\bigr\}
+            \ \leq\ \Delta .
+        \end{equation*}
+        Under~\eqref{eq:binary_margin}, $j\in c_\lambda$ forces the first
+        alternative --- otherwise $\lambda\psi_j^+\leq\kappa\log d-\log(2s^\star)$
+        would contradict~\eqref{eq:binary_modeon} --- so
+        $\kappa\log d-\lambda\psi_j(z)\leq-\log(2s^\star)$ in rule~(b); and
+        $j\notin c_\lambda$ forces the second, so
+        $\lambda\psi_j(z\setminus\{j\})-\kappa\log d\leq-\log(2s^\star)$ in
+        rule~(c).
+    \end{proof}
+
+    \begin{theorem}
+        \label{th:binary_gap_margin}
+        Assume~\ref{ass:binary_null}, $\kappa\geq1+c$ with $d^{-c}\leq1/2$, and
+        let $\lambda\in[0,1]$ satisfy the margin
+        condition~\eqref{eq:binary_margin}. Then
+        \begin{equation*}
+            \Gap(K_\lambda)\ \geq\ \frac{1}{64\,d\,s_0} .
+        \end{equation*}
+    \end{theorem}
+
+    \begin{proof}
+        By Lemma~\ref{lemma:binary_drop} every edge of $\Gamma^\lambda$ moves
+        uphill, so for $e=(z,F_\lambda(z))$, using~\eqref{eq:binary_edge} with a
+        single flip,
+        $Q(e)\geq\min\{\pi_\lambda(z),\pi_\lambda(F_\lambda(z))\}/(4d)
+        =\pi_\lambda(z)/(4d)$.
+
+        We bound $\pi_\lambda[\Prec(z)]/\pi_\lambda(z)$, where $\Prec(z)$ is the
+        set of $x$ whose orbit meets $z$. Rule~(a) fires before rules~(b)
+        and~(c), so an $x$ whose orbit meets $z$ has $x=z''\cup W$ with
+        $W\subseteq\mathcal{N}$ and $z''\subseteq x^\star$ determined as follows:
+        if $z\cap\mathcal{N}\neq\emptyset$ then $z''=z\cap x^\star$ and
+        $W\supseteq z\cap\mathcal{N}$ with $\min(W\setminus z)>\max(z\cap\mathcal{N})$;
+        if $z\subseteq x^\star$ then $W$ is arbitrary and $z''$ is any subset of
+        $x^\star$ whose orbit meets $z$. In both cases the sum factorises, and
+        \begin{equation*}
+            \sum_{W}\frac{\pi_\lambda(z''\cup W)}{\pi_\lambda(z'')}
+            \ \leq\ \sum_{w\geq0}\binom dw d^{-\kappa w}
+            \ \leq\ \sum_{w\geq0}(d^{1-\kappa})^w\ \leq\ 2
+        \end{equation*}
+        by Lemma~\ref{lemma:binary_block_mass}. For the influential factor, the
+        orbit of $z''$ differs from $z$ in $s$ coordinates of $x^\star$, so there
+        are at most $\binom{s^\star}{s}\leq(s^\star)^s$ such $z''$ at
+        distance $s$, and by the second part of Lemma~\ref{lemma:binary_drop}
+        each of the $s$ steps gains a factor $2s^\star$, so
+        $\pi_\lambda(z'')/\pi_\lambda(z)\leq(2s^\star)^{-s}$ and
+        \begin{equation*}
+            \sum_{z''}\frac{\pi_\lambda(z'')}{\pi_\lambda(z)}
+            \ \leq\ \sum_{s\geq0}\Bigl(\frac{s^\star}{2s^\star}\Bigr)^{s}\ \leq\ 2 .
+        \end{equation*}
+        Note that the count is $(s^\star)^s$ and not $\{(s^\star+1)d\}^s$: the
+        factor $d$ in the corresponding step of~\citet{YangWainwrightJordan2016}
+        comes from their exchange move, which $F_\lambda$ never uses
+        (Lemma~\ref{lemma:binary_ensemble_valid}). Hence
+        $\pi_\lambda[\Prec(z)]/\pi_\lambda(z)\leq4$ and, bounding the sum over the
+        second endpoint by $1$,
+        \begin{equation*}
+            \varrho(\Gamma^\lambda)\ \leq\ \max_z\ 4d\cdot
+            \frac{\pi_\lambda[\Prec(z)]}{\pi_\lambda(z)}\ \leq\ 16\,d .
+        \end{equation*}
+        With $\ell(\Gamma^\lambda)\leq4s_0$ from
+        Lemma~\ref{lemma:binary_ensemble_valid}, Sinclair's
+        bound~\citep{Sinclair1992} gives
+        $\Gap(K_\lambda)\geq\{16d\cdot4s_0\}^{-1}$.
+    \end{proof}
+
+    \begin{remark}
+        \label{rem:binary_beats}
+        The bound $1/(64ds_0)$ is a factor $s_0$ \emph{better} than the
+        $\OO(1/(ds_0^2))$ of Theorem~2 of~\citet{YangWainwrightJordan2016} at
+        $\lambda=1$, where~\eqref{eq:binary_margin} holds because
+        $\psi_j^-\geq(b_{\mathrm{un}}+\kappa)\log d$. The gain has one source: the
+        ensemble of Definition~\ref{def:binary_ensemble} deletes null covariates
+        before it touches the influential ones, so it never needs the exchange
+        proposal, whose probability is $1/(4ds_0)$ rather than $1/(4d)$.
+        Condition~\eqref{eq:binary_margin} also holds at $\lambda=0$, where every
+        $j$ takes the second alternative provided $d^{\kappa}\geq2s^\star$, and
+        $c_0=\emptyset$.
+    \end{remark}
+
+    \subsubsection{Temperatures at which the margin fails}
+
+    \begin{proposition}
+        \label{prop:binary_badset}
+        Let $C_\lambda$ be the set of $j\in x^\star$ failing
+        \eqref{eq:binary_margin} and $k_\lambda=\abs{C_\lambda}$. Then
+        $\{\lambda:k_\lambda\geq1\}$ is contained in a union of at most $s^\star$
+        open intervals, the one contributed by $j$ being
+        \begin{equation*}
+            \left(\frac{\kappa\log d-\log(2s^\star)}{\psi_j^+},\
+            \frac{\kappa\log d+\log(2s^\star)}{\psi_j^-}\right),
+        \end{equation*}
+        of length at most
+        $\kappa\log d\,\Delta/(\psi_j^-\psi_j^+)+2\log(2s^\star)/\psi_j^-$. In
+        particular $\lambda=0$ and $\lambda=1$ are not in it.
+    \end{proposition}
+
+    \begin{proof}
+        $j$ fails~\eqref{eq:binary_margin} exactly when
+        $\lambda\psi_j^-<\kappa\log d+\log(2s^\star)$ and
+        $\lambda\psi_j^+>\kappa\log d-\log(2s^\star)$, which is the stated
+        interval. Its length is
+        $(\kappa\log d+\log2s^\star)/\psi_j^--(\kappa\log d-\log2s^\star)/\psi_j^+$,
+        and $1/\psi_j^--1/\psi_j^+=(\psi_j^+-\psi_j^-)/(\psi_j^-\psi_j^+)
+        \leq\Delta/(\psi_j^-\psi_j^+)$. The endpoints were treated in
+        Remark~\ref{rem:binary_beats}.
+    \end{proof}
+
+    \begin{theorem}
+        \label{th:binary_gap_hybrid}
+        Assume~\ref{ass:binary_null} and $\kappa\geq1+c$ with $d^{-c}\leq1/2$.
+        Then for \textbf{every} $\lambda\in[0,1]$,
+        \begin{equation}
+            \label{eq:binary_hybrid}
+            \Gap(K_\lambda)\ \geq\
+            \frac{1}{3584\ d^{2}\,s_0\,\max(k_\lambda,1)\,
+            \bigl(4s^\star e^{\Delta}\bigr)^{k_\lambda}} .
+        \end{equation}
+    \end{theorem}
+
+    \begin{proof}
+        If $k_\lambda=0$ this is Theorem~\ref{th:binary_gap_margin}, with room to
+        spare. Otherwise apply Lemma~\ref{lemma:binary_decomposition} to the
+        partition of $\ambientspace$ by $x\cap C_\lambda$, which has
+        $2^{k_\lambda}$ blocks.
+
+        Inside a block the coordinates in $C_\lambda$ are frozen and every
+        remaining coordinate of $x^\star$ satisfies~\eqref{eq:binary_margin}, so
+        the ensemble of Definition~\ref{def:binary_ensemble} restricted to the
+        block, with $c_\lambda$ replaced by $c_\lambda\setminus C_\lambda$
+        together with the frozen coordinates, satisfies the hypotheses of the
+        proof of Theorem~\ref{th:binary_gap_margin} verbatim; hence
+        $\gamma_{\mathrm{in}}\geq1/(64ds_0)$.
+
+        Across blocks, let $T,T'\subseteq C_\lambda$ differ by one element $j$.
+        By Lemma~\ref{lemma:binary_drop} applied in both directions, flipping $j$
+        changes $\pi_\lambda$ by a factor in
+        $[e^{-\Delta}/(2s^\star),\,2s^\star e^{\Delta}]$, so the ratio between any
+        two block masses is at most $(2s^\star e^{\Delta})^{k_\lambda}$ and
+        $\min_T\bar\pi_\lambda(T)\geq2^{-k_\lambda}(2s^\star e^{\Delta})^{-k_\lambda}$.
+        The argument of Proposition~\ref{prop:binary_across} then gives
+        $\bar\gamma\geq\min_T\bar\pi_\lambda(T)/(8dk_\lambda)$. Combining with
+        Lemma~\ref{lemma:binary_decomposition} and
+        $7\cdot64\cdot8=3584$ gives~\eqref{eq:binary_hybrid}.
+    \end{proof}
+
+    \begin{remark}
+        \label{rem:binary_three}
+        Three bounds are now available at a given $\lambda$, and the best should
+        be used: Theorem~\ref{th:binary_gap_all}, which assumes only
+        Assumption~\ref{ass:binary_null} but pays $d^{\OO(s^\star)}$;
+        Theorem~\ref{th:binary_gap_margin}, which is sharp but needs
+        \eqref{eq:binary_margin}; and Theorem~\ref{th:binary_gap_hybrid}, which
+        holds at every $\lambda$ and pays $(4s^\star e^{\Delta})^{k_\lambda}$, a
+        quantity that does not grow with $d$ once $\Delta=\OO(\log d)$. The last
+        is the useful one: it removes the $d^{\OO(s^\star)}$ of
+        Theorem~\ref{th:binary_gap_all} entirely.
+
+        Exact computations on small instances ($d\leq12$, $s_0\leq4$, the second
+        eigenvalue of $K_\lambda$ obtained by diagonalisation) agree with this
+        picture. The margin fails exactly where $c_\lambda$ jumps, over an
+        interval of $\lambda$ of width $\approx0.1$, as
+        Proposition~\ref{prop:binary_badset} predicts; the measured congestion
+        $\varrho(\Gamma^\lambda)$ stays below $16d$ outside that interval and
+        rises by a factor of about $e^{\Delta}$ inside it, as
+        Lemma~\ref{lemma:binary_drop} predicts; and the true spectral gap dips by
+        a factor of at most two across the interval, so the loss
+        in~\eqref{eq:binary_hybrid} is an artefact of the proof rather than a
+        barrier in the chain.
+    \end{remark}
+
+    \subsection{Mixing times on a finite space}
+    \label{sub:binary_taubeta}
+
+    Theorems~\ref{th:main_thm},~\ref{th:normalising_smc}
+    and~\ref{th:boosted_smc} for standard SMC are stated in terms of $\tau_\beta$
+    rather than of the spectral gap. Section~\ref{sec:spectral_gap_limitation}
+    showed that the two can be far apart in either direction. On a finite space
+    they differ by at most $\tfrac12\log\abs{\ambientspace}$, and in the direction
+    unfavourable to standard SMC.
+
+    \begin{lemma}
+        \label{lemma:binary_taubeta}
+        Let $K$ be reversible with respect to $\pi_\bullet$ on the finite space
+        $\ambientspace$, with spectral gap $\gamma_\bullet>0$. Then for all
+        $\xi\in(0,1)$ and $\omega\geq1$,
+        \begin{equation*}
+            \tau_\beta(\xi,\omega,K)\ \leq\
+            \frac{1}{\gamma_\bullet}\left(\frac12\log\abs{\ambientspace}
+            +\log\frac{\omega}{2\xi}\right).
+        \end{equation*}
+    \end{lemma}
+
+    \begin{proof}
+        Fix $x$ and $q\geq1$. By the Cauchy--Schwarz inequality,
+        $2\TVNorm{\delta_xK^{q}-\pi_\bullet}
+        =\sum_z\pi_\bullet(z)\abs{K^{q}(x,z)/\pi_\bullet(z)-1}
+        \leq\chi^2(\delta_xK^{q}\mid\pi_\bullet)^{1/2}$. A $\pi_\bullet$-reversible
+        kernel with spectral gap $\gamma_\bullet$ satisfies
+        $\chi^2(\mu K\mid\pi_\bullet)\leq(1-\gamma_\bullet)^2\chi^2(\mu\mid\pi_\bullet)$,
+        so $\chi^2(\delta_xK^{q}\mid\pi_\bullet)\leq(1-\gamma_\bullet)^{2q}
+        \{1/\pi_\bullet(x)-1\}$ and
+        $\TVNorm{\delta_xK^{q}-\pi_\bullet}\leq\tfrac12(1-\gamma_\bullet)^{q}
+        \pi_\bullet(x)^{-1/2}$. For $\mu\leq\omega\pi_\bullet$, Cauchy--Schwarz
+        again gives
+        $\sum_x\pi_\bullet(x)^{1/2}\leq\abs{\ambientspace}^{1/2}$, so
+        $\int\TV(\delta_xK^{q},\pi_\bullet)\mu(\dd x)
+        \leq\tfrac\omega2(1-\gamma_\bullet)^{q}\abs{\ambientspace}^{1/2}$.
+        Use $(1-\gamma_\bullet)^{q}\leq e^{-\gamma_\bullet q}$ and solve for $q$.
+    \end{proof}
+
+    Since $\abs{\ambientspace}=\sum_{k\leq s_0}\binom dk\leq(ed/s_0)^{s_0}$, the
+    overhead over $1/\gamma_\bullet$ is at most
+    $\mathcal{L}\coloneq\tfrac{s_0}{2}\log(ed/s_0)$. It is a power of $s_0$, not a
+    logarithm, and it is the price standard SMC pays over waste-free SMC on this
+    problem, in contrast with the continuous case of
+    Section~\ref{sec:spectral_gap_limitation}, where a warm-start device made
+    $\tau_\beta$ smaller than $\gamma^{-1}$.
+
+    \subsection{Complexity}
+    \label{sub:binary_complexity}
+
+    Write
+    \begin{equation}
+        \label{eq:binary_G}
+        \mathcal{G}\coloneq 1792\ d^{2}s_0s^\star2^{s^\star}d^{\kappa s^\star}e^{\Omega_\star}
+        \ \geq\ \frac1\gamma,
+        \qquad
+        \mathcal{L}\coloneq\frac{s_0}{2}\log\frac{ed}{s_0},
+        \qquad
+        T\ \leq\ \frac{\kappa_R}{\sqrt{\log2}}\sqrt{\Omega_\star},
+    \end{equation}
+    for the inverse gap --- the better of Theorems~\ref{th:binary_gap_all}
+    and~\ref{th:binary_gap_hybrid}, the latter reducing to $64ds_0$ at every
+    temperature satisfying~\eqref{eq:binary_margin} by
+    Theorem~\ref{th:binary_gap_margin} --- the mixing-time overhead of
+    Lemma~\ref{lemma:binary_taubeta}, and the horizon of
+    Proposition~\ref{prop:binary_horizon}(iii) with
+    Corollary~\ref{cor:binary_J}.
+
+    \begin{theorem}
+        \label{th:binary_main}
+        Assume the hypotheses of Theorem~\ref{th:binary_gap_all} and
+        Corollary~\ref{cor:binary_J}, and run the samplers of
+        \cref{alg:smc,alg:wf_smc,alg:smc_size,alg:boosted} on the
+        path~\eqref{eq:binary_path} with the schedule~\eqref{eq:binary_schedule}
+        and the kernels $K_{\lambda_t}$. Then, on the event $\mathcal{H}_n$,
+        Assumptions~\ref{ass:chisquare_is_small} and~\ref{ass:spg} hold with
+        $\gamma\geq1/\mathcal{G}$ as in~\eqref{eq:binary_G}, and the number of
+        Markov steps sufficient
+        for~\eqref{eq:garantee}, respectively~\eqref{eq:garantee_Z}, is bounded as
+        follows, up to factors logarithmic in $T$, $1/\eta$ and $1/\varepsilon$:
+        \begin{center}
+            \begin{tabular}{c|c|c}
+                \arrayrulecolor{black}
+                \textbf{Estimate} & \textbf{Algorithm} & \textbf{Markov steps} \\
+                \hline
+                \multirow{3}{*}{$\widehat\pi_{T-1}(f)$}
+                & Alg.~\ref{alg:smc}
+                & $T\,\mathcal{G}\,\mathcal{L}\,\varepsilon^{-2}$ \\
+                \hhline{~--}
+                & Alg.~\ref{alg:wf_smc}
+                & \newres $T\,\mathcal{G}\,\varepsilon^{-2}$ \\
+                \hhline{~--}
+                & Alg.~\ref{alg:smc_size}
+                & \newres $\mathcal{G}\,(T+\varepsilon^{-2})$ \\
+                \hline
+                \multirow{4}{*}{$\widehat Z_T$}
+                & Alg.~\ref{alg:smc}
+                & \newres $T^4\,\mathcal{G}\,\mathcal{L}\,\varepsilon^{-2}$ \\
+                \hhline{~--}
+                & Alg.~\ref{alg:smc} with medians
+                & \newres $T^3\,\mathcal{G}\,\mathcal{L}\,\varepsilon^{-2}$ \\
+                \hhline{~--}
+                & Alg.~\ref{alg:wf_smc}
+                & \newres $T^4\,\mathcal{G}\,\varepsilon^{-2}$ \\
+                \hhline{~--}
+                & Alg.~\ref{alg:boosted}
+                & \newres $T^3\,\mathcal{G}\,\varepsilon^{-2}$ \\
+                \hline
+            \end{tabular}
+        \end{center}
+        The rows for $\widehat Z_T$ using Algorithms~\ref{alg:smc}
+        and~\ref{alg:wf_smc} hold with $\eta=1/4$.
+    \end{theorem}
+
+    \begin{proof}
+        Assumption~\ref{ass:chisquare_is_small} is
+        Proposition~\ref{prop:binary_horizon}(ii) and
+        Assumption~\ref{ass:spg} is Theorems~\ref{th:binary_gap_all}
+        and~\ref{th:binary_gap_hybrid}; by
+        Lemma~\ref{lemma:binary_taubeta},
+        $\tau_\beta(\xi,2)\leq\mathcal{G}\{\mathcal{L}+\log(1/\xi)\}$. The total
+        number of Markov steps is $(T+1)MP$ for
+        Algorithms~\ref{alg:smc},~\ref{alg:wf_smc}, $M\sum_tP_t$ for
+        Algorithm~\ref{alg:smc_size} and $J(T+1)MP$ for
+        Algorithm~\ref{alg:boosted}. The rows follow:
+        \begin{itemize}
+            \item Row~1: Theorem~\ref{th:main_thm} with $\bar\chi^2=2$ needs
+            $M=\OO(\varepsilon^{-2}\log(T/\eta))$ and
+            $P\geq\tau_\beta(\eta/(2MT),2)
+            =\OO(\mathcal{G}\{\mathcal{L}+\log(MT/\eta)\})$.
+            \item Rows~2 and~3: Theorems~\ref{th:main_wf}
+            and~\ref{th:wf_smc_greedy} with $M=1$ and $\gamma^{-1}\leq\mathcal{G}$.
+            \item Row~4: Theorem~\ref{th:normalising_smc} with
+            $M=\Omega(T^3\varepsilon^{-2})$, $P=\Omega(\tau_\beta(1/(MT)))$.
+            \item Row~5: Theorem~\ref{th:boosted_smc} with
+            $J=\Omega(\log(T/\eta))$, $M=\Omega(T^2\varepsilon^{-2})$,
+            $P=\Omega(\tau_\beta(1/(MT)))$.
+            \item Rows~6 and~7: Theorems~\ref{th:strong_normalising_constant}
+            and~\ref{th:boosted} with $M=1$ and
+            $P=\Omega(T^3\gamma^{-1}\varepsilon^{-2})$, respectively
+            $P=\Omega(T^2\gamma^{-1}\varepsilon^{-2})$ and
+            $J=\Omega(\log(T/\eta))$.
+        \end{itemize}
+    \end{proof}
+
+    Take $\kappa,\alpha,L,\Ltil,C_m,r,c_2,s^\star,\kappa_R=\OO(1)$ and a signal at
+    the detection threshold, so that $\mathcal{E}=\OO(\log d)$,
+    $\Omega_\star=\OO(\log d)$, $\mathcal{G}=\OO(s_0\,d^{q})$ for a constant $q$,
+    $\mathcal{L}=\OO(s_0\log d)$ and $T=\OO(\sqrt{\log d})$. Then the marginal
+    likelihood is estimated within relative error $\varepsilon$ with probability
+    $1-\eta$ using
+    \begin{equation*}
+        \widetilde\OO\bigl(d^{q}s_0(\log d)^{3/2}\varepsilon^{-2}\bigr)
+        \ \text{Markov steps by Algorithm~\ref{alg:boosted}, that is}\
+        \widetilde\OO\bigl(n\,d^{q}s_0^{2}(\log d)^{3/2}\varepsilon^{-2}\bigr)
+        \ \text{operations,}
+    \end{equation*}
+    and $\pi(f)$ is estimated with
+    $\widetilde\OO(d^{q}s_0\{\sqrt{\log d}+\varepsilon^{-2}\})$ Markov steps by
+    Algorithm~\ref{alg:smc_size}. Both are polynomial in $(d,n,s_0,\varepsilon^{-1})$.
+
+    \paragraph{Comparison with MCMC.}
+    Corollary~1 of~\citet{YangWainwrightJordan2016} states that the chain
+    $K_1$ started at the worst state returns $x^\star$ after
+    $\OO(\alpha nds_0^2\log d)$ steps. Started at $\nu$, the number of steps
+    needed for the law of the chain to be within $\xi$ of $\pi$ is, by the
+    inequality $\chi^2(\nu K^q\mid\pi)\leq(1-\gamma)^{2q}\chi^2(\nu\mid\pi)$ used
+    in the proof of Lemma~\ref{lemma:binary_taubeta}, of the order of
+    $\gamma^{-1}\{\ell_\nu+\log(1/\xi)\}$ with
+    $\ell_\nu=\log\chi^2(\nu\mid\pi)$, and estimating $\pi(f)$ to accuracy
+    $\varepsilon$ costs $\OO(\gamma^{-1}\varepsilon^{-2})$ further steps. By
+    Jensen's inequality applied to $\chi^2(\nu\mid\pi)=\bbE_\nu[\dd\nu/\dd\pi]$,
+    \begin{equation*}
+        \ell_\nu\ \geq\ \bbE_\nu\Bigl[\log\frac{\dd\nu}{\dd\pi}\Bigr]=\KL(\nu\mid\pi)
+        \ \geq\ \mathcal{J}-\KL(\pi\mid\nu).
+    \end{equation*}
+    So MCMC pays $\widetilde\OO(\mathcal{G}\{\ell_\nu+\varepsilon^{-2}\})$ where
+    Algorithm~\ref{alg:smc_size} pays
+    $\widetilde\OO(\mathcal{G}\{\sqrt{\mathcal{J}}+\varepsilon^{-2}\})$: the cost
+    of reaching the target from the prior falls from an amount proportional to
+    $\mathcal{J}$ to one proportional to $\sqrt{\mathcal{J}}$. Moreover MCMC
+    returns no estimate of $Z_T$ with a comparable guarantee, which is the reason
+    \citet{Schafer2013-yq} use SMC on this problem.
+
+    \subsection{Consequences for practice}
+    \label{sub:binary_practice}
+
+    \begin{enumerate}[leftmargin=2.2em]
+        \item \emph{Start from the prior, and temper the marginal likelihood.}
+        This is the path~\eqref{eq:binary_path}. It is what makes
+        Theorem~\ref{th:binary_gap_all} hold at every temperature: by~\ref{P:penalty}
+        the penalty $d^{-\kappa}$ charged for each null covariate is the same at
+        every $\lambda$, so the count of null covariates, which is $d$ per added
+        covariate, is beaten uniformly in $\lambda$ as soon as $\kappa>1$. The
+        initial distribution is sampled exactly by~\ref{P:exact}, and
+        $\widehat Z_T$ estimates the marginal likelihood directly.
+
+        \item \emph{Take $\kappa>1$ and truncate at $s_0=\OO(n/\log d)$.}
+        \citet{Schafer2013-yq} take the uniform prior on $\{0,1\}^d$, that is
+        $\kappa=0$ and $s_0=d$. Then Lemma~\ref{lemma:binary_block_mass} fails,
+        and with it Theorem~\ref{th:binary_gap_all}; Assumption~D
+        of~\citet{YangWainwrightJordan2016} also fails. Both are repaired by the
+        prior~\eqref{eq:binary_prior} with $\kappa>1$ and $s_0$ of the order that
+        Assumption~D allows.
+
+        \item \emph{Choose $g$ so that $\alpha\geq a_0$.}
+        This is the second half of Assumption~\ref{ass:binary_null}. It says the
+        Occam factor $(1+g)^{-\abs x/2}$ of the $g$-prior must be at least as
+        strong as the largest amount of likelihood a null covariate can buy.
+        Assumption~C constrains only $\kappa+\alpha$ from below, so raising
+        $\alpha$ is free.
+
+        \item \emph{The local kernel has a polynomial but large inverse gap.}
+        Theorem~\ref{th:binary_gap_all} gives $\gamma^{-1}\leq\mathcal{G}$, which
+        is $d^{2+\kappa s^\star}$ up to factors. This is polynomial, and it is
+        also large enough to explain the observation of~\citet{Schafer2013-yq}
+        that their sampler does not work with local kernels. Their global kernel,
+        an independent Metropolis--Hastings kernel with a fitted proposal, has
+        spectral gap equal to $\min_xq_{\theta_t}(x)/\pi_{t-1}(x)$, for which we
+        have no lower bound, and which can be exponentially small in $d$; we prove
+        nothing about it.
+
+        \item \emph{The exchange move is not needed.}
+        The ensemble of Definition~\ref{def:binary_ensemble} uses single flips
+        only, because it deletes null covariates before it adjusts the
+        influential ones. So Theorems~\ref{th:binary_gap_margin}
+        and~\ref{th:binary_gap_hybrid} hold for the flip-only kernel, which is
+        cheaper per step and simpler to implement than the flip-and-exchange
+        kernel $K_\lambda$. The exchange move is what
+        costs~\citet{YangWainwrightJordan2016} the second factor $s_0$ in their
+        $\OO(1/(ds_0^2))$.
+
+        \item \emph{Use Algorithm~\ref{alg:smc_size} for moments and
+        Algorithm~\ref{alg:boosted} for the marginal likelihood.} This is the
+        recommendation of Section~\ref{sub:practical}. The difference with the
+        continuous case is that standard SMC has no compensating advantage here:
+        the factor $\mathcal{L}=\OO(s_0\log d)$ of
+        Lemma~\ref{lemma:binary_taubeta} comes from $\min_x\pi_\bullet(x)$ being
+        exponentially small, and no analogue of
+        Proposition~\ref{prop:smc_mala_warm_start} removes it.
+    \end{enumerate}
+
+    \bibliographystyle{imsart-nameyear}
+    \bibliography{draft,bvs}
+\end{document}

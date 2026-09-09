@@ -1,0 +1,77 @@
+\begin{thebibliography}{5}
+% BibTex style file: imsart-nameyear.bst, 2017-11-03
+% Default style options (sort=1,type=nameyear).
+% Used options (sort=1,type=nameyear).
+
+\bibitem[\protect\citeauthoryear{Jerrum
+  et~al.}{2004}]{JerrumSonTetaliVigoda2004}
+\begin{barticle}[author]
+\bauthor{\bsnm{Jerrum},~\bfnm{Mark}\binits{M.}},
+  \bauthor{\bsnm{Son},~\bfnm{Jung-Bae}\binits{J.-B.}},
+  \bauthor{\bsnm{Tetali},~\bfnm{Prasad}\binits{P.}} \AND
+  \bauthor{\bsnm{Vigoda},~\bfnm{Eric}\binits{E.}}
+(\byear{2004}).
+\btitle{Elementary bounds on {P}oincar\'e and log-{S}obolev constants for
+  decomposable {M}arkov chains}.
+\bjournal{Ann. Appl. Probab.}
+\bvolume{14}
+\bpages{1741--1765}.
+\bdoi{10.1214/105051604000000639}
+\end{barticle}
+\endbibitem
+
+\bibitem[\protect\citeauthoryear{Madras and Randall}{2002}]{MadrasRandall2002}
+\begin{barticle}[author]
+\bauthor{\bsnm{Madras},~\bfnm{Neal}\binits{N.}} \AND
+  \bauthor{\bsnm{Randall},~\bfnm{Dana}\binits{D.}}
+(\byear{2002}).
+\btitle{Markov chain decomposition for convergence rate analysis}.
+\bjournal{Ann. Appl. Probab.}
+\bvolume{12}
+\bpages{581--606}.
+\bdoi{10.1214/aoap/1026915617}
+\end{barticle}
+\endbibitem
+
+\bibitem[\protect\citeauthoryear{Sch{\"a}fer and Chopin}{2013}]{Schafer2013-yq}
+\begin{barticle}[author]
+\bauthor{\bsnm{Sch{\"a}fer},~\bfnm{Christian}\binits{C.}} \AND
+  \bauthor{\bsnm{Chopin},~\bfnm{Nicolas}\binits{N.}}
+(\byear{2013}).
+\btitle{Sequential {M}onte {C}arlo on large binary sampling spaces}.
+\bjournal{Statistics and Computing}
+\bvolume{23}
+\bpages{163--184}.
+\end{barticle}
+\endbibitem
+
+\bibitem[\protect\citeauthoryear{Sinclair}{1992}]{Sinclair1992}
+\begin{barticle}[author]
+\bauthor{\bsnm{Sinclair},~\bfnm{Alistair}\binits{A.}}
+(\byear{1992}).
+\btitle{Improved bounds for mixing rates of {M}arkov chains and multicommodity
+  flow}.
+\bjournal{Combin. Probab. Comput.}
+\bvolume{1}
+\bpages{351--370}.
+\bdoi{10.1017/S0963548300000390}
+\end{barticle}
+\endbibitem
+
+\bibitem[\protect\citeauthoryear{Yang, Wainwright and
+  Jordan}{2016}]{YangWainwrightJordan2016}
+\begin{barticle}[author]
+\bauthor{\bsnm{Yang},~\bfnm{Yun}\binits{Y.}},
+  \bauthor{\bsnm{Wainwright},~\bfnm{Martin~J.}\binits{M.~J.}} \AND
+  \bauthor{\bsnm{Jordan},~\bfnm{Michael~I.}\binits{M.~I.}}
+(\byear{2016}).
+\btitle{On the computational complexity of high-dimensional {B}ayesian variable
+  selection}.
+\bjournal{Ann. Statist.}
+\bvolume{44}
+\bpages{2497--2532}.
+\bdoi{10.1214/15-AOS1417}
+\end{barticle}
+\endbibitem
+
+\end{thebibliography}
